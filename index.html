@@ -71,6 +71,9 @@ mono,code.mono{font-family:"JetBrains Mono",monospace}
 .ctrlrow label{font-size:12px;color:var(--muted);font-family:"JetBrains Mono",monospace}
 input[type=text],input[type=number]{font-family:"JetBrains Mono",monospace;font-size:14px;padding:6px 8px;border:1.5px solid var(--line);border-radius:2px;background:#fff}
 input.short{width:64px}
+input.mid{width:112px}
+.startnote{margin-top:6px;padding-top:6px;border-top:1px dashed var(--line);color:var(--muted);font-size:12px}
+.mgnull{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--muted);font-family:"JetBrains Mono",monospace}
 input.long{width:160px;flex:1;min-width:130px}
 .hint{font-size:12px;color:var(--muted);margin-top:8px}
 .btn{font-family:"JetBrains Mono",monospace;font-size:13px;font-weight:500;border:1.5px solid var(--ink);background:var(--paper);color:var(--ink);padding:7px 13px;border-radius:2px;cursor:pointer;transition:all .15s}
@@ -233,6 +236,13 @@ input.long{width:160px;flex:1;min-width:130px}
 .bstnone{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--muted);font-style:italic}
 .bstempty{font-family:"JetBrains Mono",monospace;font-size:13px;color:var(--muted);font-style:italic;padding:24px 12px;text-align:center}
 
+/* ---- mergeLists view: left, right and result as three rows ---- */
+.mgstage{display:flex;flex-direction:column;gap:14px;width:100%;padding:8px 6px}
+.mgrow{display:flex;align-items:flex-start;gap:6px;flex-wrap:wrap;min-height:84px}
+.mglab{width:58px;padding-top:17px;font-family:"JetBrains Mono",monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+.mgarr{padding-top:14px;color:var(--muted);font-size:16px}
+.mgempty{margin-top:4px;height:50px;min-width:70px;padding:0 14px;display:flex;align-items:center;justify-content:center;border:1.5px dashed var(--line);border-radius:3px;color:var(--muted);font-family:"JetBrains Mono",monospace;font-size:12px}
+.lcell.mgdone .lbox{opacity:.4}
 /* ---- linked list view ---- */
 .llrow{position:relative;display:flex;align-items:flex-start;flex-wrap:nowrap;min-height:150px;padding:64px 14px 44px;gap:34px;overflow:visible}
 /* extra headroom only while a new node floats above the row */
@@ -434,12 +444,13 @@ input.long{width:160px;flex:1;min-width:130px}
 .f-quiz{left:3%;top:11%;width:22%}
 .f-xp{left:50%;top:35%;width:25%;transform:translateX(-50%)}
 .f-xp:hover,.f-xp:focus-visible{transform:translateX(-50%) translateY(-4px)}
-.f-wardrobe{right:3%;top:20%;width:22%}
+.f-wardrobe{right:3%;top:24.3%;width:22%}
 .f-joke{left:25%;bottom:3%;width:16%}
-.f-report{left:63%;top:12%;width:12%}
-.f-report svg{transform:rotate(-4deg)}
-.f-report .shackle{transition:transform .35s;transform-origin:76px 66px}
-.f-report.unlocked .shackle{transform:rotate(-38deg) translate(2px,-3px)}
+.f-report{left:65%;top:11%;width:7.5%}
+.f-report .wings{transform-origin:35px 42px}
+.f-report.unlocked .wings{animation:wingFlap .5s ease-in-out 3}
+@keyframes wingFlap{50%{transform:scaleX(.5)}}
+@media(prefers-reduced-motion:reduce){.f-report.unlocked .wings{animation:none}}
 .homebg{position:absolute;inset:0;width:100%;height:100%}
 .homespot{position:absolute;left:50%;top:71%;width:64px;height:64px;transform:translateX(-50%)}
 @media(min-width:760px){.grid.two{grid-template-columns:1fr 1fr}}
@@ -473,7 +484,7 @@ input.long{width:160px;flex:1;min-width:130px}
 
   <header class="top">
     <h1>CSE 12 Data Structure Visualizer</h1>
-    <span class="sub">Watch operations reshape a data structure, one step at a time.</span>
+    <span class="sub">Watch operations reshape a data structure, one step at a time</span>
     <button type="button" class="btn ghost" id="tourBtn" style="padding:4px 10px;font-size:12px">Tutorial</button>
   </header>
 
@@ -795,8 +806,13 @@ input.long{width:160px;flex:1;min-width:130px}
 
           <button class="btn primary obtn" id="appendBtn" data-act="append">append(e)</button>
           <div class="args">
-            <span class="field"><label>e</label><input type="text" id="vAppend" class="short" placeholder="value" value="8"></span>
+            <span class="field"><label>e</label><input type="text" id="vAppend" class="short" placeholder="value" value="7"></span>
             <button class="btn ghost" id="appendNullBtn" data-act="appendNull">append(null)</button>
+          </div>
+
+          <button class="btn primary obtn llonly" data-act="getNth" style="display:none">getNth(i)</button>
+          <div class="args llonly" style="display:none">
+            <span class="field"><label>i</label><input type="number" id="iGetNth" class="short" value="1" min="0"></span>
           </div>
         </div>
       </div>
@@ -828,9 +844,18 @@ input.long{width:160px;flex:1;min-width:130px}
           <button class="btn primary obtn llonly" data-act="clear" style="display:none">clear()</button>
           <div class="args llonly" style="display:none"></div>
 
+          <button class="btn primary obtn llonly" data-act="merge" style="display:none">mergeLists(left, right)</button>
+          <div class="args llonly" style="display:none">
+            <span class="field"><label>left</label><input type="text" id="vMgL" class="mid" data-free value="1, 2, 2"></span>
+            <label class="mgnull"><input type="checkbox" id="mgLNull"> null</label>
+            <span class="field"><label>right</label><input type="text" id="vMgR" class="mid" data-free value="2, 3, 4"></span>
+            <label class="mgnull"><input type="checkbox" id="mgRNull"> null</label>
+          </div>
+
           <button class="btn primary obtn alonly" data-act="moveTarget">moveTargetToEnd(t)</button>
           <div class="args alonly">
             <span class="field"><label>t</label><input type="number" id="vMove" class="short" value="8"></span>
+            <label class="mgnull"><input type="checkbox" id="mvNull"> null nums</label>
           </div>
         </div>
       </div>
@@ -936,7 +961,7 @@ input.long{width:160px;flex:1;min-width:130px}
         <button class="tbtn" id="tNext" title="Step forward (&rarr;)" aria-label="Step forward"><svg viewBox="0 0 16 16" width="13" height="13"><path d="M5 3l6 5-6 5z"/></svg></button>
         <span class="progress" id="tProg">0 / 0</span>
         <div class="track"><div class="fill" id="tFill"></div></div>
-        <span class="speedwrap">slow <input type="range" id="speed" min="120" max="3000" value="1620" style="width:84px"> fast</span>
+        <span class="speedwrap">slow <input type="range" id="speed" min="120" max="3000" value="2120" style="width:84px"> fast</span>
       </div>
     </div>
 
@@ -992,6 +1017,15 @@ input.long{width:160px;flex:1;min-width:130px}
           <defs>
             <pattern id="homeDots" width="18" height="18" patternUnits="userSpaceOnUse"><circle cx="9" cy="9" r="1.6" fill="#efcf9f" opacity=".7"/></pattern>
             <radialGradient id="homeGlow" cx="50%" cy="55%" r="75%"><stop offset="0" stop-color="#ffd9a0" stop-opacity=".5"/><stop offset="1" stop-color="#ffd9a0" stop-opacity="0"/></radialGradient>
+            <linearGradient id="homeSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c9dde6"/><stop offset="1" stop-color="#eef1ea"/></linearGradient>
+            <clipPath id="homeGlass"><rect x="153" y="25" width="86" height="70"/></clipPath>
+            <g id="homeCurtain">
+              <path d="M141 25H168C167 42 160 52 159 66C160 80 169 92 173 104C166 110 162 100 156 105C150 110 146 100 140 105C137 107 135 104 133 102C140 90 147 80 146 66C145 52 140 40 141 25Z" fill="#e0925c" stroke="#a9613a" stroke-width="1.6" stroke-linejoin="round"/>
+              <path d="M146 27C147 45 150 55 147 68C145 82 140 94 137 103M153 27C153 45 154 56 152 68C152 82 152 96 150 107M160 27C160 45 158 56 157 68C158 84 165 96 167 106" stroke="#c97b48" stroke-width="1.6" fill="none" stroke-linecap="round" opacity=".9"/>
+              <path d="M149.500 30C150 46 151 54 150 66M156.500 30C156 46 156 54 155 66" stroke="#a9613a" stroke-width="1" fill="none" stroke-linecap="round" opacity=".45"/>
+              <rect x="144" y="63" width="17" height="6" rx="3" fill="#d28a52" stroke="#a9613a" stroke-width="1.6"/>
+              <path d="M152.5 69v7" stroke="#a9613a" stroke-width="1.6"/><path d="M149.5 76h6l-1 8h-4z" fill="#d28a52" stroke="#a9613a" stroke-width="1.4" stroke-linejoin="round"/>
+            </g>
             <linearGradient id="homeBeam" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff3c4" stop-opacity=".8"/><stop offset="1" stop-color="#fff3c4" stop-opacity="0"/></linearGradient>
           </defs>
           <!-- wallpaper with a wooden panel below -->
@@ -1006,19 +1040,24 @@ input.long{width:160px;flex:1;min-width:130px}
           <g stroke="#c58d4f" stroke-width="1.4"><path d="M0 200h400M0 224h400M0 248h400M50 178v22M160 178v22M280 178v22M370 178v22M100 200v24M220 200v24M330 200v24M30 224v24M150 224v24M270 224v24M380 224v24"/></g>
           <!-- window, curtains and a patch of sun on the floor -->
           <path d="M150 100h92l40 150H110z" fill="url(#homeBeam)" opacity=".55"/>
-          <rect x="150" y="22" width="92" height="76" rx="5" fill="#cfe9ea" stroke="#8a5a2e" stroke-width="5"/>
-          <path d="M196 22v76M150 60h92" stroke="#8a5a2e" stroke-width="4"/>
-          <circle cx="222" cy="40" r="8" fill="#ffe08a"/>
-          <path d="M160 88c10-12 22-14 30-8" stroke="#fff" stroke-width="3" opacity=".7" fill="none" stroke-linecap="round"/>
-          <rect x="140" y="16" width="112" height="6" rx="3" fill="#8a5a2e"/>
-          <path d="M146 20c-5 26-6 52 2 80l13-2c-5-26-5-52 0-76z" fill="#e48e68"/>
-          <path d="M246 20c5 26 6 52-2 80l-13-2c5-26 5-52 0-76z" fill="#e48e68"/>
-          <path d="M146 62c8 4 14 4 18 0M246 62c-8 4-14 4-18 0" stroke="#c8704c" stroke-width="3" fill="none" stroke-linecap="round"/>
-          <rect x="146" y="98" width="100" height="7" rx="3" fill="#a9703d"/>
-          <!-- string lights: two matching swags, one each side of the window -->
-          <path d="M16 6Q78 34 140 10M260 10Q322 34 384 6" stroke="#7a5a3a" stroke-width="1.5" fill="none"/>
-          <g fill="#ffd36e"><circle cx="38" cy="14" r="3.4"/><circle cx="78" cy="21" r="3.4"/><circle cx="118" cy="17" r="3.4"/><circle cx="282" cy="17" r="3.4"/><circle cx="322" cy="21" r="3.4"/><circle cx="362" cy="14" r="3.4"/></g>
-          <g fill="#ffe9a8" opacity=".45"><circle cx="38" cy="14" r="7"/><circle cx="78" cy="21" r="7"/><circle cx="118" cy="17" r="7"/><circle cx="282" cy="17" r="7"/><circle cx="322" cy="21" r="7"/><circle cx="362" cy="14" r="7"/></g>
+          <rect x="148" y="20" width="96" height="80" rx="5" fill="#8a5a2e"/>
+          <rect x="153" y="25" width="86" height="70" fill="url(#homeSky)"/>
+          <g clip-path="url(#homeGlass)">
+            <circle cx="222" cy="42" r="8" fill="#f1e2b0"/>
+            <path d="M153 76q26-14 52-6t34-4v29h-86z" fill="#c9d6b8"/>
+            <path d="M153 86q28-12 52-4t34-2v15h-86z" fill="#a7bb9c"/>
+          </g>
+          <path d="M196 25v70M153 60h86M174.5 25v70M217.5 25v70" stroke="#8a5a2e" stroke-width="3"/>
+          <path d="M160 92L180 30h8L168 92zM200 92l14-40h5L205 92z" fill="#fff" opacity=".28"/>
+          <rect x="153" y="25" width="86" height="70" fill="none" stroke="#6b4423" stroke-width="1.6"/>
+          <!-- sill with a small plant -->
+          <rect x="143" y="98" width="106" height="8" rx="3" fill="#a9703d" stroke="#7a4a28" stroke-width="2"/>
+          <path d="M146 106h100" stroke="#7a4a28" stroke-width="2" opacity=".25"/>
+          <g transform="translate(214 78)"><path d="M3 12h14l-2 8H5z" fill="#b09274" stroke="#6b5440" stroke-width="1.6" stroke-linejoin="round"/><path d="M10 12c-1-5-6-6-8-5 1 4 4 6 8 5zM10 12c1-6 6-8 9-6-1 5-4 7-9 6z" fill="#6f8f6a" stroke="#4d6a4a" stroke-width="1.2" stroke-linejoin="round"/></g>
+          <!-- rod, valance and curtains -->
+          <use href="#homeCurtain" transform="translate(135 0) scale(.82 1) translate(-141 0)"/><use href="#homeCurtain" transform="translate(392 0) scale(-1 1) translate(135 0) scale(.82 1) translate(-141 0)"/>
+          <path d="M142 19h108v7q-9 9-18 0q-9 9-18 0q-9 9-18 0q-9 9-18 0q-9 9-18 0q-9 9-18 0z" fill="#e0925c" stroke="#a9613a" stroke-width="1.6" stroke-linejoin="round"/>
+          <rect x="136" y="12" width="120" height="6" rx="3" fill="#8a5a2e" stroke="#6b4423" stroke-width="1.4"/><circle cx="135" cy="15" r="4.5" fill="#a9743f" stroke="#6b4423" stroke-width="1.4"/><circle cx="257" cy="15" r="4.5" fill="#a9743f" stroke="#6b4423" stroke-width="1.4"/>
           <!-- shadows under the big pieces -->
           <g fill="#7a4a28" opacity=".18"><ellipse cx="57" cy="192" rx="40" ry="5"/><ellipse cx="343" cy="194" rx="40" ry="5"/><ellipse cx="200" cy="184" rx="52" ry="4"/></g>
           <!-- round rug, with Pawie's spot in the middle -->
@@ -1036,23 +1075,20 @@ input.long{width:160px;flex:1;min-width:130px}
             <rect x="9" y="12" width="72" height="126" fill="#9a6538"/>
             <rect x="9" y="52" width="72" height="4" fill="#7a4a28"/><rect x="9" y="94" width="72" height="4" fill="#7a4a28"/>
             <g><rect x="12" y="20" width="8" height="32" rx="1" fill="#d6563c"/><rect x="21" y="26" width="7" height="26" rx="1" fill="#f2b84b"/><rect x="29" y="18" width="9" height="34" rx="1" fill="#4f8f8a"/><rect x="39" y="24" width="7" height="28" rx="1" fill="#6b7fd7"/><rect x="47" y="21" width="8" height="31" rx="1" fill="#e48e68"/><path d="M58 52l6-30 8 2-6 28z" fill="#8c5fb0"/><rect x="73" y="28" width="6" height="24" rx="1" fill="#d6563c"/></g>
-            <g><rect x="12" y="66" width="9" height="28" rx="1" fill="#4f8f8a"/><rect x="22" y="60" width="8" height="34" rx="1" fill="#f2b84b"/><rect x="31" y="68" width="7" height="26" rx="1" fill="#d6563c"/><rect x="39" y="62" width="9" height="32" rx="1" fill="#8c5fb0"/><rect x="50" y="70" width="28" height="24" rx="3" fill="#fff8e8" stroke="#a9703d" stroke-width="2"/><text x="64" y="90" font-family="JetBrains Mono,monospace" font-size="20" font-weight="700" fill="#d6563c" text-anchor="middle">?</text></g>
+            <g><rect x="12" y="66" width="9" height="28" rx="1" fill="#4f8f8a"/><rect x="22" y="60" width="8" height="34" rx="1" fill="#f2b84b"/><rect x="31" y="68" width="7" height="26" rx="1" fill="#d6563c"/><rect x="39" y="62" width="9" height="32" rx="1" fill="#8c5fb0"/><circle cx="64" cy="82" r="11.5" fill="#fff8e8" stroke="#a9703d" stroke-width="2.4"/><path d="M64 72.500v2M64 89.500v2M54.500 82h2M71.500 82h2" stroke="#7a4a28" stroke-width="1.4" stroke-linecap="round"/><path d="M64 82l-4.700 2.700" stroke="#3a2a1a" stroke-width="2" stroke-linecap="round"/><path d="M64 82v-7.500" stroke="#3a2a1a" stroke-width="1.4" stroke-linecap="round"/><circle cx="64" cy="82" r="1.3" fill="#3a2a1a"/></g>
             <g><rect x="12" y="108" width="10" height="30" rx="1" fill="#6b7fd7"/><rect x="23" y="112" width="7" height="26" rx="1" fill="#e48e68"/><rect x="31" y="106" width="9" height="32" rx="1" fill="#f2b84b"/><rect x="41" y="112" width="8" height="26" rx="1" fill="#4f8f8a"/><rect x="50" y="108" width="9" height="30" rx="1" fill="#d6563c"/><rect x="60" y="114" width="8" height="24" rx="1" fill="#8c5fb0"/><circle cx="76" cy="130" r="6" fill="#4f9a5c"/><rect x="73" y="132" width="6" height="6" fill="#c2603f"/></g>
           </svg><span>Quiz</span></button>
         <button type="button" class="furn f-xp" data-furn="xp" aria-label="XP: the trophy cabinet" title="XP">
           <svg viewBox="0 0 104 72" aria-hidden="true">
             <path d="M42 4h20v12a10 10 0 0 1-20 0z" fill="#f2b84b" stroke="#a96f12" stroke-width="2.2"/><path d="M42 7h-7v3a6 6 0 0 0 6 6M62 7h7v3a6 6 0 0 1-6 6" fill="none" stroke="#a96f12" stroke-width="2.2"/>
             <path d="M52 8l1.8 3.6 4 .5-3 2.7.9 3.9-3.7-2-3.7 2 .9-3.9-3-2.7 4-.5z" fill="#fff3c4"/><rect x="49" y="26" width="6" height="6" fill="#a96f12"/><rect x="44" y="31" width="16" height="4" rx="1" fill="#6b4a2b"/>
-            <g transform="translate(14,18)"><rect x="0" y="6" width="16" height="11" rx="1" fill="#6b7fd7"/><rect x="2" y="2" width="16" height="11" rx="1" fill="#f2b84b" transform="rotate(-8 10 8)"/></g>
-            <g transform="translate(78,16)"><circle cx="8" cy="10" r="8" fill="#d6563c" stroke="#7a2a18" stroke-width="2"/><path d="M5 2l-2 8M11 2l2 8" stroke="#3f8a4f" stroke-width="2.4"/></g>
             <rect x="4" y="35" width="96" height="6" rx="2" fill="#8f5a30" stroke="#7a4a28" stroke-width="2"/>
             <rect x="8" y="41" width="88" height="26" rx="3" fill="#b97c4a" stroke="#7a4a28" stroke-width="2.4"/>
             <path d="M52 43v22" stroke="#7a4a28" stroke-width="2"/><rect x="14" y="46" width="34" height="16" rx="2" fill="none" stroke="#7a4a28" stroke-width="1.8"/><rect x="56" y="46" width="34" height="16" rx="2" fill="none" stroke="#7a4a28" stroke-width="1.8"/>
             <circle cx="44" cy="54" r="2.2" fill="#f4e3c2"/><circle cx="60" cy="54" r="2.2" fill="#f4e3c2"/><rect x="12" y="67" width="7" height="5" fill="#7a4a28"/><rect x="85" y="67" width="7" height="5" fill="#7a4a28"/>
           </svg><span>XP</span></button>
         <button type="button" class="furn f-wardrobe" data-furn="wardrobe" aria-label="Wardrobe: the cabinet" title="Wardrobe">
-          <svg viewBox="0 0 90 142" aria-hidden="true">
-            <path d="M30 18a15 12 0 0 1 30 0z" fill="#d6563c" stroke="#7a2a18" stroke-width="2.4"/><circle cx="45" cy="5" r="3.4" fill="#fff"/>
+          <svg viewBox="0 12 90 130" aria-hidden="true">
             <rect x="4" y="16" width="82" height="8" rx="3" fill="#8f5a30" stroke="#7a4a28" stroke-width="2"/>
             <rect x="8" y="24" width="74" height="106" rx="3" fill="#b97c4a" stroke="#7a4a28" stroke-width="3"/>
             <path d="M45 26v102" stroke="#7a4a28" stroke-width="2.6"/>
@@ -1062,19 +1098,40 @@ input.long{width:160px;flex:1;min-width:130px}
             <circle cx="40" cy="88" r="2.8" fill="#f4e3c2" stroke="#7a4a28"/><circle cx="50" cy="88" r="2.8" fill="#f4e3c2" stroke="#7a4a28"/>
             <rect x="12" y="130" width="12" height="8" fill="#7a4a28"/><rect x="66" y="130" width="12" height="8" fill="#7a4a28"/>
           </svg><span>Wardrobe</span></button>
-        <button type="button" class="furn f-joke" data-furn="joke" aria-label="Joke: the radio" title="Joke">
+        <button type="button" class="furn f-joke" data-furn="joke" aria-label="Joke: the microphone" title="Joke">
           <svg viewBox="0 0 74 84" aria-hidden="true">
-            <path d="M16 20L44 6" stroke="#7a2a18" stroke-width="2.4" stroke-linecap="round"/>
-            <rect x="6" y="18" width="52" height="30" rx="6" fill="#d6563c" stroke="#7a2a18" stroke-width="3"/>
-            <circle cx="23" cy="33" r="9.5" fill="#f4e3c2" stroke="#7a2a18" stroke-width="2.2"/><path d="M17 33h12M18 28h10M18 38h10" stroke="#7a2a18" stroke-width="1.8" stroke-linecap="round"/>
-            <circle cx="42" cy="28" r="3.6" fill="#f4e3c2" stroke="#7a2a18" stroke-width="1.8"/><circle cx="51" cy="28" r="3.6" fill="#f4e3c2" stroke="#7a2a18" stroke-width="1.8"/><rect x="38" y="37" width="16" height="5" rx="2" fill="#f4e3c2" stroke="#7a2a18" stroke-width="1.6"/>
-            <path d="M60 10c3-4 6-3 6-8M67 13c2-3 5-2 5-6" stroke="#f4a63c" stroke-width="2.4" fill="none" stroke-linecap="round"/>
             <ellipse cx="32" cy="52" rx="28" ry="6" fill="#a9703d" stroke="#7a4a28" stroke-width="2.4"/>
             <path d="M32 58v18M16 76h32" stroke="#7a4a28" stroke-width="4" stroke-linecap="round"/>
-            <g transform="translate(48,41)"><path d="M0 4h10v6a5 5 0 0 1-10 0z" fill="#fff8e8" stroke="#a9703d" stroke-width="1.6"/><path d="M10 6h2.5a2.5 2.5 0 0 1 0 5H10" fill="none" stroke="#a9703d" stroke-width="1.6"/><path d="M3 0c1 2-1 2 0 4M6 0c1 2-1 2 0 4" stroke="#d6a27a" stroke-width="1" fill="none"/></g>
+            <defs><clipPath id="micHead"><rect x="13" y="4" width="18" height="27" rx="9"/></clipPath></defs>
+            <path d="M12 53c-4 2-6 1-8 4" fill="none" stroke="#2b2f33" stroke-width="1.8" stroke-linecap="round"/>
+            <ellipse cx="22" cy="52" rx="10.5" ry="3.2" fill="#2f363d"/><ellipse cx="22" cy="51" rx="10.5" ry="3" fill="#59656f" stroke="#2f363d" stroke-width="1.4"/><ellipse cx="22" cy="50.4" rx="6" ry="1.5" fill="#7c8994" opacity=".8"/>
+            <rect x="20.2" y="30" width="3.6" height="21" rx="1.2" fill="#a8b2bb" stroke="#4d5660" stroke-width="1.6"/><path d="M21.2 31v19" stroke="#e6ebef" stroke-width="1" opacity=".8"/>
+            <path d="M9.5 18v6a12.5 11 0 0 0 25 0v-6" fill="none" stroke="#4d5660" stroke-width="2.4" stroke-linecap="round"/>
+            <circle cx="9.5" cy="20" r="2.4" fill="#e0b04a" stroke="#7a5a1a" stroke-width="1.3"/><circle cx="34.5" cy="20" r="2.4" fill="#e0b04a" stroke="#7a5a1a" stroke-width="1.3"/>
+            <rect x="13" y="4" width="18" height="27" rx="9" fill="#d3dae0"/>
+            <g clip-path="url(#micHead)" stroke="#8d98a2" stroke-width=".9"><path d="M8 8l22 24M8 14l22 24M8 2l22 24M14 2l22 24M20 2l22 24M2 14l22 24M2 20l22 24M30 8L8 32M30 14L8 38M30 2L8 26M36 2L14 26M42 2L20 26M24 2L2 26M24 8L2 32"/><path d="M13 4v27M31 4v27" stroke="none"/></g>
+            <rect x="13" y="4" width="18" height="27" rx="9" fill="none" stroke="#4d5660" stroke-width="2.4"/>
+            <path d="M16.5 12v12" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".7"/>
+            <rect x="12" y="16.5" width="20" height="3.6" rx="1.4" fill="#e0b04a" stroke="#7a5a1a" stroke-width="1.2"/><rect x="12.6" y="26" width="18.8" height="2.4" rx="1" fill="#e0b04a" stroke="#7a5a1a" stroke-width="1"/>
+            <g transform="translate(47,38) scale(1.15)"><path d="M0 4h10v6a5 5 0 0 1-10 0z" fill="#fff8e8" stroke="#a9703d" stroke-width="1.6"/><path d="M10 6h2.5a2.5 2.5 0 0 1 0 5H10" fill="none" stroke="#a9703d" stroke-width="1.6"/><ellipse cx="5" cy="4" rx="5" ry="1.9" fill="#6b4226" stroke="#a9703d" stroke-width="1.4"/><ellipse cx="4" cy="3.7" rx="2.4" ry=".7" fill="#9a6a42" opacity=".8"/><path d="M3 0c1 2-1 2 0 3M6.500 0c1 2-1 2 0 3" stroke="#d6a27a" stroke-width="1" fill="none" stroke-linecap="round"/></g>
           </svg><span>Joke</span></button>
-        <button type="button" class="furn f-report" data-furn="report" aria-label="Report an issue: the sticky note" title="Report an issue">
-          <svg viewBox="0 0 100 90" aria-hidden="true"><path d="M12 12h76v50l-14 18H12z" fill="#ffe27a" stroke="#b8861a" stroke-width="3" stroke-linejoin="round"/><path d="M74 80V66a4 4 0 0 1 4-4h10z" fill="#f2c94c" stroke="#b8861a" stroke-width="2.6" stroke-linejoin="round"/><path d="M24 30h52M24 42h40M24 54h26" stroke="#b8861a" stroke-width="3" stroke-linecap="round" opacity=".55"/><circle cx="50" cy="12" r="6" fill="#d6563c" stroke="#7a2a18" stroke-width="2.4"/><circle cx="48.2" cy="10.2" r="1.7" fill="#fff" opacity=".8"/><path class="shackle" d="M62 66v-5a7 7 0 0 1 14 0v5" fill="none" stroke="#6b6b6b" stroke-width="3.2" stroke-linecap="round"/><rect x="57" y="65" width="24" height="19" rx="3.5" fill="#f2b84b" stroke="#a96f12" stroke-width="2.4"/><circle cx="69" cy="73" r="2.6" fill="#a96f12"/><path d="M69 75v4" stroke="#a96f12" stroke-width="2.4" stroke-linecap="round"/></svg>
+        <button type="button" class="furn f-report" data-furn="report" aria-label="Report an issue: the butterfly frame" title="Report an issue">
+          <svg viewBox="0 0 70 80" aria-hidden="true">
+            <path d="M35 5L13 14M35 5l22 9" stroke="#7a5a3a" stroke-width="1.5" fill="none"/><circle cx="35" cy="5" r="2.6" fill="#7a5a3a"/>
+            <rect x="6" y="12" width="58" height="62" rx="3" fill="#8f5a30" stroke="#5c3818" stroke-width="3"/>
+            <rect x="12" y="18" width="46" height="50" fill="#f6ecd2" stroke="#5c3818" stroke-width="1.6"/>
+            <defs><g id="bfWing">
+              <path d="M34 42C30 29 19 19 12 24c-4 6 0 17 10 20 5 1 9 0 12-2z" fill="#4da3ee" stroke="#1c2f4a" stroke-width="2.2" stroke-linejoin="round"/>
+              <path d="M32 40C29 31 22 25 17 28c-2 5 1 11 8 13 3 1 5 0 7-1z" fill="#a9d6ff"/>
+              <path d="M34 45C27 44 18 48 19 56c1 6 9 7 13 2 2-3 3-8 2-13z" fill="#2f86e0" stroke="#1c2f4a" stroke-width="2.2" stroke-linejoin="round"/>
+              <g fill="#fff"><circle cx="14" cy="27" r="1.5"/><circle cx="13.5" cy="33" r="1.4"/><circle cx="16" cy="38.5" r="1.3"/><circle cx="21" cy="53" r="1.3"/><circle cx="24" cy="58" r="1.2"/></g>
+            </g></defs>
+            <g class="wings"><use href="#bfWing"/><use href="#bfWing" transform="translate(70 0) scale(-1 1)"/></g>
+            <ellipse cx="35" cy="46" rx="2" ry="10" fill="#1c2f4a"/>
+            <path d="M35 36c-1-5-3-7-6-8M35 36c1-5 3-7 6-8" stroke="#1c2f4a" stroke-width="1.3" fill="none" stroke-linecap="round"/><circle cx="29" cy="28" r="1.3" fill="#1c2f4a"/><circle cx="41" cy="28" r="1.3" fill="#1c2f4a"/>
+            <circle cx="35" cy="41" r="2" fill="#e0b04a" stroke="#7a5a1a" stroke-width="1"/>
+            <path d="M14 20h14l-12 46h-4z" fill="#fff" opacity=".35"/>
+          </svg>
           <span>Report</span></button>
         <div class="homespot" id="pawieSpot" aria-hidden="true"></div>
       </div>
@@ -1131,6 +1188,8 @@ const readVal = id => { const t=document.getElementById(id).value.trim();
   const n=Number(t); return (Number.isFinite(n)&&t!=="")?n:t; };
 const MAX_N = 30;   // capacity / n / element-count ceiling: keeps the picture readable and the page responsive
 const clampN = n => Math.max(0, Math.min(MAX_N, Number.isFinite(n) ? n : 0));
+/* a comma list of whole numbers for the merge boxes: anything else is dropped */
+const readIntList = id => document.getElementById(id).value.split(',').map(parseToken).filter(t=>typeof t==='number').slice(0, 8);
 const readInt = id => { const el=document.getElementById(id); return el?(parseInt(el.value,10)||0):0; };
 
 /* =====================================================================
@@ -1353,13 +1412,16 @@ function genAdd(index, value, isAppend){
   return {frames:g.frames, final:g.final(), row:isAppend?'bo-append':'bo-add', code:isAppend?'append':'add', label, bigO};
 }
 
+/* the legal positions for get, set and remove, worded so an empty list does not claim [0, -1] */
+const alRange = n => n>0 ? 'a position in <b>[0, size-1] = [0, '+(n-1)+']</b>' : '<b>no position at all</b>, because the list is empty (size = 0)';
+
 /* ---- remove(index) ---- */
 function genRemove(index){
   const g = newGen(model);
   const label = 'remove('+index+')';
   if(index<0 || index>=g.size){
     g.snap({phase:'read', err:true,
-      say:'<b>IndexOutOfBoundsException</b>: remove allows a position in <b>[0, size-1] = [0, '+(g.size-1)+']</b>, but got <b>'+index+'</b>. Nothing changes.'});
+      say:'<b>IndexOutOfBoundsException</b>: remove allows '+alRange(g.size)+', but got <b>'+index+'</b>. Nothing changes.'});
     return {frames:g.frames, final:model, row:'bo-remove', code:'remove', label, bigO:null};
   }
   const removed = g.data[index];
@@ -1423,7 +1485,7 @@ function genSet(index, value){
   const label = 'set('+index+', '+fmt(value)+')';
   if(index<0 || index>=g.size){
     g.snap({phase:'read', err:true,
-      say:'<b>IndexOutOfBoundsException</b>: set allows a position in <b>[0, size-1] = [0, '+(g.size-1)+']</b>, but got <b>'+index+'</b>. Nothing changes.'});
+      say:'<b>IndexOutOfBoundsException</b>: set allows '+alRange(g.size)+', but got <b>'+index+'</b>. Nothing changes.'});
     return {frames:g.frames, final:model, row:'bo-set', code:'set', label, bigO:null};
   }
   const old = g.data[index];
@@ -1445,7 +1507,7 @@ function genGet(index){
   const label = 'get('+index+')';
   if(index<0 || index>=g.size){
     g.snap({phase:'check', err:true,
-      say:'<b>IndexOutOfBoundsException</b>: get allows a position in <b>[0, size-1] = [0, '+(g.size-1)+']</b>, but got <b>'+index+'</b>.'});
+      say:'<b>IndexOutOfBoundsException</b>: get allows '+alRange(g.size)+', but got <b>'+index+'</b>.'});
     return {frames:g.frames, final:model, row:'bo-get', code:'get', label, bigO:null};
   }
   g.snap({phase:'check', markers:mk(g,{i:index}),
@@ -1518,9 +1580,13 @@ function genExpandCapacity(req){
 }
 
 /* ---- MyAlgorithm.moveTargetToEnd(nums, target): in place, via remove + append ---- */
-function genMoveTarget(target){
+function genMoveTarget(target, numsNull){
   const g = newGen(model);
-  const label = 'moveTargetToEnd('+target+')';
+  const label = 'moveTargetToEnd('+(numsNull ? 'null' : target)+')';
+  if(numsNull){
+    g.snap({phase:'find', err:true, run:label, say:'<b>NullPointerException</b>: moveTargetToEnd throws when <b>nums</b> is null. Nothing changes.'});
+    return {frames:g.frames, final:model, row:'bo-move', code:'moveTarget', label, bigO:null};
+  }
   const n = g.size;
   g.snap({phase:'find', markers:mk(g,{size:g.size}), run:'Moving every '+target+' to the back',
     say:'<b>moveTargetToEnd('+target+')</b> sends every <b>'+target+'</b> to the back of the list, in place. It scans from the left. Each target is lifted out, the elements behind it slide forward to close the gap, and the target is placed at the back.'});
@@ -1572,12 +1638,29 @@ function mk(g, o){
 /* =====================================================================
    PLAYER, steps through the generated frames.
    ===================================================================== */
-let player = { frames:[], i:0, playing:false, token:0, row:null, bigO:null };
+let player = { frames:[], i:0, playing:false, token:0, row:null, bigO:null, counting:0 };
+/* A click on a constructor or a method waits a few seconds before the animation starts, so a student has time to
+   scroll down to the picture first. Play, step, restart or another operation ends the wait at once. */
+const START_DELAY_S = 1;
+let startTimer = null;
+function cancelStart(){ if(startTimer){ clearInterval(startTimer); startTimer = null; } player.counting = 0; }
+function playAfterDelay(){
+  cancelStart();
+  let left = START_DELAY_S;
+  player.counting = left;
+  drawFrame();
+  startTimer = setInterval(()=>{
+    left--;
+    if(left <= 0){ cancelStart(); play(); }
+    else { player.counting = left; drawFrame(); }
+  }, 1000);
+}
 
 function awardPet(t,k){ if(window.Pawie && window.Pawie.award) window.Pawie.award(t,k); }
 function curStruct(){ const b=document.querySelector('.struct.active'); return b ? b.getAttribute('data-struct') : 'ArrayList'; }
 function loadOp(result, autoplay, opts){
   opts = opts || {};
+  cancelStart();
   if(!opts.noReact){
     const op = String(result.label||'').split('(')[0].trim().slice(0,40);
     track('op_run', {struct:curStruct(), op});
@@ -1604,7 +1687,7 @@ function loadOp(result, autoplay, opts){
   player.bigO = result.bigO;
   document.getElementById('bOp').style.display=''; document.getElementById('bOp').textContent=result.label;
   drawFrame();
-  if(autoplay) play(); else updateTransport();
+  if(autoplay) playAfterDelay(); else updateTransport();
   if(!opts.noReact && window.Pawie && window.Pawie.react) window.Pawie.react(result);
 }
 
@@ -1629,8 +1712,8 @@ function drawFrame(){
   const f = player.frames[player.i];
   if(!f){ renderState(model, {}); return; }
   if(f.ctorFail) renderCtorFail();
-  else if(f.kind==='linked') renderLinked(f); else if(f.kind==='stack') renderStack(f); else if(f.kind==='queue' || f.kind==='deque') renderQueue(f); else if(f.kind==='hash') renderHash(f); else if(f.kind==='heap') renderHeap(f); else if(f.kind==='tree') renderTree(f); else renderState(f, f);
-  setNote(f.say, f.err);
+  else if(f.kind==='linked') renderLinked(f); else if(f.kind==='merge') renderMerge(f); else if(f.kind==='stack') renderStack(f); else if(f.kind==='queue' || f.kind==='deque') renderQueue(f); else if(f.kind==='hash') renderHash(f); else if(f.kind==='heap') renderHeap(f); else if(f.kind==='tree') renderTree(f); else renderState(f, f);
+  setNote(f.say + (player.counting ? '<div class="startnote">The animation starts in <b>'+player.counting+'</b>s. Scroll down to the picture, or press play to start now.</div>' : ''), f.err);
   const completed = new Set(player.frames.slice(0, player.i).map(x=>x.phase));
   const skipped = new Set();
   player.frames.slice(0, player.i+1).forEach(x=>{ if(x.skip) x.skip.forEach(id=>skipped.add(id)); });
@@ -1646,7 +1729,7 @@ function drawFrame(){
 
 function updateTransport(){
   const n = player.frames.length;
-  document.getElementById('tProg').textContent = (n? (player.i+1):0)+' / '+n;
+  document.getElementById('tProg').textContent = player.counting ? 'starts in '+player.counting+'s' : (n? (player.i+1):0)+' / '+n;
   document.getElementById('tFill').style.width = (n? ((player.i+1)/n*100):0)+'%';
   const atStart = player.i<=0, atEnd = player.i>=n-1;
   document.getElementById('tPrev').disabled = atStart || n===0;
@@ -1729,6 +1812,7 @@ function step(d){
 function restart(){ pause(); player.i=0; drawFrame(); }
 
 function play(){
+  cancelStart();
   if(player.frames.length===0) return;
   if(player.i >= player.frames.length-1) player.i = 0;
   player.playing = true;
@@ -1743,7 +1827,7 @@ function play(){
   };
   tick();
 }
-function pause(){ player.playing=false; player.token++; updateTransport(); }
+function pause(){ cancelStart(); player.playing=false; player.token++; updateTransport(); }
 function togglePlay(){ player.playing ? pause() : play(); }
 
 /* =====================================================================
@@ -2031,6 +2115,8 @@ document.querySelector('.controls').addEventListener('click', e=>{
     else if(act==='clear') result = genLLclear();
     else if(act==='isEmpty')result = genLLisEmpty();
     else if(act==='size')  result = genLLsize();
+    else if(act==='getNth')result = genLLgetNth(readInt('iGetNth'));
+    else if(act==='merge') result = genLLmerge(readIntList('vMgL'), readIntList('vMgR'), document.getElementById('mgLNull').checked, document.getElementById('mgRNull').checked);
   } else {
     if(act==='append')     result = genAdd(model.size, readVal('vAppend'), true);
     else if(act==='appendNull') result = genAdd(model.size, null, true);
@@ -2041,7 +2127,7 @@ document.querySelector('.controls').addEventListener('click', e=>{
     else if(act==='size')  result = genArrSize();
     else if(act==='getCapacity') result = genArrGetCapacity();
     else if(act==='expandCapacity') result = genExpandCapacity(Math.min(MAX_N, readInt('vExpand')));   // a negative request is kept: the PA throws IllegalArgumentException for it
-    else if(act==='moveTarget') result = genMoveTarget(readInt('vMove'));
+    else if(act==='moveTarget') result = genMoveTarget(readInt('vMove'), document.getElementById('mvNull').checked);
   }
   if(result) loadOp(result, true);
 });
@@ -2111,9 +2197,14 @@ document.getElementById('hashmodewrap').addEventListener('click', e=>{
    Until the server answers, only ArrayList shows. This is a
    product choice, not security: the other structures still exist in the page, just out of sight.
    Names are the buttons' data-struct values; '*' means all. */
+let ITER_OPEN = false;      // is the ListIterator open to this user? It is the 'Iterator' entry of the same list
 function setVisibleStructs(list){
   const enabled = Array.isArray(list) && list.length ? list : ['ArrayList'];
   const all = enabled.includes('*');
+  ITER_OPEN = all || enabled.includes('Iterator');
+  const lm = document.getElementById('llmodewrap');             // the Plain list / ListIterator toggle inside LinkedList
+  if(lm && lm.style.display!=='none' && !ITER_OPEN){ lm.style.display = 'none'; if(ITER) setLLMode('plain'); }
+  else if(lm && STRUCT==='linked' && ITER_OPEN) lm.style.display = '';
   document.querySelectorAll('#structNav .struct').forEach(b=>{
     b.style.display = (all || enabled.includes(b.getAttribute('data-struct'))) ? '' : 'none';
   });
@@ -2188,19 +2279,33 @@ const PHASES_LL = {
   size: [
     {id:'read', t:'Read the size field', d:'size is kept up to date on every add and remove, so it is returned directly.'},
   ],
+  getNth: [
+    {id:'check',  t:'Check the index', d:'The position must be between 0 and size minus 1.'},
+    {id:'walk',   t:'Walk to the node', d:'Step from the head one link at a time, counting hops, until you reach the index.'},
+    {id:'return', t:'Return the Node', d:'Hand back the node itself, not its value. get, set and remove all build on this.'},
+  ],
+  merge: [
+    {id:'setup',   t:'Start an empty result', d:'Both inputs must be non-null. Make a new empty list and read the two sizes with size().'},
+    {id:'compare', t:'Compare the two fronts', d:'get the next unused element of each list and keep the smaller one. A tie goes to the left list.'},
+    {id:'take',    t:'Add the smaller one', d:'add it to the end of result, then move that list\'s index forward.'},
+    {id:'drain',   t:'Copy what is left', d:'When one list runs out, add the rest of the other list in order.'},
+    {id:'done',    t:'Return the result', d:'Hand back the new list. The two inputs are untouched.'},
+  ],
 };
 PHASES_LL.append = PHASES_LL.add;
-const PHASE_TITLES_LL = {add:'How add(i, e) works', append:'How add(e) works', remove:'How remove(i) works', set:'How set(i, e) works', get:'How get(i) works', clear:'How clear() works', isEmpty:'How isEmpty() works', size:'How size() works'};
+const PHASE_TITLES_LL = {add:'How add(i, e) works', append:'How add(e) works', remove:'How remove(i) works', set:'How set(i, e) works', get:'How get(i) works', clear:'How clear() works', isEmpty:'How isEmpty() works', size:'How size() works', getNth:'How getNth(i) works', merge:'How mergeLists(left, right) works'};
 
 const CX_LINKED =
-  '<tr id="bo-get"><td class="opname">get(i)</td><td class="bigo">O(n)</td><td class="why">Walks from the head to index i.</td></tr>'+
-  '<tr id="bo-set"><td class="opname">set(i, e)</td><td class="bigo">O(n)</td><td class="why">Walks to the node, then changes it.</td></tr>'+
   '<tr id="bo-append"><td class="opname">add(e)</td><td class="bigo">O(n)</td><td class="why">Works like add(size, e): walks from the head to the end.</td></tr>'+
   '<tr id="bo-add"><td class="opname">add(i, e)</td><td class="bigo">O(n)</td><td class="why">Walks to the spot. The front is O(1).</td></tr>'+
+  '<tr id="bo-get"><td class="opname">get(i)</td><td class="bigo">O(n)</td><td class="why">Walks from the head to index i.</td></tr>'+
+  '<tr id="bo-getnth"><td class="opname">getNth(i)</td><td class="bigo">O(n)</td><td class="why">Walks from the head and returns the Node itself.</td></tr>'+
+  '<tr id="bo-set"><td class="opname">set(i, e)</td><td class="bigo">O(n)</td><td class="why">Walks to the node, then changes it.</td></tr>'+
   '<tr id="bo-remove"><td class="opname">remove(i)</td><td class="bigo">O(n)</td><td class="why">Walks to the node, then unlinks it.</td></tr>'+
   '<tr id="bo-clear"><td class="opname">clear()</td><td class="bigo">O(1)</td><td class="why">Repoints the sentinels; the chain is dropped.</td></tr>'+
   '<tr id="bo-empty"><td class="opname">isEmpty()</td><td class="bigo">O(1)</td><td class="why">Reads the stored size field.</td></tr>'+
-  '<tr id="bo-size"><td class="opname">size()</td><td class="bigo">O(1)</td><td class="why">Reads the stored size field.</td></tr>';
+  '<tr id="bo-size"><td class="opname">size()</td><td class="bigo">O(1)</td><td class="why">Reads the stored size field.</td></tr>'+
+  '<tr id="bo-merge"><td class="opname">mergeLists(l, r)</td><td class="bigo">O(n&sup2;)</td><td class="why">MyAlgorithm: one get and one add per element, each walking from the head.</td></tr>';
 const CXP_LINKED = 'A linked list has no random access. Reaching index <code>i</code> means walking <code>i+1</code> links from the head, which is the <code>O(n)</code> cost. Once you are there, inserting or removing is just a few pointer changes, <code>O(1)</code>.';
 let CX_ARRAY = '', CXP_ARRAY = '';
 
@@ -2232,6 +2337,8 @@ const hopWord = h => h+' hop'+(h===1?'':'s');
    node currently at index i, and 'NEW' for a freshly-created floating node.
    Each frame can carry an explicit `arrows` list so we can light up and
    redirect ONE pointer at a time, in the canonical order. */
+/* the legal indexes for get, set, remove and getNth, worded so an empty list does not claim [0, -1] */
+const llRange = n => n>0 ? 'index in <b>[0, size-1] = [0, '+(n-1)+']</b>' : '<b>no index at all</b>, because the list is empty (size = 0)';
 function llIds(len){ const a=['H']; for(let i=0;i<len;i++) a.push('n'+i); a.push('T'); return a; }
 function A(from,to,kind,state,label){ return {from,to,kind,state:state||'normal',label:label||null}; }
 function llChain(ids){ const a=[]; for(let k=0;k<ids.length-1;k++){ a.push(A(ids[k],ids[k+1],'next')); a.push(A(ids[k+1],ids[k],'prev')); } return a; }
@@ -2312,7 +2419,7 @@ function genLLremove(index){
   const n = g.vals.length;
   const label = 'remove('+index+')';
   if(index<0 || index>=n){
-    g.snap({phase:'walk', err:true, say:'<b>IndexOutOfBoundsException</b>: remove allows index in <b>[0, size-1] = [0, '+(n-1)+']</b>, but got <b>'+index+'</b>. Nothing changes.'});
+    g.snap({phase:'walk', err:true, say:'<b>IndexOutOfBoundsException</b>: remove allows '+llRange(n)+', but got <b>'+index+'</b>. Nothing changes.'});
     return {frames:g.frames, final:modelLL, code:'remove', row:'bo-remove', label, bigO:null};
   }
   const removed = g.vals[index];
@@ -2369,8 +2476,8 @@ function genLLset(index, value){
     g.snap({phase:'check', err:true,
       say:(nullBad
         ? '<b>NullPointerException</b>: a linked list node cannot hold <b>null</b>.'
-        : '<b>IndexOutOfBoundsException</b>: set allows index in <b>[0, size-1] = [0, '+(n-1)+']</b>, but got <b>'+index+'</b>.')+
-        (nullBad && indexBad ? ' (The index <b>'+index+'</b> is also outside [0, '+(n-1)+'], so <b>IndexOutOfBoundsException</b> is just as correct. Either check may run first.)' : '')+
+        : '<b>IndexOutOfBoundsException</b>: set allows '+llRange(n)+', but got <b>'+index+'</b>.')+
+        (nullBad && indexBad ? ' (The index <b>'+index+'</b> is also out of range, so <b>IndexOutOfBoundsException</b> is just as correct. Either check may run first.)' : '')+
         ' Nothing changes.'});
     return {frames:g.frames, final:modelLL, code:'set', row:'bo-set', label, bigO:null};
   }
@@ -2394,7 +2501,7 @@ function genLLget(index){
   const n = g.vals.length;
   const label = 'get('+index+')';
   if(index<0 || index>=n){
-    g.snap({phase:'check', err:true, say:'<b>IndexOutOfBoundsException</b>: get allows index in <b>[0, size-1] = [0, '+(n-1)+']</b>, but got <b>'+index+'</b>.'});
+    g.snap({phase:'check', err:true, say:'<b>IndexOutOfBoundsException</b>: get allows '+llRange(n)+', but got <b>'+index+'</b>.'});
     return {frames:g.frames, final:modelLL, code:'get', row:'bo-get', label, bigO:null};
   }
   g.snap({phase:'check', curr:0, run:label, say:'Index <b>'+index+'</b> is within [0, '+(n-1)+'].'});
@@ -2467,6 +2574,91 @@ function genLLsize(){
     say:'<b>size</b> returns the stored counter directly: <b>'+n+'</b>. It is kept up to date on every add and remove, so there is no need to walk and count.'});
   return {frames:g.frames, final:modelLL, code:'size', row:'bo-size', label:'size()',
     bigO:'Because the count lives in a field instead of being recomputed, <b>size</b> is a single field read: <code>O(1)</code>.'};
+}
+
+
+/* ---- getNth(index): the helper behind get, set and remove, it returns the NODE ---- */
+function genLLgetNth(index){
+  const g = newLL(modelLL);
+  const n = g.vals.length;
+  const label = 'getNth('+index+')';
+  if(index<0 || index>=n){
+    g.snap({phase:'check', err:true, say:'<b>IndexOutOfBoundsException</b>: getNth allows '+llRange(n)+', but got <b>'+index+'</b>. Nothing changes.'});
+    return {frames:g.frames, final:modelLL, code:'getNth', row:'bo-getnth', label, bigO:null};
+  }
+  g.snap({phase:'check', curr:0, run:label, say:'<b>getNth</b> is the helper that <b>get</b>, <b>set</b> and <b>remove</b> all start with. It checks that index <b>'+index+'</b> is within [0, '+(n-1)+'].'});
+  g.snap({phase:'walk', curr:0, say:'Start at the <b>head</b> sentinel and follow <b>next</b> links, one hop per step, until the walk reaches index <b>'+index+'</b>.'});
+  for(let i=0;i<=index;i++){
+    g.cost.hops++; const t = (i===index);
+    g.snap({phase:'walk', curr:i+1, links:[i], flags:{[i]: t?'target':'look'}, lit:'H',
+      say: t ? 'Arrived at index '+index+' after <b>'+hopWord(g.cost.hops)+'</b>.' : 'Follow <b>next</b>. ('+hopWord(g.cost.hops)+')'});
+  }
+  g.snap({phase:'return', curr:index+1, flags:{[index]:'target'}, ret:'the Node holding '+fmt(g.vals[index]),
+    say:'<b>getNth</b> returns the <b>Node</b> itself, the whole box, not the value inside it. <b>get</b> calls <b>getElement()</b> on this node to read <b>'+fmt(g.vals[index])+'</b>, <b>set</b> calls <b>setElement</b>, and <b>remove</b> unlinks it. The list is unchanged.'});
+  return {frames:g.frames, final:modelLL, code:'getNth', row:'bo-getnth', label,
+    bigO:'Reaching index '+index+' took <code>'+g.cost.hops+'</code> hop(s) from the head, and the worst case is all <code>n</code> nodes, so <code>getNth</code> is <code>O(n)</code>. Every method that calls it inherits that cost.'};
+}
+
+/* =====================================================================
+   MyAlgorithm.mergeLists(left, right): two sorted lists in, one new sorted list out.
+   The write-up forbids head, tail and size, so it can only use get, add and size(): every get
+   and every add walks from the head, which is what the hop counter shows.
+   ===================================================================== */
+function genLLmerge(L, R, lNull, rNull){
+  const label = 'mergeLists(left, right)';
+  const cost = {hops:0, links:0}, frames = [];
+  let res = [];
+  const snap = o => frames.push({
+    kind:'merge', left:lNull?null:L.slice(), right:rNull?null:R.slice(), result:res.slice(),
+    il:o.il===undefined?null:o.il, ir:o.ir===undefined?null:o.ir, hot:o.hot||null, added:!!o.added,
+    phase:o.phase||null, say:o.say||'', cost:{...cost}, lit:o.lit||null, err:!!o.err,
+    run:o.run||'', ret:(o.ret===undefined?null:o.ret)
+  });
+  const unchanged = {frames, final:modelLL, code:'merge', row:'bo-merge', label, bigO:null};
+  if(lNull || rNull){
+    snap({phase:'setup', err:true, run:label,
+      say:'<b>NullPointerException</b>: mergeLists throws when <b>'+(lNull && rNull ? 'left or right' : lNull ? 'left' : 'right')+'</b> is null. No result list is built.'});
+    return unchanged;
+  }
+  const sorted = a => a.every((v,i)=>i===0 || a[i-1]<=v);
+  const nL = L.length, nR = R.length, total = nL + nR;
+  const warn = (!sorted(L) || !sorted(R))
+    ? ' <b>Heads up:</b> the write-up promises both lists are sorted, and <b>'+(!sorted(L) ? 'left' : 'right')+'</b> is not, so the result will only be as ordered as the inputs.' : '';
+  snap({phase:'setup', il:0, ir:0, run:label,
+    say:'<b>mergeLists</b> builds a brand-new sorted list from two sorted lists. It may only call MyLinkedList methods such as <b>get</b>, <b>add</b> and <b>size()</b>, never touch <b>head</b>, <b>tail</b> or the <b>size</b> field. Create an empty <b>result</b>. <b>left.size()</b> is <b>'+nL+'</b> and <b>right.size()</b> is <b>'+nR+'</b>.'+warn});
+  let il = 0, ir = 0;
+  const addTo = (v, from) => {                        // result.add(v): add(size, v) walks size hops, then wires five pointers
+    cost.hops += res.length; cost.links += 5; res.push(v);
+  };
+  while(il < nL && ir < nR){
+    const a = L[il], b = R[ir], takeLeft = a <= b;
+    cost.hops += (il+1) + (ir+1);
+    snap({phase:'compare', il, ir, hot:takeLeft?'left':'right', lit:'H', run:'valL = left.get('+il+'), valR = right.get('+ir+')',
+      say:'<b>left.get('+il+')</b> walks '+hopWord(il+1)+' and gives <b>'+a+'</b>. <b>right.get('+ir+')</b> walks '+hopWord(ir+1)+' and gives <b>'+b+'</b>. '
+        + (a===b ? 'They are equal, and <b>compareTo(...) &lt;= 0</b> is true, so the left one goes first.' : takeLeft ? '<b>'+a+'</b> is smaller, so it goes next.' : '<b>'+b+'</b> is smaller, so it goes next.')});
+    const v = takeLeft ? a : b;
+    addTo(v);
+    if(takeLeft) il++; else ir++;
+    snap({phase:'take', il, ir, hot:takeLeft?'left':'right', added:true, lit:'L', run:'result.add('+(takeLeft?'valL':'valR')+')',
+      say:'<b>result.add('+v+')</b> walks to the end of result and wires in a new node. Then <b>'+(takeLeft?'idxLeft':'idxRight')+'</b> moves on to '+(takeLeft?il:ir)+'.'});
+  }
+  const drain = (arr, start, side) => {
+    for(let k = start; k < arr.length; k++){
+      cost.hops += k+1;
+      const v = arr[k]; addTo(v);
+      if(side==='left') il = k+1; else ir = k+1;
+      snap({phase:'drain', il, ir, hot:side, added:true, lit:'L', run:'result.add('+side+'.get('+k+'))',
+        say:'<b>'+(side==='left'?'right':'left')+'</b> is used up, so <b>'+side+'</b> just continues. <b>'+side+'.get('+k+')</b> walks '+hopWord(k+1)+' and gives <b>'+v+'</b>, and <b>result.add('+v+')</b> puts it at the end.'});
+    }
+  };
+  drain(L, il, 'left'); drain(R, ir, 'right');
+  const out = '['+res.join(', ')+']';
+  snap({phase:'done', il:nL, ir:nR, run:'return result', ret:out,
+    say: total ? 'Every element has been copied across in order. <b>return result</b> gives <b>'+out+'</b>. Neither input list was changed.' : 'Both lists are empty, so the result is empty too. <b>return result</b> gives <b>[]</b>.'});
+  return {frames, final:modelLL, code:'merge', row:'bo-merge', label,
+    bigO: total
+      ? 'Merging <b>'+total+'</b> element(s) took <code>'+cost.hops+'</code> hop(s) in all. Each element costs one <code>get</code> and one <code>add</code>, and every call starts again from the head, so the walks add up like <code>1 + 2 + ... + n</code>. That makes it <code>O(n&sup2;)</code> in the total length, not <code>O(n)</code>.'
+      : 'With nothing to copy there is no walking at all.'};
 }
 
 /* =====================================================================
@@ -2681,6 +2873,46 @@ function genItQuery(kind){
 /* ---- render a linked frame: head <-> nodes <-> tail, with real next/prev
    arrows drawn as an SVG overlay so each pointer can be lit and redirected. */
 const SVGNS = 'http://www.w3.org/2000/svg';
+
+/* ---- mergeLists: the two inputs and the growing result, one row each ---- */
+function renderMerge(f){
+  const cells = document.getElementById('cells');
+  cells.innerHTML = '';
+  const host = document.createElement('div'); host.className = 'mgstage';
+  const addRow = (name, vals, idx, tag, hot, grew) => {
+    const row = document.createElement('div'); row.className = 'mgrow';
+    const lab = document.createElement('div'); lab.className = 'mglab'; lab.textContent = name; row.appendChild(lab);
+    if(vals===null){
+      const b = document.createElement('div'); b.className = 'mgempty'; b.textContent = 'null'; row.appendChild(b);
+    } else if(!vals.length){
+      const b = document.createElement('div'); b.className = 'mgempty'; b.textContent = 'empty'; row.appendChild(b);
+    } else {
+      vals.forEach((v, i)=>{
+        if(i){ const a = document.createElement('span'); a.className = 'mgarr'; a.innerHTML = '&harr;'; row.appendChild(a); }
+        const cell = document.createElement('div');
+        let cls = 'lcell';
+        if(idx!==null && idx!==undefined){
+          if(i < idx) cls += ' mgdone';
+          else if(i === idx) cls += hot ? ' target' : ' look';
+        }
+        if(grew && i === vals.length-1) cls += ' new';
+        cell.className = cls;
+        const box = document.createElement('div'); box.className = 'lbox'; box.textContent = fmt(v); cell.appendChild(box);
+        const ptr = document.createElement('div'); ptr.className = 'lptr';
+        if(tag && idx===i) ptr.innerHTML = '<span class="currtag">'+tag+'</span>';
+        cell.appendChild(ptr);
+        row.appendChild(cell);
+      });
+    }
+    host.appendChild(row);
+  };
+  addRow('left',   f.left,  f.il, 'idxLeft',  f.hot==='left',  false);
+  addRow('right',  f.right, f.ir, 'idxRight', f.hot==='right', false);
+  addRow('result', f.result, null, null, false, f.added);
+  cells.appendChild(host);
+  const bs = document.getElementById('bSize'); if(bs) bs.textContent = 'result size = ' + f.result.length;
+}
+
 function renderLinked(f){
   const cells = document.getElementById('cells');
   cells.innerHTML = '';
@@ -3288,6 +3520,15 @@ function setStruct(name){
   document.getElementById('bCap').style.display = (isLL||isHeap||isTree) ? 'none' : '';
   document.querySelectorAll('.llonly').forEach(el=>el.style.display = isLL ? '' : 'none');
   document.querySelectorAll('.alonly').forEach(el=>el.style.display = isCustom ? 'none' : '');
+  {                                       // the buttons follow the order of each PA's method table, read down the left column, then the right
+    const lists = document.querySelectorAll('#stdOps .oplist');
+    const pair = {};
+    document.querySelectorAll('#stdOps .oplist [data-act]').forEach(b=>{ if(b.nextElementSibling && b.nextElementSibling.classList.contains('args')) pair[b.getAttribute('data-act')] = [b, b.nextElementSibling]; });
+    const order = isLL
+      ? [['append','add','get','getNth','set'], ['remove','clear','isEmpty','size','merge','moveTarget','expandCapacity','getCapacity']]   // PA3: add(E), add(int, E), get, getNth, set, remove, clear, isEmpty, size, then MyAlgorithm
+      : [['expandCapacity','getCapacity','add','append','getNth'], ['get','set','remove','size','isEmpty','clear','merge','moveTarget']];   // PA2: expandCapacity, getCapacity, add, append, get, set, remove, size, then MyAlgorithm
+    if(lists.length===2 && order.flat().every(act=>pair[act])) order.forEach((acts,k)=>acts.forEach(act=>pair[act].forEach(el=>lists[k].appendChild(el))));
+  }
   document.getElementById('legendArr').style.display = isCustom ? 'none' : '';
   document.getElementById('legendLL').style.display  = isLL ? '' : 'none';
   document.getElementById('legendIter').style.display = 'none';
@@ -3298,7 +3539,7 @@ function setStruct(name){
   document.getElementById('legendHeap').style.display = isHeap ? '' : 'none';
   document.getElementById('legendTree').style.display = isTree ? '' : 'none';
   // the plain/iterator toggle and its panels only make sense for LinkedList
-  document.getElementById('llmodewrap').style.display = isLL ? '' : 'none';
+  document.getElementById('llmodewrap').style.display = (isLL && ITER_OPEN) ? '' : 'none';
   // the HashMap/HashSet toggle only makes sense for Hashing
   document.getElementById('hashmodewrap').style.display = isHash ? '' : 'none';
   // the MyMinHeap/MyPriorityQueue toggle only makes sense for the Heap tab
@@ -5666,7 +5907,6 @@ setVisibleStructs(['ArrayList']);      // hide the rest right away; the server's
 <style>
 #pawie{position:fixed;left:0;top:0;width:64px;height:64px;z-index:60;cursor:pointer;outline:none;
   transition:left .9s linear, top .9s linear;will-change:left,top}
-#pawie.face-left{transform:scaleX(-1)}
 #pawie canvas{width:64px;height:64px;image-rendering:pixelated;image-rendering:crisp-edges;display:block;
   filter:drop-shadow(0 3px 4px rgba(40,35,20,.28));transform-origin:50% 90%}
 #pawie:focus-visible canvas{outline:2px solid var(--teal);outline-offset:3px;border-radius:4px}
@@ -5674,7 +5914,7 @@ setVisibleStructs(['ArrayList']);      // hide the rest right away; the server's
   color:var(--muted);opacity:0;transition:opacity .4s;pointer-events:none}
 #pawie.sleeping #pawieZ{opacity:.8}
 /* A floating panel: wider than before, drag it by the title, resize it from the bottom-right corner. */
-#pawieBubble{position:fixed;right:18px;bottom:90px;width:360px;min-width:260px;min-height:150px;
+#pawieBubble{position:fixed;right:18px;bottom:90px;width:520px;min-width:260px;min-height:380px;
   max-width:calc(100vw - 16px);max-height:calc(100vh - 16px);z-index:61;background:var(--paper);
   display:flex;flex-direction:column;overflow:hidden;resize:both;
   border:1.5px solid var(--ink);border-radius:9px;box-shadow:0 6px 20px rgba(40,35,20,.18);padding:13px 14px 12px;
@@ -5719,7 +5959,6 @@ setVisibleStructs(['ArrayList']);      // hide the rest right away; the server's
 #pawieMsg .qz-next{margin-top:9px;font-family:"JetBrains Mono",monospace;font-size:11.5px;
   border:1.5px solid var(--ink);background:var(--ink);color:var(--paper);padding:5px 11px;border-radius:14px;cursor:pointer}
 #pawieMsg a.qz-next{display:inline-block;text-decoration:none}
-#pawieMsg .rp-lock{font-size:22px;line-height:1;margin-bottom:6px}
 #pawieMsg .rp-note{font-size:12px;line-height:1.5;color:var(--muted);margin-top:8px}
 #pawieActions{display:flex;flex-wrap:wrap;gap:6px;margin-top:11px}
 #pawieActions button{font-family:"JetBrains Mono",monospace;font-size:11.5px;border:1.5px solid var(--line);
@@ -5836,8 +6075,6 @@ setVisibleStructs(['ArrayList']);      // hide the rest right away; the server's
   const COVER = IDLE.slice();                                    // paws over the eyes (peek-a-boo)
   COVER[4] = '.DBBLLLLLLLLBBD.'; COVER[5] = '.DBBLLLLLLLLBBD.'; COVER[6] = '.DBBLLLLLLLLBBD.';
   // ---- walk cycle (Phase 4): alternate the feet so Pawie looks like it's strolling ----
-  const WALK_A = IDLE.slice(); WALK_A[15] = '..GGG......GGG..';  // wide stance (black shoes)
-  const WALK_B = IDLE.slice(); WALK_B[15] = '....GGG..GGG....';  // feet together
   // ---- ear-twitch frames: nudge one ear tip sideways for a little wiggle ----
   const EAR_A = IDLE.slice(); EAR_A[0] = '.DDD.......DDD..';    // left ear flicks out
   const EAR_B = IDLE.slice(); EAR_B[0] = '..DDD.......DDD.';    // right ear flicks out
@@ -5847,6 +6084,11 @@ setVisibleStructs(['ArrayList']);      // hide the rest right away; the server's
   // ---- foot-shuffle frames: both feet slide left, then right ----
   const FEET_L = IDLE.slice(); FEET_L[15] = '..GGG....GGG....';  // feet shifted left
   const FEET_R = IDLE.slice(); FEET_R[15] = '....GGG...GGG...';  // feet shifted right
+  // ---- glances and the yawn: the eyes slide inside the glasses, the mouth opens ----
+  const eyesAt = (l, r) => { const row = '.DGBBBGBBGBBBGD.'.split(''); row[l] = 'K'; row[r] = 'K'; return row.join(''); };
+  const LOOK_L = IDLE.slice(); LOOK_L[5] = eyesAt(3, 10);        // looking left
+  const LOOK_R = IDLE.slice(); LOOK_R[5] = eyesAt(5, 12);        // looking right
+  const YAWN = BLINK.slice(); YAWN[8] = '.DBBBCKKKKCBBBD.'; YAWN[9] = '.DBBBCCKKCCBBBD.';   // eyes shut, mouth wide open
 
   const STRUCTS = ['ArrayList','LinkedList','Iterator','Hashing','Deque','Stack','Queue','Heap','Tree'];
 
@@ -5882,20 +6124,44 @@ setVisibleStructs(['ArrayList']);      // hide the rest right away; the server's
 
   let talk=false, raf=0;
   let reactKind=null, reactFrame=null, reactUntil=0, reactStart=0;
-  let walking=false, roamTimer=0, curX=0, curY=0;   // roaming state (unused, kept)
   let animTimer=0;
-  // idle animation cycle: 5 units of (one random 5s action + 5s of standing still),
-  // then a 10s nap, repeating forever. Exactly one action runs at a time.
-  const CYCLE_ACTS = ['sway','ears','blink','jump','hands','feet'];
-  let phase=null, phaseUntil=0, unitCount=0, curAction=null;
-  function nextAct(prev){ let a; do{ a=CYCLE_ACTS[(Math.random()*CYCLE_ACTS.length)|0]; }while(a===prev && CYCLE_ACTS.length>1); return a; }
-  function wake(){ /* the idle cycle runs autonomously; nothing to wake */ }
+  // ---- idle behaviour ----
+  // Pawie reads the room. While the student is busy (a click, key or scroll in the last few seconds, or the bubble
+  // is open) it just stands, blinking now and then. Once things go quiet it starts small actions, each only
+  // 1 to 3 seconds long, with uneven rests of 3 to 8 seconds between them. Only after a long quiet spell,
+  // and a few actions, does it glance at the clock on the bookshelf, yawn and nap, and it wakes with a stretch.
+  // A reaction (hop, shake, ...) always wins, and Pawie then holds still for a moment so it can finish.
+  const IDLE_ACTS = { sway:2800, jump:2600, ears:2400, hands:3000, feet:2600, look:2200, shake:900, scratch:2200 };
+  const ACT_NAMES = Object.keys(IDLE_ACTS);
+  const QUIET_MS = 6000, NAP_AFTER_MS = 40000, HOLD_AFTER_REACT_MS = 2500;
+  const rand = (a, b) => a + Math.random()*(b-a);
+  let idleMode='rest', idleUntil=0, idleStart=0, idleCount=0, curAction=null, lookDir=-1;
+  let lastInput = performance.now();
+  function nextAct(prev){ let a; do{ a=ACT_NAMES[(Math.random()*ACT_NAMES.length)|0]; }while(a===prev); return a; }
+  function wake(){ lastInput = performance.now(); }
+  ['pointerdown','keydown','wheel','touchstart'].forEach(ev=>document.addEventListener(ev, wake, {passive:true, capture:true}));
+  function setIdle(mode, now, ms){ idleMode = mode; idleStart = now; idleUntil = now + ms; }
+  function stepIdle(now){
+    const quiet = now - lastInput >= QUIET_MS && bubble.hidden;
+    if(idleMode==='sleep' && !quiet){ setIdle('stretch', now, 1500); idleCount=0; return; }   // someone is back: wake up
+    if(now < idleUntil) return;
+    switch(idleMode){
+      case 'rest':
+        if(!quiet){ setIdle('rest', now, rand(1500, 3000)); break; }              // busy: stay still
+        if(idleCount>=3 && now - lastInput >= NAP_AFTER_MS){ setIdle('glance', now, 1200); break; }
+        curAction = nextAct(curAction); lookDir = Math.random()<0.5 ? -1 : 1;
+        setIdle('act', now, IDLE_ACTS[curAction]); break;
+      case 'act':    idleCount++; setIdle('rest', now, rand(3000, 8000)); break;
+      case 'glance': setIdle('yawn', now, 1600); break;
+      case 'yawn':   setIdle('sleep', now, rand(8000, 12000)); break;
+      case 'sleep':  setIdle('stretch', now, 1500); idleCount=0; break;
+      default:       setIdle('rest', now, rand(3000, 6000));                         // after a stretch
+    }
+  }
 
-  // ---- roaming engine: Pawie strolls around the viewport ----
+  // ---- positioning: Pawie stays put, so only the bubbles need to be parked next to it ----
   const vw = () => window.innerWidth, vh = () => window.innerHeight;
-  const clampX = x => Math.max(8, Math.min(vw()-72, x));
-  const clampY = y => Math.max(8, Math.min(vh()-72, y));
-  function setPos(x,y){ curX=x; curY=y; el.style.right='auto'; el.style.bottom='auto'; el.style.left=x+'px'; el.style.top=y+'px'; }
+  function setPos(x,y){ el.style.right='auto'; el.style.bottom='auto'; el.style.left=x+'px'; el.style.top=y+'px'; }
   function placeNear(node, biasLeft){               // park a bubble/emote next to the bear, clamped on-screen
     const r = el.getBoundingClientRect();
     node.style.right='auto'; node.style.bottom='auto';
@@ -5905,61 +6171,45 @@ setVisibleStructs(['ArrayList']);      // hide the rest right away; the server's
     let top = r.top - nh - 10; if(top < 8) top = r.bottom + 10;
     node.style.left = left+'px'; node.style.top = top+'px';
   }
-  function roamStep(){
-    if(reduce || el.style.display==='none' || talk || document.hidden){ scheduleRoam(2000); return; }
-    // stroll the perimeter so Pawie circles the page without sitting on top of controls
-    let x, y; const edge = Math.random();
-    if(edge < 0.55){ y = clampY(vh()-78); x = clampX(20 + Math.random()*(vw()-120)); }      // bottom (most common)
-    else if(edge < 0.72){ y = clampY(10); x = clampX(20 + Math.random()*(vw()-120)); }      // top
-    else if(edge < 0.86){ x = clampX(8); y = clampY(70 + Math.random()*(vh()-180)); }       // left edge
-    else { x = clampX(vw()-74); y = clampY(70 + Math.random()*(vh()-180)); }                // right edge
-    const dx = x-curX, dy = y-curY, dist = Math.hypot(dx,dy);
-    if(dist < 12){ scheduleRoam(1500+Math.random()*2500); return; }
-    el.classList.toggle('face-left', dx < 0);
-    const dur = Math.min(4, Math.max(0.8, dist/90));
-    el.style.transitionDuration = dur+'s, '+dur+'s';
-    walking = true; setPos(x,y);
-    clearTimeout(roamTimer);
-    roamTimer = setTimeout(()=>{ walking=false; maybeActivity(); scheduleRoam(2600+Math.random()*4200); }, dur*1000+90);
-  }
-  function scheduleRoam(ms){ clearTimeout(roamTimer); roamTimer = setTimeout(roamStep, ms); }
 
   function loop(now){
     raf = requestAnimationFrame(loop);
     if(document.hidden){ return; }                 // pause work while tab is hidden
     if(reactKind && now>=reactUntil) reactKind=null;
     const reacting = !!reactKind;
+    if(reacting){ setIdle('rest', now, (reactUntil-now) + HOLD_AFTER_REACT_MS); }   // let the reaction finish, then hold still a moment
+    else stepIdle(now);
+    el.classList.toggle('sleeping', !reacting && idleMode==='sleep');
 
-    // advance the idle cycle: 5 units of (5s action + 5s rest), then a 10s nap, on repeat
-    if(!reacting && (phase===null || now>=phaseUntil)){
-      if(phase==='action'){ phase='rest'; phaseUntil=now+5000; }
-      else if(phase==='rest'){
-        if(++unitCount>=5){ phase='sleep'; phaseUntil=now+10000; }
-        else { phase='action'; curAction=nextAct(curAction); phaseUntil=now+5000; }
-      }
-      else if(phase==='sleep'){ unitCount=0; phase='action'; curAction=nextAct(curAction); phaseUntil=now+5000; }
-      else { phase='action'; unitCount=0; curAction=nextAct(null); phaseUntil=now+5000; }   // first run
-    }
-    el.classList.toggle('sleeping', !reacting && phase==='sleep');
-
-    let frame=IDLE, xform='';
+    const blinkNow = (now % 4300) < 130;            // a quick blink every few seconds
+    let frame = IDLE, xform = '';
     if(reacting){
       if(reactKind==='peek'){                       // peek-a-boo: cover, peek, cover, reveal
         const t = now-reactStart;
         frame = (t<600 || (t>950 && t<1350)) ? COVER : IDLE;
       } else frame = reactFrame || IDLE;
-    } else if(reduce || phase==='rest'){
-      frame = IDLE;                                 // rest / reduced motion: stand still
-    } else if(phase==='sleep'){
-      frame = BLINK; xform = 'translateY('+(Math.sin(now/750)-1).toFixed(2)+'px)';  // nap: closed eyes + slow breathing
+    } else if(reduce){
+      frame = blinkNow ? BLINK : IDLE;              // reduced motion: stand still, only blink
     } else {
-      switch(curAction){                            // the current 5s action (one at a time)
-        case 'sway':  xform = 'rotate('+(Math.sin(now/280)*5).toFixed(2)+'deg)'; break;                 // left-right sway
-        case 'jump':  xform = 'translateY('+(-Math.abs(Math.sin(now/260))*8).toFixed(1)+'px)'; break;   // up-down hop (element moves, no pixel lost)
-        case 'ears':  frame = (Math.floor(now/150)%2) ? EAR_A : EAR_B; break;                           // wiggle ears
-        case 'blink': frame = ((now%1000) < 130) ? BLINK : IDLE; break;                                 // blink
-        case 'hands': frame = (Math.floor(now/240)%2) ? HANDS_UP : HANDS_DOWN; break;                   // hands up/down
-        case 'feet':  frame = (Math.floor(now/200)%2) ? FEET_L : FEET_R; break;                         // feet left/right
+      const t = now - idleStart, k = Math.min(1, t / Math.max(1, idleUntil - idleStart));
+      switch(idleMode){
+        case 'glance':  frame = LOOK_L; break;                                                            // a look at the clock on the bookshelf
+        case 'yawn':    frame = YAWN; xform = 'scale('+(1 + 0.06*Math.sin(Math.PI*k)).toFixed(3)+')'; break;
+        case 'sleep':   frame = BLINK; xform = 'translateY('+(Math.sin(now/750)-1).toFixed(2)+'px)'; break;   // closed eyes, slow breathing
+        case 'stretch': frame = HANDS_UP; xform = 'translateY('+(-3*Math.sin(Math.PI*k)).toFixed(2)+'px) scaleY('+(1 + 0.05*Math.sin(Math.PI*k)).toFixed(3)+')'; break;
+        case 'act':
+          switch(curAction){
+            case 'sway':    xform = 'rotate('+(Math.sin(now/280)*5).toFixed(2)+'deg)'; break;
+            case 'jump':    xform = 'translateY('+(-Math.abs(Math.sin(now/260))*8).toFixed(1)+'px)'; break;
+            case 'ears':    frame = (Math.floor(now/150)%2) ? EAR_A : EAR_B; break;
+            case 'hands':   frame = (Math.floor(now/240)%2) ? HANDS_UP : HANDS_DOWN; break;
+            case 'feet':    frame = (Math.floor(now/200)%2) ? FEET_L : FEET_R; break;
+            case 'look':    frame = k < 0.8 ? (lookDir<0 ? LOOK_L : LOOK_R) : IDLE; break;                // glance at the shelf or the wardrobe
+            case 'shake':   xform = 'translateX('+(Math.sin(now/45)*2*(1-k)).toFixed(2)+'px)'; break;      // a quick shake-off
+            case 'scratch': frame = (Math.floor(now/170)%2) ? HANDS_UP : IDLE; xform = 'rotate(-5deg)'; break;   // a paw to the head
+          }
+          break;
+        default:        frame = blinkNow ? BLINK : IDLE;                                                   // resting
       }
     }
     cv.style.transform = reacting ? '' : xform;     // reactions animate via their own CSS class
@@ -6132,14 +6382,13 @@ setVisibleStructs(['ArrayList']);      // hide the rest right away; the server's
   // ---- entertainment content: loaded from pawie-content.js (edit copy there) ----
   const _C = window.PawieContent || {};
   const JOKES  = (_C.JOKES  && _C.JOKES.length)  ? _C.JOKES  : ["My joke file didn't load, but you're doing great anyway!"];
-  const CHEERS = (_C.CHEERS && _C.CHEERS.length) ? _C.CHEERS : ["You've got this!"];
   const QUIZ   = (_C.QUIZ && _C.QUIZ['default']) ? _C.QUIZ   : {
     'default':[{q:"Big-O measures…",opt:["laptop speed","how work grows with input","lines of code"],ans:1,
       why:"It scales with n, the size of the data."}]
   };
 
   function poseOnly(kind){ const d=REACT[kind]||REACT.ok; wake(); reactKind=kind; reactFrame=d.f; reactStart=performance.now(); reactUntil=reactStart+2200; animateClass(d.cls); }
-  // ---- jokes: released by date exactly like the quiz (served by the server, 7 days of 3 jokes about the current
+  // ---- jokes: released by date exactly like the quiz (served by the server, 7 days of 1 joke about the current
   // structure). Days that have come stay open to read again, later days are locked. No answers and no XP. ----
   let jokeList = null, jokeDay = 0, jokeIdx = 0;
   function jokeChips(){
@@ -6153,15 +6402,15 @@ setVisibleStructs(['ArrayList']);      // hide the rest right away; the server's
   function renderJoke(){
     const L = jokeList, d = L.days.find(x=>x.day===jokeDay);
     if(!d || !d.open){
-      msg.innerHTML = jokeChips() + '<div class="qz-q">Not open yet.</div><div class="acc-small">Day '+jokeDay+' jokes open on '+fmtDate((d||L.days[0]).date)+'.</div>';
+      msg.innerHTML = jokeChips() + '<div class="qz-q">Not open yet.</div><div class="acc-small">Day '+jokeDay+' joke opens on '+fmtDate((d||L.days[0]).date)+'.</div>';
       return;
     }
     const i = jokeIdx % d.jokes.length;
-    msg.innerHTML = jokeChips() + '<div class="qz-head">Day '+d.day+' of '+L.total+' · joke '+(i+1)+' of '+d.jokes.length+'</div>'
+    msg.innerHTML = jokeChips() + '<div class="qz-head">Day '+d.day+' of '+L.total+(d.jokes.length>1 ? ' · joke '+(i+1)+' of '+d.jokes.length : '')+'</div>'
       + '<div class="qz-q">'+esc(d.jokes[i])+'</div>'
-      + '<button type="button" class="qz-next" data-qz="jnext">Next joke →</button>';
+      + (d.jokes.length>1 ? '<button type="button" class="qz-next" data-qz="jnext">Next joke →</button>' : '');
   }
-  // the suggestion box: locked until the student asks for it, then it links out to an anonymous Google Form.
+  // the butterfly frame: closed until the student asks for it, then it links out to an anonymous Google Form.
   // Set REPORT_FORM_URL once the form exists; the form itself collects the answers, nothing passes through this site.
   const REPORT_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSf6yjIKIpcEfxcYB3SWmjbWMqiEcQLu1Nfv7prVGkTTwrqvwQ/viewform';
   let reportOpen = false;
@@ -6169,12 +6418,12 @@ setVisibleStructs(['ArrayList']);      // hide the rest right away; the server's
     const box = document.querySelector('.f-report');
     if(box) box.classList.toggle('unlocked', reportOpen);
     if(!reportOpen){
-      msg.innerHTML = '<div class="rp-lock">&#128274;</div><div class="qz-q">Found a bug, or got an idea?</div>'
-        + '<div class="acc-small">The suggestion box is locked. Unlock it to tell the course team, anonymously.</div>'
-        + '<button type="button" class="qz-next" data-report="unlock">Unlock the box</button>';
+      msg.innerHTML = '<div class="qz-q">Found a bug, or got an idea?</div>'
+        + '<div class="acc-small">The butterfly is pinned under glass. Open the frame to tell the course team, anonymously.</div>'
+        + '<button type="button" class="qz-next" data-report="unlock">Open the frame</button>';
       poseOnly('ok'); return;
     }
-    msg.innerHTML = '<div class="rp-lock">&#128275;</div><div class="qz-q">The box is open.</div>'
+    msg.innerHTML = '<div class="qz-q">The frame is open.</div>'
       + (REPORT_FORM_URL
         ? '<a class="qz-next" href="'+esc(REPORT_FORM_URL).replace(/"/g,'&quot;')+'" target="_blank" rel="noopener noreferrer" data-report="go">Open the anonymous form</a>'
           + '<div class="rp-note">Name and email are optional.</div>'
@@ -6197,7 +6446,7 @@ setVisibleStructs(['ArrayList']);      // hide the rest right away; the server's
   }
 
   let quizItem=null, streak=0;
-  // ---- daily quiz: each PA runs 7 days with 3 questions a day (see PA_SCHEDULE in pawie-content.js) ----
+  // ---- daily quiz: each PA runs 7 days with 5 questions a day (see PA_SCHEDULE in pawie-content.js) ----
   const DAY_MS = 86400000, PER_DAY = 3;
   const pacificDay = ()=> new Date().toLocaleDateString('en-CA', {timeZone:'America/Los_Angeles'});   // YYYY-MM-DD
   const dayNum = iso => Math.floor(Date.parse(iso+'T00:00:00Z') / DAY_MS);
@@ -6211,7 +6460,7 @@ setVisibleStructs(['ArrayList']);      // hide the rest right away; the server's
   }
   // ---- the daily quiz is served by the server ----
   // A day's questions only reach the browser once its date has come, and the answers only come back after all
-  // 3 of that day's questions are answered. A day that was missed can still be made up, but earns no XP.
+  // of that day's questions are answered. A day that was missed can still be made up, but earns no XP.
   let quizList = null, quizDay = 0;
   const fmtDate = iso => new Date(iso+'T00:00:00Z').toLocaleDateString('en-US', {month:'short', day:'numeric', timeZone:'UTC'});
   const isMissed = d => d.open && !d.done && d.date < quizList.today;
@@ -6258,7 +6507,7 @@ setVisibleStructs(['ArrayList']);      // hide the rest right away; the server's
       return;
     }
     if(d.done){ msg.innerHTML = quizReview(d, L.total); return; }
-    const idx = [0,1,2].find(k=>!d.answered.includes(k));
+    const idx = d.questions.map((_,k)=>k).find(k=>!d.answered.includes(k));
     const late = isMissed(d);
     showQuestion(d.questions[idx],
       'Day '+d.day+' of '+L.total+' · question '+(d.answered.length+1)+' of '+L.perDay+(late ? ' · make-up, no XP' : ''),
@@ -6281,7 +6530,7 @@ setVisibleStructs(['ArrayList']);      // hide the rest right away; the server's
       renderQuizDay();
     }catch(err){ msg.innerHTML = esc(err.message || 'Could not load the quiz.'); }
   }
-  // answering a daily question: the server stores it and pays XP, and only reveals the answers after the 3rd
+  // answering a daily question: the server stores it and pays XP, and only reveals the answers after the last one
   async function answerDaily(opt){
     const it = quizItem, chosen = +opt.getAttribute('data-opt'), m = it.meta;
     quizItem = null;
@@ -6339,14 +6588,6 @@ setVisibleStructs(['ArrayList']);      // hide the rest right away; the server's
     }
   });
 
-  function maybeActivity(){                         // small chance Pawie pipes up while strolling
-    if(talk || el.style.display==='none' || document.hidden) return;
-    const r=Math.random();
-    if(r<0.5) return;                                // often it just wanders quietly
-    if(r<0.8){ showEmote('', pick(CHEERS)); animateClass('r-hop'); }
-    else { showEmote('', pick(JOKES)); animateClass('r-tilt'); }
-  }
-
   const esc = s => s.replace(/[&<>]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
 
 
@@ -6383,11 +6624,11 @@ setVisibleStructs(['ArrayList']);      // hide the rest right away; the server's
   // ---- Pawie's home panel: level, XP, today's tasks and the wardrobe entry ----
   const homeEl = document.getElementById('homeInfo');
   const TASKS = [
-    {k:'visit',  t:'Visit today',                       need:1, xp:'10 XP'},
-    {k:'ctor',   t:'Try a constructor',                 need:1, xp:'10 XP'},
-    {k:'method', t:'Run 4 different methods',           need:4, xp:'5 XP each'},
-    {k:'watch',  t:'Watch 3 animations to the end',     need:3, xp:'5 XP each'},
-    {k:'quiz',   t:'Answer today\'s 3 quiz questions',   need:3, xp:'15 XP each'},
+    {k:'visit',  t:'Visit today',                       need:1, xp:'15 XP'},
+    {k:'ctor',   t:'Try a constructor',                 need:1, xp:'15 XP'},
+    {k:'method', t:'Run 4 different methods',           need:4, xp:'15 XP each'},
+    {k:'watch',  t:'Watch 3 animations to the end',     need:3, xp:'15 XP each'},
+    {k:'quiz',   t:'Answer today\'s 5 quiz questions',   need:5, xp:'18 XP each'},
   ];
   function paintHome(){
     if(!homeEl) return;
@@ -6468,21 +6709,21 @@ setVisibleStructs(['ArrayList']);      // hide the rest right away; the server's
       paintWardrobe();
       return;
     }
-    const daily = wardrobe ? wardrobe.dailyXp : 100;
+    const daily = wardrobe ? wardrobe.dailyXp : 225;
     msg.innerHTML = verifyBox + '<b>'+esc(p.name)+'</b> <span class="lvchip">Lv '+p.unlockedCount+'</span>'
       + '<div class="xpbar"><i style="width:'+pct+'%"></i></div>'
       + '<div class="acc-small">'+p.xp+' XP. '
       + (p.next ? 'Next: <b>'+esc(p.next.name)+'</b> at '+p.next.xp+' XP ('+(p.next.xp-p.xp)+' to go). ' : 'Everything is unlocked! ')
-      + 'Steady practice unlocks about one new item a week.</div>'
+      + 'Practising three days a week unlocks everything before the term ends.</div>'
       + '<div class="acc-small" style="margin-top:8px">Today: <b>'+p.todayXp+' / '+p.dailyCap+' XP</b>'
       + (p.streak > 1 ? ' &middot; '+p.streak+' days in a row' : '')+'</div>'
       + '<div class="xpbar"><i style="width:'+Math.min(100, Math.round(100*p.todayXp/p.dailyCap))+'%"></i></div>'
       + '<details class="acc-small"><summary>How to earn XP</summary><ul class="xp-how">'
-      + '<li>Visit today: 10 XP, and 10 more on your 3rd day in a row and every 7th</li>'
-      + '<li>Try a constructor: 10 XP</li>'
-      + '<li>Run 4 different methods: 5 XP each</li>'
-      + '<li>Watch 3 animations to their last step: 5 XP each</li>'
-      + '<li>Answer your 3 quiz questions for the day: 15 XP each</li>'
+      + '<li>Visit today: 15 XP, and 10 more on your 3rd day in a row and every 7th</li>'
+      + '<li>Try a constructor: 15 XP</li>'
+      + '<li>Run 4 different methods: 15 XP each</li>'
+      + '<li>Watch 3 animations to their last step: 15 XP each</li>'
+      + '<li>Answer your 5 quiz questions for the day: 18 XP each</li>'
       + '<li>Finish all five tasks for the full '+daily+' XP. The most you can earn in a day is '+daily+' XP</li></ul></details>'
       + '<form class="acc-f" id="accName"><input id="accNm" type="text" maxlength="20" value="'+esc(p.name).replace(/"/g,'&quot;')+'" aria-label="Pawie name">'
       + '<div class="acc-row"><button class="acc-btn" type="submit">Rename</button>'
@@ -6715,7 +6956,6 @@ setVisibleStructs(['ArrayList']);      // hide the rest right away; the server's
   draw(IDLE);
   raf = requestAnimationFrame(loop);
 
-  // Pawie stays parked in the bottom-right corner (roaming disabled).
   // Pawie lives in the "Pawie's home" panel. While the home is on screen the bear
   // stands on its rug; when it scrolls away, Pawie waits in the bottom-right corner
   // so the chat is always reachable.

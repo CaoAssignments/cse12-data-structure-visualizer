@@ -11,14 +11,14 @@
   const SAVE_KEY = 'pawie.save.v1';
 
   // ---- rules (mirrors auth.js) ----
-  const DAILY_XP_CAP = 100;
+  const DAILY_XP_CAP = 225;
   const SOURCES = {
-    daily_visit:  { xp: 10, xpCap: 10 },
-    ctor_new:     { xp: 10, xpCap: 10, unique: true },
-    method_new:   { xp: 5,  xpCap: 20, unique: true },
-    watch_end:    { xp: 5,  xpCap: 15, minGapMs: 2000 },
-    quiz_correct: { xp: 15, xpCap: 45, unique: true },
-    quiz_wrong:   { xp: 15, xpCap: 45, unique: true },
+    daily_visit:  { xp: 15, xpCap: 15 },
+    ctor_new:     { xp: 15, xpCap: 15, unique: true },
+    method_new:   { xp: 15, xpCap: 60, unique: true },
+    watch_end:    { xp: 15, xpCap: 45, minGapMs: 2000 },
+    quiz_correct: { xp: 18, xpCap: 90, unique: true },
+    quiz_wrong:   { xp: 18, xpCap: 90, unique: true },
   };
   const EVENTS = {
     daily_visit: ['daily_visit'], ctor: ['ctor_new'], method: ['method_new'],
@@ -30,7 +30,7 @@
   const dayKey = () => dayKeyAt(Date.now());
   const yesterdayKey = () => dayKeyAt(Date.now() - 86400000);
 
-  const WEEKLY_XP = 500;
+  const WEEKLY_XP = 650;
   const UNLOCK_SCHEDULE = [
     ['outfit', 'grey',    'Grey outfit',       'grey',    300],
     ['hat',    'cap',     'Grey baseball cap', 'grey',    800],
@@ -44,12 +44,12 @@
   const WARDROBE = (() => {
     const slots = { hat: [], outfit: [] };
     for (const [slot, id, name, set, xp] of UNLOCK_SCHEDULE) slots[slot].push({ id, name, set, xp, week: Math.ceil(xp / WEEKLY_XP) });
-    return { weeks: 8, weeklyXp: WEEKLY_XP, dailyXp: DAILY_XP_CAP, order: ['hat', 'outfit'], slots };
+    return { weeks: 6, weeklyXp: WEEKLY_XP, dailyXp: DAILY_XP_CAP, order: ['hat', 'outfit'], slots };
   })();
   const ITEMS = Object.entries(WARDROBE.slots).flatMap(([slot, list]) => list.map((i) => Object.assign({}, i, { slot }))).sort((a, b) => a.xp - b.xp);
   const owned = (slot, id, xp) => id === 'none' || (WARDROBE.slots[slot] || []).some((i) => i.id === id && xp >= i.xp);
   const MAX_XP = ITEMS[ITEMS.length - 1].xp;
-  const QUIZ_PER_DAY = 3;
+  const QUIZ_PER_DAY = 5;
 
   // ---- storage ----
   // localStorage can be missing or throw (private windows, blocked site data). The save then lives in memory

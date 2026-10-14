@@ -43,6 +43,26 @@ window.PawieQuiz = {
      ],
      "ans": 0,
      "why": "A capacity strictly less than 0 is invalid. A capacity of 0 is allowed."
+    },
+    {
+     "q": "What does new MyArrayList(E[] arr) do when arr is null?",
+     "opt": [
+      "It acts like the no-arg constructor, with capacity 5",
+      "It throws NullPointerException",
+      "It creates a list with capacity 0"
+     ],
+     "ans": 0,
+     "why": "The write-up says a null array falls back to the no-arg behavior, so you get an empty list with the default capacity of 5."
+    },
+    {
+     "q": "How is capacity different from size?",
+     "opt": [
+      "Capacity is the length of data, and size counts the valid elements",
+      "They are always equal",
+      "Capacity counts the valid elements, and size is the length of data"
+     ],
+     "ans": 0,
+     "why": "Capacity is data.length, the number of slots that exist. Size is how many of them hold valid elements."
     }
    ],
    [
@@ -75,6 +95,26 @@ window.PawieQuiz = {
      ],
      "ans": 0,
      "why": "Appending is adding at index size, so it follows all of add's rules, including growing when the array is full."
+    },
+    {
+     "q": "The array is full and you call add(1, e). What happens first?",
+     "opt": [
+      "The capacity is expanded following the rules of expandCapacity",
+      "IndexOutOfBoundsException is thrown",
+      "The last element is dropped"
+     ],
+     "ans": 0,
+     "why": "add must make room before it inserts, and the write-up says to update the capacity according to expandCapacity."
+    },
+    {
+     "q": "The list is empty and you append 4. What is the list afterwards?",
+     "opt": [
+      "The list is {4} and its size is 1",
+      "The list stays empty until you call add",
+      "It throws IndexOutOfBoundsException because the list is empty"
+     ],
+     "ans": 0,
+     "why": "The write-up example says that appending 4 to an empty list gives {4}."
     }
    ],
    [
@@ -107,6 +147,26 @@ window.PawieQuiz = {
      ],
      "ans": 0,
      "why": "Only valid elements may be non-null. Removing never shrinks the array, so the freed slot is cleared to null."
+    },
+    {
+     "q": "The list is {1,2,3}. What does remove(1) return, and what is the list afterwards?",
+     "opt": [
+      "It returns 2 and the list is {1,3}",
+      "It returns 1 and the list is {2,3}",
+      "It returns 3 and the list is {1,2}"
+     ],
+     "ans": 0,
+     "why": "remove returns the element that was at the index, and the elements after it shift left to close the gap."
+    },
+    {
+     "q": "The list is {1,2,3}. What does get(3) do?",
+     "opt": [
+      "It throws IndexOutOfBoundsException",
+      "It returns null",
+      "It returns 3"
+     ],
+     "ans": 0,
+     "why": "get accepts indexes from 0 up to size - 1. Index 3 is equal to the size, so it is out of bounds."
     }
    ],
    [
@@ -139,6 +199,26 @@ window.PawieQuiz = {
      ],
      "ans": 0,
      "why": "Asking for less room than you already have is invalid. Equal is allowed, and it still doubles."
+    },
+    {
+     "q": "The capacity is 0 and requiredCapacity is 11. What is the capacity afterwards?",
+     "opt": [
+      "11",
+      "5",
+      "10"
+     ],
+     "ans": 0,
+     "why": "A capacity of 0 is reset to the default of 5. That is still less than 11, so the capacity is set to 11."
+    },
+    {
+     "q": "What must expandCapacity preserve?",
+     "opt": [
+      "The size and every element at the same index",
+      "Only the size",
+      "Only the first element"
+     ],
+     "ans": 0,
+     "why": "The write-up says the elements before and after the expansion must be at the same indices, and the size does not change."
     }
    ],
    [
@@ -171,6 +251,26 @@ window.PawieQuiz = {
      ],
      "ans": 0,
      "why": "The array constructor copies arr, so capacity and size both equal arr.length."
+    },
+    {
+     "q": "A list has size 6 and capacity 7. You call append(null). What is the size afterwards?",
+     "opt": [
+      "7, because null is a valid element",
+      "6, because null is ignored",
+      "It throws NullPointerException"
+     ],
+     "ans": 0,
+     "why": "In MyArrayList a null can be a valid element, so appending it grows the size like any other value."
+    },
+    {
+     "q": "How does MyArrayList tell a valid null from an empty slot?",
+     "opt": [
+      "By comparing the index with size",
+      "By checking whether the slot is null",
+      "By keeping a second array of booleans"
+     ],
+     "ans": 0,
+     "why": "Every unused slot is null, so only the size variable says which slots are valid."
     }
    ],
    [
@@ -203,6 +303,26 @@ window.PawieQuiz = {
      ],
      "ans": 0,
      "why": "get only reads, so nothing about the list is allowed to change."
+    },
+    {
+     "q": "Which of these should a test of append on a non-empty list check?",
+     "opt": [
+      "The new element at the end, the old elements unchanged, and the size",
+      "Only that no exception is thrown",
+      "Only that the capacity is 5"
+     ],
+     "ans": 0,
+     "why": "The write-up asks that the element is inserted at the end while the existing elements are preserved, and that size and capacity are updated where applicable."
+    },
+    {
+     "q": "A test for expandCapacity first puts elements in the list. Why?",
+     "opt": [
+      "To confirm they stay at the same indices after the expansion",
+      "Because expandCapacity does not work on an empty list",
+      "Because capacity only changes when the size is above 0"
+     ],
+     "ans": 0,
+     "why": "An empty list cannot show whether elements survive the copy, so the test needs some elements to check."
     }
    ],
    [
@@ -235,6 +355,26 @@ window.PawieQuiz = {
      ],
      "ans": 0,
      "why": "The write-up says a null list throws NullPointerException."
+    },
+    {
+     "q": "nums holds {1, 3, 2, 3, 4}. What does moveTargetToEnd(nums, 3) leave?",
+     "opt": [
+      "{1, 2, 4, 3, 3}",
+      "{3, 3, 1, 2, 4}",
+      "{1, 2, 4}"
+     ],
+     "ans": 0,
+     "why": "Both 3s move to the back and every other element keeps its order. This matches the first example in the write-up."
+    },
+    {
+     "q": "After moveTargetToEnd, what happens to the size of nums?",
+     "opt": [
+      "It does not change",
+      "It drops by the number of targets",
+      "It grows by the number of targets"
+     ],
+     "ans": 0,
+     "why": "The targets are moved, not removed, so the size stays the same."
     }
    ]
   ],
@@ -269,6 +409,26 @@ window.PawieQuiz = {
      ],
      "ans": 0,
      "why": "size does not include the sentinels. Index 0 refers to the first node after head."
+    },
+    {
+     "q": "Where does index 0 live in a MyLinkedList?",
+     "opt": [
+      "In the first node after head",
+      "In the head sentinel",
+      "In the tail sentinel"
+     ],
+     "ans": 0,
+     "why": "Sentinel nodes have no index numbers. Index 0 is the first node that is not a sentinel."
+    },
+    {
+     "q": "Which of these does the write-up require?",
+     "opt": [
+      "Sentinel head and tail nodes",
+      "Importing java.util.LinkedList to help",
+      "Making head, tail and size private"
+     ],
+     "ans": 0,
+     "why": "You must use sentinel head and tail nodes. The built-in LinkedList is forbidden, and the instance variables keep the default access."
     }
    ],
    [
@@ -301,6 +461,26 @@ window.PawieQuiz = {
      ],
      "ans": 0,
      "why": "This list never accepts null, unlike Java's built-in LinkedList. A successful add(E) always returns true."
+    },
+    {
+     "q": "The list is head <-> a <-> b <-> tail. You call add(1, x). Which node comes right before x?",
+     "opt": [
+      "a",
+      "b",
+      "head"
+     ],
+     "ans": 0,
+     "why": "Index 1 is the slot between a and b, so the new node goes after a."
+    },
+    {
+     "q": "What does add(e) return?",
+     "opt": [
+      "true, always",
+      "false when the list was empty",
+      "The new size"
+     ],
+     "ans": 0,
+     "why": "The write-up says the boolean add presumably always returns true, because the method definition comes from AbstractList."
     }
    ],
    [
@@ -333,6 +513,26 @@ window.PawieQuiz = {
      ],
      "ans": 0,
      "why": "The neighbors of the removed node must point at each other. The removed data is returned."
+    },
+    {
+     "q": "What does remove(0) return on the list a, b, c?",
+     "opt": [
+      "a",
+      "head",
+      "b"
+     ],
+     "ans": 0,
+     "why": "remove returns the data of the node it removes, and index 0 is the first real node, a."
+    },
+    {
+     "q": "The size is 3 and you call set(5, x) with a non-null x. What happens?",
+     "opt": [
+      "It throws IndexOutOfBoundsException",
+      "It throws NullPointerException",
+      "The list grows to include index 5"
+     ],
+     "ans": 0,
+     "why": "set accepts indexes from 0 up to size - 1, so index 5 is out of bounds."
     }
    ],
    [
@@ -365,6 +565,26 @@ window.PawieQuiz = {
      ],
      "ans": 0,
      "why": "Index 0 is valid when size is 1. After the removal, head and tail point at each other again."
+    },
+    {
+     "q": "A list holds 3 elements. What does size() return after clear()?",
+     "opt": [
+      "0",
+      "3",
+      "1"
+     ],
+     "ans": 0,
+     "why": "clear removes every non-sentinel node and resets the size to 0."
+    },
+    {
+     "q": "What does isEmpty() return right after clear() on a non-empty list?",
+     "opt": [
+      "true",
+      "false",
+      "It throws an exception"
+     ],
+     "ans": 0,
+     "why": "After clear the list holds no data nodes, so its size is 0 and isEmpty is true."
     }
    ],
    [
@@ -397,6 +617,26 @@ window.PawieQuiz = {
      ],
      "ans": 0,
      "why": "null data is never allowed, whether you add or set. Index 1 is valid here, so the null is the problem."
+    },
+    {
+     "q": "Which methods use getNth(index) to find their node?",
+     "opt": [
+      "get, set and remove",
+      "Only get",
+      "Only add"
+     ],
+     "ans": 0,
+     "why": "get, set and remove all start by asking getNth for the node at the index."
+    },
+    {
+     "q": "The size is 3. What does getNth(-1) do?",
+     "opt": [
+      "It throws IndexOutOfBoundsException",
+      "It returns head",
+      "It returns null"
+     ],
+     "ans": 0,
+     "why": "getNth throws IndexOutOfBoundsException when the index is below 0 or at least the size."
     }
    ],
    [
@@ -429,6 +669,26 @@ window.PawieQuiz = {
      ],
      "ans": 0,
      "why": "A correct implementation may check the rules in any order, so your test must be written to accept every exception it could raise."
+    },
+    {
+     "q": "How many points do you earn for each bad implementation that your test fails?",
+     "opt": [
+      "2 points",
+      "1 point",
+      "5 points"
+     ],
+     "ans": 0,
+     "why": "The write-up gives 2 points for every bad implementation your test fails, as long as it also passes on the good one."
+    },
+    {
+     "q": "Your test fails on a good implementation. What does that tell you?",
+     "opt": [
+      "The test is written incorrectly",
+      "The good implementation is wrong",
+      "The test still earns full credit"
+     ],
+     "ans": 0,
+     "why": "A correct test must pass on a good implementation, so a failure there means the test itself has a mistake."
     }
    ],
    [
@@ -461,6 +721,26 @@ window.PawieQuiz = {
      ],
      "ans": 0,
      "why": "The write-up forbids head, tail and size in this problem, but you may use any MyLinkedList method."
+    },
+    {
+     "q": "May mergeLists call methods of MyLinkedList?",
+     "opt": [
+      "Yes, any method, but it must not use head, tail or the size field",
+      "No, it may only call add",
+      "Yes, but only get"
+     ],
+     "ans": 0,
+     "why": "The write-up says to feel free to use any MyLinkedList method, and gives 0 points if you reference head, tail or size directly."
+    },
+    {
+     "q": "What does mergeLists throw when left is null?",
+     "opt": [
+      "NullPointerException",
+      "IllegalArgumentException",
+      "IndexOutOfBoundsException"
+     ],
+     "ans": 0,
+     "why": "The write-up says mergeLists throws a NullPointerException when left or right is null."
     }
    ]
   ]
@@ -468,76 +748,48 @@ window.PawieQuiz = {
  "JOKES_DAYS": {
   "ArrayList": [
    [
-    "Why did the ArrayList never feel crowded? It doubles its capacity whenever things get tight.",
-    "An ArrayList asked for a table for five. When a sixth friend showed up, it moved to a table for ten.",
-    "Why does add(0, e) tire out an ArrayList? Everybody has to shift over to make room."
+    "Why did the ArrayList never feel crowded? It doubles its capacity whenever things get tight."
    ],
    [
-    "I asked the ArrayList how it was doing. It said, I am at index 0 and I feel fine.",
-    "What did the full ArrayList say to the new element? Hold on, let me call expandCapacity first.",
-    "Why do ArrayLists make great roommates? They know exactly where everything is, index by index."
+    "I asked the ArrayList how it was doing. It said, I am at index 0 and I feel fine."
    ],
    [
-    "Size and capacity went to couples therapy. Size said, I only count what is valid. Capacity said, I count the empty seats too.",
-    "Why did the null refuse to leave the list? It was a valid element and had the size to prove it.",
-    "What is an ArrayList's favorite workout? Shifts."
+    "Size and capacity went to couples therapy. Size said, I only count what is valid. Capacity said, I count the empty seats too."
    ],
    [
-    "Why does remove feel so tidy? It always clears the last slot to null before leaving.",
-    "get(i) walked into the lobby and found the right room instantly. That is O(1) hospitality.",
-    "The ArrayList refused to shrink after remove. It said, I like having room to grow."
+    "Why does remove feel so tidy? It always clears the last slot to null before leaving."
    ],
    [
-    "Why did the programmer put a 4 at index 2? Everything after it had already booked a seat to the right.",
-    "An ArrayList is like a bus. Buying a bigger bus is easy. Making everyone move seats is the real cost.",
-    "What do you call an ArrayList with capacity 0? A tiny house waiting for its first expandCapacity."
+    "Why did the programmer put a 4 at index 2? Everything after it had already booked a seat to the right."
    ],
    [
-    "Capacity 3 met requiredCapacity 18 and learned that doubling to 6 was not going to cut it.",
-    "My ArrayList only argues about one thing. Is index size out of bounds? For add, it is not.",
-    "IndexOutOfBoundsException shows up uninvited whenever you ask get for index size."
+    "Capacity 3 met requiredCapacity 18 and learned that doubling to 6 was not going to cut it."
    ],
    [
-    "Why did moveTargetToEnd cause a scene? It kept sending every 3 to the back of the line.",
-    "Why do ArrayLists love moveTargetToEnd? They finally get to remove and append in the same day.",
-    "What is an ArrayList's motto? Same elements, same indices, even after expansion."
+    "Why did moveTargetToEnd cause a scene? It kept sending every 3 to the back of the line."
    ]
   ],
   "LinkedList": [
    [
-    "Why does the linked list never get lost? Every node knows where the next one is.",
-    "What did the head sentinel say? I hold no data, but I hold everything together.",
-    "A linked list tried to jump straight to index 500. It had to walk there like everyone else."
+    "Why does the linked list never get lost? Every node knows where the next one is."
    ],
    [
-    "Why did the node leave the array? It was tired of living in a row house with no room to grow.",
-    "Inserting into a linked list is easy once you are there. Getting there is the whole commute.",
-    "Why was the tail sentinel always calm? It had nothing after it and nothing to prove."
+    "Why did the node leave the array? It was tired of living in a row house with no room to grow."
    ],
    [
-    "What do you call a node that lost its next pointer? A very short story.",
-    "Why is get(i) slow on a linked list? Every visitor follows the signs one node at a time.",
-    "Two nodes got married. They finally agreed on who points to whom."
+    "What do you call a node that lost its next pointer? A very short story."
    ],
    [
-    "Removing a node is like leaving a group chat. The neighbors just reconnect around you.",
-    "Why do programmers love sentinels? No more special cases for an empty list.",
-    "A linked list and a coffee shop have one thing in common. You always join the line from the front."
+    "Removing a node is like leaving a group chat. The neighbors just reconnect around you."
    ],
    [
-    "Rewire in the right order. Set the new node's pointers first, or the rest of the list wanders off.",
-    "What does a doubly linked list say at parties? I know who is before me and who is after me.",
-    "Why did the garbage collector smile when you called remove? A detached node is a free snack."
+    "Rewire in the right order. Set the new node's pointers first, or the rest of the list wanders off."
    ],
    [
-    "A linked list never needs to resize. It just keeps adding rooms like a rambling old house.",
-    "I asked a node how far away the tail is. It said, go ask my next, I only know about one step.",
-    "Why is a linked list bad at random access? It never learned to teleport."
+    "A linked list never needs to resize. It just keeps adding rooms like a rambling old house."
    ],
    [
-    "Why did add at index 0 feel quick? The head was already standing right there.",
-    "Where do linked lists keep their memories? One node at a time.",
-    "What is the linked list's love language? Pointers that always point back."
+    "Why did add at index 0 feel quick? The head was already standing right there."
    ]
   ]
  }
