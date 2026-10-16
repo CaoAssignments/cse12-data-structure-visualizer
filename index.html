@@ -1775,30 +1775,46 @@ function noteWatched(){
   seqNoteDone();
 }
 
-/* ---- ArrayList methods unlock one at a time, in the order of the PA2 write-up ----
-   A method opens once the one before it has been watched to its last frame. When all nine are open the
-   whole set stays open for good. Progress lives in this browser, per signed-in account (or guest).
-   Constructors and the other structures are never locked. */
-const SEQ_ORDER = ['expandCapacity','getCapacity','add','append','get','set','remove','size','moveTarget'];
-const SEQ_LABEL = {expandCapacity:'expandCapacity(n)', getCapacity:'getCapacity()', add:'add(i, e)', append:'append(e)', get:'get(i)', set:'set(i, e)', remove:'remove(i)', size:'size()', moveTarget:'moveTargetToEnd(t)'};
-let seqWho = '', seqK = null;     // seqK = how many methods are open (1..9)
-const seqKey = () => 'pawie.unlock.array.v1:' + seqWho;
+/* ---- ArrayList and LinkedList methods unlock one at a time, in the order of each PA's write-up ----
+   A method opens once the one before it has been watched to its last frame. When every method of a structure is
+   open, its whole set stays open for good. Progress lives in this browser, per signed-in account (or guest), and
+   each structure keeps its own. Constructors and the other structures are never locked. */
+const SEQS = {
+  array: { name:'ArrayList',
+    order:['expandCapacity','getCapacity','add','append','get','set','remove','size','moveTarget'],
+    label:{expandCapacity:'expandCapacity(n)', getCapacity:'getCapacity()', add:'add(i, e)', append:'append(e)', get:'get(i)', set:'set(i, e)', remove:'remove(i)', size:'size()', moveTarget:'moveTargetToEnd(t)'} },
+  linked: { name:'LinkedList',
+    order:['append','add','get','getNth','set','remove','clear','isEmpty','size','merge'],
+    label:{append:'add(e)', add:'add(i, e)', get:'get(i)', getNth:'getNth(i)', set:'set(i, e)', remove:'remove(i)', clear:'clear()', isEmpty:'isEmpty()', size:'size()', merge:'mergeLists(left, right)'} },
+};
+let seqWho = '';
+const seqKs = {};                 // how many methods are open, per structure (1 up to the number of methods)
+const seqKey = st => 'pawie.unlock.'+st+'.v1:' + seqWho;
 const seqKeyOf = act => act==='appendNull' ? 'append' : act;
+const seqCur = () => (ITER ? null : (SEQS[STRUCT] || null));      // the sequence of the structure on screen, if it has one
 function seqLoad(){
-  let k = 1;
-  try{ const v = parseInt(localStorage.getItem(seqKey()), 10); if(v>=1) k = Math.min(SEQ_ORDER.length, v); }catch(e){}
-  seqK = k;
+  for(const st of Object.keys(SEQS)){
+    let k = 1;
+    try{ const v = parseInt(localStorage.getItem(seqKey(st)), 10); if(v>=1) k = Math.min(SEQS[st].order.length, v); }catch(e){}
+    seqKs[st] = k;
+  }
 }
-function seqSave(){ try{ localStorage.setItem(seqKey(), String(seqK)); }catch(e){} }
-function seqIdx(act){ return SEQ_ORDER.indexOf(seqKeyOf(act)); }
-function seqLocked(act){ if(seqK===null) seqLoad(); const i = seqIdx(act); return STRUCT==='array' && i>=0 && i >= seqK; }
+function seqSave(st){ try{ localStorage.setItem(seqKey(st), String(seqKs[st])); }catch(e){} }
+function seqEnsure(){ if(seqKs.array===undefined) seqLoad(); }
+function seqIdx(sq, act){ return sq.order.indexOf(seqKeyOf(act)); }
+function seqLocked(act){
+  seqEnsure();
+  const sq = seqCur(); if(!sq) return false;
+  const i = seqIdx(sq, act); return i>=0 && i >= seqKs[STRUCT];
+}
 function applySeqLocks(){
-  if(seqK===null) seqLoad();
+  seqEnsure();
+  const sq = seqCur();
   document.querySelectorAll('.ops2 [data-act]').forEach(b=>{
-    const act = b.getAttribute('data-act'), i = seqIdx(act);
-    const lock = STRUCT==='array' && i>=0 && i >= seqK;
+    const act = b.getAttribute('data-act'), i = sq ? seqIdx(sq, act) : -1;
+    const lock = !!sq && i>=0 && i >= seqKs[STRUCT];
     b.classList.toggle('seqlock', lock);
-    if(lock){ b.setAttribute('aria-disabled','true'); b.title = 'Locked. Watch '+SEQ_LABEL[SEQ_ORDER[seqK-1]]+' to the end to unlock this.'; }
+    if(lock){ b.setAttribute('aria-disabled','true'); b.title = 'Locked. Watch '+sq.label[sq.order[seqKs[STRUCT]-1]]+' to the end to unlock this.'; }
     else { b.removeAttribute('aria-disabled'); if(b.title && b.title.indexOf('Locked.')===0) b.removeAttribute('title'); }
     const args = b.nextElementSibling;
     if(args && args.classList.contains('args')) args.classList.toggle('seqlock-args', lock);
@@ -1812,21 +1828,25 @@ function seqToast(text){
 }
 /* the animation just reached its last frame: if it was the newest open method, open the next one */
 function seqNoteDone(){
-  if(STRUCT!=='array' || seqK===null || seqK>=SEQ_ORDER.length || player.failed) return;
-  if(seqKeyOf(player.code)!==SEQ_ORDER[seqK-1]) return;
-  seqK++; seqSave(); applySeqLocks();
-  const next = SEQ_ORDER[seqK-1], btn = document.querySelector('.ops2 [data-act="'+next+'"]');
+  const sq = seqCur(); if(!sq) return;
+  seqEnsure();
+  const st = STRUCT;
+  if(seqKs[st]>=sq.order.length || player.failed || !player.row) return;      // a constructor has no row: building a list never opens a method
+  if(seqKeyOf(player.code)!==sq.order[seqKs[st]-1]) return;
+  seqKs[st]++; seqSave(st); applySeqLocks();
+  const next = sq.order[seqKs[st]-1], btn = document.querySelector('.ops2 [data-act="'+next+'"]');
   if(btn){ btn.classList.remove('justunlocked'); void btn.offsetWidth; btn.classList.add('justunlocked'); }
-  seqToast(seqK>=SEQ_ORDER.length
-    ? '&#128275; <b>'+SEQ_LABEL[next]+'</b> unlocked. That is every ArrayList method, all open for good.'
-    : '&#128275; <b>'+SEQ_LABEL[next]+'</b> unlocked.');
+  seqToast(seqKs[st]>=sq.order.length
+    ? '&#128275; <b>'+sq.label[next]+'</b> unlocked. That is every '+sq.name+' method, all open for good.'
+    : '&#128275; <b>'+sq.label[next]+'</b> unlocked.');
 }
 // a locked method does nothing but explain itself
 document.addEventListener('click', e=>{
   const b = e.target.closest && e.target.closest('.ops2 [data-act]');
   if(!b || !seqLocked(b.getAttribute('data-act'))) return;
   e.stopImmediatePropagation(); e.preventDefault();
-  setNote('<b>'+SEQ_LABEL[seqKeyOf(b.getAttribute('data-act'))]+'</b> is locked. Watch <b>'+SEQ_LABEL[SEQ_ORDER[seqK-1]]+'</b> to the end to unlock it.');
+  const sq = seqCur();
+  setNote('<b>'+sq.label[seqKeyOf(b.getAttribute('data-act'))]+'</b> is locked. Watch <b>'+sq.label[sq.order[seqKs[STRUCT]-1]]+'</b> to the end to unlock it.');
   b.classList.remove('seqnudge'); void b.offsetWidth; b.classList.add('seqnudge');
 }, true);
 document.addEventListener('pawie:signedin', e=>{ seqWho = String((e.detail && e.detail.ident) || '').toLowerCase(); seqLoad(); applySeqLocks(); });
@@ -3189,7 +3209,7 @@ function setCostLabels(isLL, iter){
 /* highlight the nav button matching the active structure + mode. Iterator is
    the LinkedList in ListIterator mode, so it lights its own nav button. */
 function markActiveStruct(){
-  setTimeout(applySeqLocks, 0);   // STRUCT is already set; the locks only apply to the ArrayList
+  setTimeout(applySeqLocks, 0);   // STRUCT is already set; the locks apply to the ArrayList and the LinkedList
   let active = 'ArrayList';
   if(STRUCT==='stack') active = 'Stack';
   else if(STRUCT==='queue') active = 'Queue';
