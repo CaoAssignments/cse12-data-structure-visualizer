@@ -72,6 +72,10 @@ mono,code.mono{font-family:"JetBrains Mono",monospace}
 input[type=text],input[type=number]{font-family:"JetBrains Mono",monospace;font-size:14px;padding:6px 8px;border:1.5px solid var(--line);border-radius:2px;background:#fff}
 input.short{width:64px}
 input.mid{width:112px}
+.watchhint{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:70;display:flex;align-items:center;gap:12px;max-width:calc(100vw - 24px);padding:10px 14px;background:var(--ink);color:#fff;border-radius:9px;box-shadow:0 6px 20px rgba(40,35,20,.3);font-size:13px;line-height:1.4}
+.watchhint[hidden]{display:none}
+.watchhint button{flex:none;font:inherit;font-weight:600;background:#fff;color:var(--ink);border:0;border-radius:6px;padding:6px 12px;cursor:pointer}
+.stage .vis{scroll-margin-top:12px}
 .startnote{margin-top:6px;padding-top:6px;border-top:1px dashed var(--line);color:var(--muted);font-size:12px}
 .mgnull{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--muted);font-family:"JetBrains Mono",monospace}
 input.long{width:160px;flex:1;min-width:130px}
@@ -364,7 +368,7 @@ input.long{width:160px;flex:1;min-width:130px}
 .note b{font-family:"JetBrains Mono",monospace}
 
 /* ---- transport ---- */
-.transport{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.transport{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--line)}
 .tbtn{font-family:"JetBrains Mono",monospace;font-size:14px;border:1.5px solid var(--ink);background:var(--paper);color:var(--ink);width:38px;height:34px;border-radius:2px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:all .12s}
 .tbtn:hover{background:var(--teal-soft)}
 .tbtn.play{background:var(--teal);color:#fff;border-color:var(--teal);width:46px}
@@ -480,6 +484,8 @@ input.long{width:160px;flex:1;min-width:130px}
 </style>
 </head>
 <body>
+<div id="watchHint" class="watchhint" role="status" hidden><span>Scroll down to watch. The animation starts as soon as the picture is on screen.</span><button type="button" id="watchGo">Show me</button></div>
+
 <div class="wrap">
 
   <header class="top">
@@ -865,6 +871,15 @@ input.long{width:160px;flex:1;min-width:130px}
   <!-- stage: visualization | concept -->
   <div class="stage">
     <div class="panel vis">
+      <div class="transport">
+        <button class="tbtn" id="tRestart" title="Restart (Home)" aria-label="Restart"><svg viewBox="0 0 16 16" width="13" height="13"><rect x="3" y="3" width="1.7" height="10"/><path d="M13 3 6.2 8 13 13 Z"/></svg></button>
+        <button class="tbtn" id="tPrev" title="Step back (&larr;)" aria-label="Step back"><svg viewBox="0 0 16 16" width="13" height="13"><path d="M11 3 5 8l6 5z"/></svg></button>
+        <button class="tbtn play" id="tPlay" title="Play / Pause (Space)" aria-label="Play"></button>
+        <button class="tbtn" id="tNext" title="Step forward (&rarr;)" aria-label="Step forward"><svg viewBox="0 0 16 16" width="13" height="13"><path d="M5 3l6 5-6 5z"/></svg></button>
+        <span class="progress" id="tProg">0 / 0</span>
+        <div class="track"><div class="fill" id="tFill"></div></div>
+        <span class="speedwrap">slow <input type="range" id="speed" min="120" max="3000" value="2120" style="width:84px"> fast</span>
+      </div>
       <div class="badges">
         <span class="badge size" id="bSize">size = 0</span>
         <span class="badge cap" id="bCap">capacity = 5</span>
@@ -953,16 +968,6 @@ input.long{width:160px;flex:1;min-width:130px}
         <span><i class="sw" style="opacity:.45;border-style:dashed"></i> unlinked → garbage</span>
       </div>
       <div class="note" id="note">Build a list above, then run an operation. Use the transport bar to step through it.</div>
-
-      <div class="transport">
-        <button class="tbtn" id="tRestart" title="Restart (Home)" aria-label="Restart"><svg viewBox="0 0 16 16" width="13" height="13"><rect x="3" y="3" width="1.7" height="10"/><path d="M13 3 6.2 8 13 13 Z"/></svg></button>
-        <button class="tbtn" id="tPrev" title="Step back (&larr;)" aria-label="Step back"><svg viewBox="0 0 16 16" width="13" height="13"><path d="M11 3 5 8l6 5z"/></svg></button>
-        <button class="tbtn play" id="tPlay" title="Play / Pause (Space)" aria-label="Play"></button>
-        <button class="tbtn" id="tNext" title="Step forward (&rarr;)" aria-label="Step forward"><svg viewBox="0 0 16 16" width="13" height="13"><path d="M5 3l6 5-6 5z"/></svg></button>
-        <span class="progress" id="tProg">0 / 0</span>
-        <div class="track"><div class="fill" id="tFill"></div></div>
-        <span class="speedwrap">slow <input type="range" id="speed" min="120" max="3000" value="2120" style="width:84px"> fast</span>
-      </div>
     </div>
 
 
@@ -1646,21 +1651,38 @@ function mk(g, o){
    PLAYER, steps through the generated frames.
    ===================================================================== */
 let player = { frames:[], i:0, playing:false, token:0, row:null, bigO:null, counting:0 };
-/* A click on a constructor or a method waits a few seconds before the animation starts, so a student has time to
-   scroll down to the picture first. Play, step, restart or another operation ends the wait at once. */
+/* A click on a constructor or a method starts the animation only once the picture is on screen, so a student who is
+   still scrolling down does not miss the first steps. When the picture is already in view it starts after a short
+   pause. Play, step, restart or another operation ends the wait at once. */
 const START_DELAY_S = 1;
 let startTimer = null;
-function cancelStart(){ if(startTimer){ clearInterval(startTimer); startTimer = null; } player.counting = 0; }
+function stageVisible(){
+  const el = document.querySelector('.stage .vis'); if(!el) return true;
+  const r = el.getBoundingClientRect(), vh = window.innerHeight || 700;
+  const seen = Math.min(r.bottom, vh) - Math.max(r.top, 0);
+  return seen >= Math.min(r.height, vh) * 0.5;        // at least half of the panel, or half the screen when it is taller
+}
+function watchHint(show){ const h = document.getElementById('watchHint'); if(h) h.hidden = !show; }
+function cancelStart(){ if(startTimer){ clearInterval(startTimer); startTimer = null; } player.counting = 0; watchHint(false); }
 function playAfterDelay(){
   cancelStart();
-  let left = START_DELAY_S;
-  player.counting = left;
-  drawFrame();
-  startTimer = setInterval(()=>{
-    left--;
-    if(left <= 0){ cancelStart(); play(); }
-    else { player.counting = left; drawFrame(); }
-  }, 1000);
+  let seenSince = null, shown = '';
+  const tick = ()=>{
+    const now = performance.now();
+    if(stageVisible()){
+      if(seenSince === null) seenSince = now;
+      const left = Math.ceil((START_DELAY_S*1000 - (now - seenSince)) / 1000);
+      if(left <= 0){ cancelStart(); play(); return; }
+      watchHint(false);
+      if(shown !== 'c'+left){ shown = 'c'+left; player.counting = left; drawFrame(); }
+    } else {
+      seenSince = null;
+      watchHint(true);                                 // not on screen yet: wait, and point the way
+      if(shown !== 'w'){ shown = 'w'; player.counting = 0; drawFrame(); }
+    }
+  };
+  startTimer = setInterval(tick, 200);
+  tick();
 }
 
 function awardPet(t,k){ if(window.Pawie && window.Pawie.award) window.Pawie.award(t,k); }
@@ -1720,7 +1742,7 @@ function drawFrame(){
   if(!f){ renderState(model, {}); return; }
   if(f.ctorFail) renderCtorFail();
   else if(f.kind==='linked') renderLinked(f); else if(f.kind==='merge') renderMerge(f); else if(f.kind==='stack') renderStack(f); else if(f.kind==='queue' || f.kind==='deque') renderQueue(f); else if(f.kind==='hash') renderHash(f); else if(f.kind==='heap') renderHeap(f); else if(f.kind==='tree') renderTree(f); else renderState(f, f);
-  setNote(f.say + (player.counting ? '<div class="startnote">The animation starts in <b>'+player.counting+'</b>s. Scroll down to the picture, or press play to start now.</div>' : ''), f.err);
+  setNote(f.say + (player.counting ? '<div class="startnote">The animation starts in <b>'+player.counting+'</b>s. Press play to start right now.</div>' : ''), f.err);
   const completed = new Set(player.frames.slice(0, player.i).map(x=>x.phase));
   const skipped = new Set();
   player.frames.slice(0, player.i+1).forEach(x=>{ if(x.skip) x.skip.forEach(id=>skipped.add(id)); });
@@ -2139,6 +2161,7 @@ document.querySelector('.controls').addEventListener('click', e=>{
   if(result) loadOp(result, true);
 });
 
+document.getElementById('watchGo').onclick = ()=>{ const v = document.querySelector('.stage .vis'); if(v) v.scrollIntoView({behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block:'start'}); };
 document.getElementById('tPlay').onclick   = togglePlay;
 document.getElementById('tNext').onclick    = ()=>step(1);
 document.getElementById('tPrev').onclick    = ()=>step(-1);
