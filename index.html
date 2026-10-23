@@ -2028,7 +2028,7 @@ document.querySelector('.controls').addEventListener('click', e=>{
     else if(act==='ithasprev')result = genItQuery('hasprev');
     else if(act==='itnextidx')result = genItQuery('nextidx');
     else if(act==='itprevidx')result = genItQuery('previdx');
-    else if(act==='itmerge')  result = (MERGE_STEPS ? genItMerge : (L,R,ln,rn)=>genMergeAnswer(L,R,ln,rn,true))(readIntList('vItMgL'), readIntList('vItMgR'), document.getElementById('itMgLNull').checked, document.getElementById('itMgRNull').checked);
+    else if(act==='itmerge'){ if(typeof setPA4Phases==='function') setPA4Phases(); result = (MERGE_REVEAL.pa4 ? genItMerge : (L,R,ln,rn)=>genMergeAnswer(L,R,ln,rn,true))(readIntList('vItMgL'), readIntList('vItMgR'), document.getElementById('itMgLNull').checked, document.getElementById('itMgRNull').checked); }
     if(result) loadOp(result, true);
     return;
   }
@@ -2129,7 +2129,7 @@ document.querySelector('.controls').addEventListener('click', e=>{
     else if(act==='isEmpty')result = genLLisEmpty();
     else if(act==='size')  result = genLLsize();
     else if(act==='getNth')result = genLLgetNth(readInt('iGetNth'));
-    else if(act==='merge') result = (MERGE_STEPS ? genLLmerge : (L,R,ln,rn)=>genMergeAnswer(L,R,ln,rn,false))(readIntList('vMgL'), readIntList('vMgR'), document.getElementById('mgLNull').checked, document.getElementById('mgRNull').checked);
+    else if(act==='merge') result = (MERGE_REVEAL.pa3 ? genLLmerge : (L,R,ln,rn)=>genMergeAnswer(L,R,ln,rn,false))(readIntList('vMgL'), readIntList('vMgR'), document.getElementById('mgLNull').checked, document.getElementById('mgRNull').checked);
   } else {
     if(act==='append')     result = genAdd(model.size, readVal('vAppend'), true);
     else if(act==='appendNull') result = genAdd(model.size, null, true);
@@ -2299,7 +2299,7 @@ const PHASES_LL = {
     {id:'return', t:'Return the Node', d:'Hand back the node itself, not its value. get, set and remove all build on this.'},
   ],
   merge: [
-    {id:'result', t:'What mergeLists returns', d:'A new sorted list that holds every element of both inputs, duplicates kept. Working out how is the assignment, so this page shows only the answer.'},
+    {id:'result', t:'What mergeLists returns', d:'A new sorted list that holds every element of both inputs, duplicates kept. Working out how is the assignment, so for now try to work out the solution yourself. A detailed walkthrough will be shared after the PA is due.'},
   ],
 };
 PHASES_LL.append = PHASES_LL.add;
@@ -2612,11 +2612,77 @@ function genLLgetNth(index){
     bigO:'Reaching index '+index+' took <code>'+g.cost.hops+'</code> hop(s) from the head, and the worst case is all <code>n</code> nodes, so <code>getNth</code> is <code>O(n)</code>. Every method that calls it inherits that cost.'};
 }
 
+/* =====================================================================
+   MyAlgorithm.mergeLists(left, right): two sorted lists in, one new sorted list out.
+   The write-up forbids head, tail and size, so it can only use get, add and size(): every get
+   and every add walks from the head, which is what the hop counter shows.
+   ===================================================================== */
+function genLLmerge(L, R, lNull, rNull){
+  const label = 'mergeLists(left, right)';
+  const cost = {hops:0, links:0}, frames = [];
+  let res = [];
+  const snap = o => frames.push({
+    kind:'merge', left:lNull?null:L.slice(), right:rNull?null:R.slice(), result:res.slice(),
+    il:o.il===undefined?null:o.il, ir:o.ir===undefined?null:o.ir, hot:o.hot||null, added:!!o.added,
+    walk:o.walk||null, wlab:o.wlab||null, tagL:'idxLeft', tagR:'idxRight',
+    phase:o.phase||null, say:o.say||'', cost:{...cost}, lit:o.lit||null, err:!!o.err,
+    run:o.run||'', ret:(o.ret===undefined?null:o.ret)
+  });
+  const unchanged = {frames, final:modelLL, code:'merge', row:'bo-merge', label, bigO:null};
+  if(lNull || rNull){
+    snap({phase:'setup', err:true, run:label,
+      say:'<b>NullPointerException</b>: mergeLists throws when <b>'+(lNull && rNull ? 'left or right' : lNull ? 'left' : 'right')+'</b> is null. No result list is built.'});
+    return unchanged;
+  }
+  const sorted = a => a.every((v,i)=>i===0 || a[i-1]<=v);
+  const nL = L.length, nR = R.length, total = nL + nR;
+  const warn = (!sorted(L) || !sorted(R))
+    ? ' <b>Heads up:</b> the write-up promises both lists are sorted, and <b>'+(!sorted(L) ? 'left' : 'right')+'</b> is not, so the result will only be as ordered as the inputs.' : '';
+  snap({phase:'setup', il:0, ir:0, run:label,
+    say:'<b>mergeLists</b> builds a brand-new sorted list from two sorted lists. It may only call MyLinkedList methods such as <b>get</b>, <b>add</b> and <b>size()</b>, never touch <b>head</b>, <b>tail</b> or the <b>size</b> field. Create an empty <b>result</b>. <b>left.size()</b> is <b>'+nL+'</b> and <b>right.size()</b> is <b>'+nR+'</b>.'+warn});
+  let il = 0, ir = 0;
+  const addTo = (v, from) => {                        // result.add(v): add(size, v) walks size hops, then wires five pointers
+    cost.hops += res.length; cost.links += 5; res.push(v);
+  };
+  while(il < nL && ir < nR){
+    const a = L[il], b = R[ir], takeLeft = a <= b;
+    cost.hops += il+1;
+    snap({phase:'compare', il, ir, lit:'H', walk:{left:il+1}, wlab:{left:'get('+il+'): '+hopWord(il+1)}, run:'valL = left.get('+il+')',
+      say:'<b>left.get('+il+')</b> starts at head and walks '+hopWord(il+1)+' along the links to index '+il+', then gives <b>'+a+'</b>.'});
+    cost.hops += ir+1;
+    snap({phase:'compare', il, ir, hot:takeLeft?'left':'right', lit:'H', walk:{right:ir+1}, wlab:{right:'get('+ir+'): '+hopWord(ir+1)}, run:'valR = right.get('+ir+')',
+      say:'<b>right.get('+ir+')</b> also starts at head, walks '+hopWord(ir+1)+', and gives <b>'+b+'</b>. '
+        + (a===b ? 'They are equal, and <b>compareTo(...) &lt;= 0</b> is true, so the left one goes first.' : takeLeft ? '<b>'+a+'</b> is smaller, so it goes next.' : '<b>'+b+'</b> is smaller, so it goes next.')});
+    const v = takeLeft ? a : b, before = res.length;
+    addTo(v);
+    snap({phase:'take', il, ir, hot:takeLeft?'left':'right', added:true, lit:'L', walk:{result:before}, wlab:{result:'add('+before+', '+v+'): '+hopWord(before)}, run:'result.add('+(takeLeft?'valL':'valR')+')',
+      say:'<b>result.add('+v+')</b> is <b>add(size, e)</b>, so it starts at head and walks '+hopWord(before)+' to the end of result, then wires in a new node. After this <b>'+(takeLeft?'idxLeft':'idxRight')+'</b> moves on to '+((takeLeft?il:ir)+1)+'.'});
+    if(takeLeft) il++; else ir++;
+  }
+  const drain = (arr, start, side) => {
+    for(let k = start; k < arr.length; k++){
+      cost.hops += k+1;
+      const v = arr[k], before = res.length; addTo(v);
+      if(side==='left') il = k+1; else ir = k+1;
+      snap({phase:'drain', il: side==='left'?k:il, ir: side==='right'?k:ir, hot:side, added:true, lit:'L',
+        walk:{[side]:k+1, result:before}, wlab:{[side]:'get('+k+'): '+hopWord(k+1), result:'add('+before+', '+v+'): '+hopWord(before)}, run:'result.add('+side+'.get('+k+'))',
+        say:'<b>'+(side==='left'?'right':'left')+'</b> is used up, so <b>'+side+'</b> just continues. <b>'+side+'.get('+k+')</b> walks '+hopWord(k+1)+' and gives <b>'+v+'</b>, then <b>result.add('+v+')</b> walks '+hopWord(before)+' to the end and wires it in.'});
+    }
+  };
+  drain(L, il, 'left'); drain(R, ir, 'right');
+  const out = '['+res.join(', ')+']';
+  snap({phase:'done', il:nL, ir:nR, run:'return result', ret:out,
+    say: total ? 'Every element has been copied across in order. <b>return result</b> gives <b>'+out+'</b>. Neither input list was changed.' : 'Both lists are empty, so the result is empty too. <b>return result</b> gives <b>[]</b>.'});
+  return {frames, final:modelLL, code:'merge', row:'bo-merge', label,
+    bigO: total
+      ? 'Merging <b>'+total+'</b> element(s) took <code>'+cost.hops+'</code> hop(s) in all. Each round calls <code>get</code> on both lists and <code>add</code> once, and every call starts again from the head, so the walks add up like <code>1 + 2 + ... + n</code>. That makes it <code>O(n&sup2;)</code> in the total length, not <code>O(n)</code>.'
+      : 'With nothing to copy there is no walking at all.'};
+}
 
 /* ---- mergeLists, answer only: what it returns, never how ----
    mergeLists is the assignment's problem to solve, so the student site shows only the two inputs and what comes back
    (the examples and the rules of the write-up), not the steps. */
-const MERGE_STEPS = false;     // the walkthrough is opt-in, even while developing
+const MERGE_REVEAL = {"pa3":true,"pa4":false};
 function genMergeAnswer(L, R, lNull, rNull, iter){
   const label = 'mergeLists(left, right)';
   const cost = iter ? 'The write-up requires your solution to run in <code>O(n)</code>.'
@@ -2639,7 +2705,7 @@ function genMergeAnswer(L, R, lNull, rNull, iter){
   }
   const out = L.concat(R).sort((a,b)=>a-b), text = '['+out.join(', ')+']';
   return done([frame({result:out, ret:text,
-    say:'<b>mergeLists(left, right)</b> returns <b>'+text+'</b>, a new sorted list with every element of both lists, duplicates kept. How to build it is your assignment. '
+    say:'<b>mergeLists(left, right)</b> returns <b>'+text+'</b>, a new sorted list with every element of both lists, duplicates kept. How to build it is your assignment, so for now try to work out the solution yourself. A detailed walkthrough will be shared after the PA is due. '
       + (iter ? 'In PA4 the only MyLinkedList methods you may call are <b>listIterator()</b>, <b>iterator()</b> and the constructor, so not even size(), and no MyLinkedList or MyListIterator variables. Any MyListIterator method is fine. Your solution must run in O(n).'
               : 'In PA3 you may use any MyLinkedList method, but do not reference the head, tail or size fields.')})]);
 }
@@ -2674,9 +2740,20 @@ const PHASES_IT = {
   ithasprev:[{id:'read',t:'left ≠ head ?',d:'True unless the cursor is at the very front (idx = 0).'}],
   itnextidx:[{id:'read',t:'Return idx',d:'The index next() would return, or size at the end.'}],
   itprevidx:[{id:'read',t:'Return idx − 1',d:'Or −1 when the cursor is at the front.'}],
-  itmerge:  [{id:'result', t:'What mergeLists returns', d:'A new sorted list that holds every element of both inputs, duplicates kept. Working out how is the assignment, so this page shows only the answer.'}],
+  itmerge:  [{id:'result', t:'What mergeLists returns', d:'A new sorted list that holds every element of both inputs, duplicates kept. Working out how is the assignment, so for now try to work out the solution yourself. A detailed walkthrough will be shared after the PA is due.'}],
 };
 const PHASE_TITLES_IT = {itnext:'How next() works', itprev:'How previous() works', itadd:'How add(e) works', itset:'How set(e) works', itremove:'How remove() works', ithasnext:'How hasNext() works', ithasprev:'How hasPrevious() works', itnextidx:'How nextIndex() works', itprevidx:'How previousIndex() works', itmerge:'What mergeLists(left, right) returns', itctor:'How list.listIterator() works'};
+// PA3 is past its due date, so its mergeLists walkthrough is shown, and it is described step by step
+if(MERGE_REVEAL.pa3){
+PHASES_LL.merge = [
+    {id:'setup',   t:'Start an empty result', d:'Both inputs must be non-null. Make a new empty list and read the two sizes with size().'},
+    {id:'compare', t:'Compare the two fronts', d:'get the next unused element of each list and keep the smaller one. A tie goes to the left list.'},
+    {id:'take',    t:'Add the smaller one', d:'add it to the end of result, then move that list\'s index forward.'},
+    {id:'drain',   t:'Copy what is left', d:'When one list runs out, add the rest of the other list in order.'},
+    {id:'done',    t:'Return the result', d:'Hand back the new list. The two inputs are untouched.'},
+  ];
+PHASE_TITLES_LL.merge = 'How mergeLists(left, right) works';
+}
 
 const CX_ITER =
   '<tr id="bo-itquery"><td class="opname">hasNext / hasPrevious</td><td class="bigo">O(1)</td><td class="why">Reads idx and size.</td></tr>'+
