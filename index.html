@@ -94,6 +94,14 @@ input.long{width:160px;flex:1;min-width:130px}
 .ctortabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
 .ctortab{font-family:"JetBrains Mono",monospace;font-size:12.5px;padding:6px 12px;border:1.5px solid var(--line);border-radius:2px;background:var(--paper);color:var(--ink);cursor:pointer;transition:all .15s}
 .ctortab:hover{background:var(--teal-soft)}
+.ctorcode{display:flex;flex-direction:column;gap:6px;width:100%;font-family:"JetBrains Mono",monospace;font-size:12.5px}
+.ctorcode .cl{display:flex;gap:10px;align-items:baseline;padding:6px 12px;border:1.5px solid var(--line);border-radius:2px;background:var(--paper)}
+.ctorcode .cn{color:var(--muted);font-size:11px}
+.ctorcode .cnote{color:var(--muted);font-size:11px;margin-left:auto}
+.ctorcode .cslot{margin-left:auto;display:inline-flex;align-items:center}
+.ctorcode .cslot .ctorarg{display:inline-flex;align-items:center;gap:6px}
+.ctorcode .cslot input{font-size:12px}
+.listlabel{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--muted);margin:0 0 4px 4px;letter-spacing:.03em}
 .ctortab.active{background:var(--ink);color:var(--paper);border-color:var(--ink)}
 .ctorargrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;min-height:34px}
 .ctorarg{display:inline-flex;gap:8px;align-items:center}
@@ -113,7 +121,7 @@ input.long{width:160px;flex:1;min-width:130px}
 .args label{font-size:12px;color:var(--muted);font-family:"JetBrains Mono",monospace}
 .field{display:inline-flex;gap:6px;align-items:center}
 /* iterator method names are longer, give them a wider, uniform button column */
-#iterOps .oplist{grid-template-columns:152px 1fr}
+#iterOps .oplist{grid-template-columns:196px 1fr}
 #iterOps .obtn{width:100%}
 @media(max-width:520px){.ops2{grid-template-columns:1fr;gap:8px}.opcol-h{margin-top:4px}.oplist{grid-template-columns:auto 1fr}}
 
@@ -247,12 +255,27 @@ input.long{width:160px;flex:1;min-width:130px}
 .mgarr{padding-top:14px;color:var(--muted);font-size:16px}
 .mgempty{margin-top:4px;height:50px;min-width:70px;padding:0 14px;display:flex;align-items:center;justify-content:center;border:1.5px dashed var(--line);border-radius:3px;color:var(--muted);font-family:"JetBrains Mono",monospace;font-size:12px}
 .lcell.mgdone .lbox{opacity:.4}
+/* mergeLists: the inputs and the result as rows of nodes */
+.mgit{padding-top:20px;gap:3px;min-height:64px;flex-wrap:nowrap}
+.mgitems{display:flex;flex-wrap:wrap;align-items:flex-start;gap:3px;row-gap:26px;flex:1;min-width:0}
+.mgit .mglab{width:74px;padding-top:4px;text-transform:none;letter-spacing:0}
+.mgit .mglab b{display:block;font-size:12px;color:var(--ink);text-transform:uppercase;letter-spacing:.07em}
+.mgit .mglab span{display:block;margin-top:3px;font-size:10px;font-weight:400;color:var(--teal);line-height:1.3}
+.mgit .lbox{min-width:36px;height:36px;padding:0 6px;font-size:15px}
+.mgit .lcell.sent .lbox{min-width:40px;font-size:9px;letter-spacing:.03em}
+.mgit .mgarr{padding-top:8px;font-size:12px}
+.mgit .mgempty{height:36px;margin-top:0}
+.lcell.onwalk .lbox{opacity:1;background:var(--blue-soft);border-color:var(--blue);color:var(--blue)}
+.lcell.onwalk.target .lbox{background:var(--orange);border-color:var(--orange);color:#fff}
+.lcell.sent.onwalk .lbox{color:var(--blue)}
+.mgcur{position:relative;flex:none;width:0;height:36px;margin:0 3px;border-left:2.5px dashed var(--teal)}
+.mgcur i{position:absolute;left:0;top:-19px;transform:translateX(-50%);font-style:normal;font-family:"JetBrains Mono",monospace;font-size:10.5px;font-weight:700;color:var(--teal);background:var(--paper);border:1px solid var(--teal);border-radius:3px;padding:0 5px;white-space:nowrap}
 /* ---- linked list view ---- */
 .llrow{position:relative;display:flex;align-items:flex-start;flex-wrap:nowrap;min-height:150px;padding:64px 14px 44px;gap:34px;overflow:visible}
 /* extra headroom only while a new node floats above the row */
 .llrow.hasfloat{padding-top:110px}
 .llstage{position:relative}
-.llsvg{position:absolute;left:0;top:0;pointer-events:none;z-index:0;overflow:visible}
+.llsvg{position:absolute;left:0;top:0;pointer-events:none;z-index:2;overflow:visible}
 .lcell{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:5px;flex:0 0 auto}
 .lbox{min-width:52px;height:52px;padding:0 12px;display:flex;align-items:center;justify-content:center;font-family:"JetBrains Mono",monospace;font-size:18px;font-weight:500;border:1.5px solid var(--ink);border-radius:6px;background:#fff;transition:transform .2s,box-shadow .2s}
 .lcell.sent .lbox{background:#ece5d4;border-style:dashed;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.07em;font-weight:700}
@@ -263,6 +286,7 @@ input.long{width:160px;flex:1;min-width:130px}
 .lcell.floatnew{transform:translateY(-82px)}
 .lcell.floatnew .lbox{background:var(--orange-soft);border:2px solid var(--orange);color:#7a3414;box-shadow:0 8px 18px rgba(207,90,38,.28)}
 .lcell.detached .lbox{opacity:.42;border-style:dashed;text-decoration:line-through;color:var(--muted)}
+.iterstage .lcell.detached .lbox{border-style:solid}
 /* iterator: the node next()/previous() just returned (set/remove target) */
 .lcell.itret .lbox{background:var(--teal-soft);border-color:var(--teal);color:var(--teal);font-weight:700}
 .lcell.itlook .lbox{background:var(--teal-soft);border-color:var(--teal);color:var(--teal)}
@@ -287,7 +311,7 @@ input.long{width:160px;flex:1;min-width:130px}
 .itf{display:inline-flex;align-items:center;gap:8px}
 .itk{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--ink)}
 .itk.blue{color:var(--blue)}
-.itbox{width:40px;height:24px;border:1.5px solid var(--ink);border-radius:2px;background:#fff}
+.itbox{width:40px;height:24px;border:1.5px solid var(--ink);border-radius:2px;background:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:13px;color:var(--teal);vertical-align:middle}
 .itval{font-family:"JetBrains Mono",monospace;font-size:13px;font-weight:700;min-width:34px;height:24px;display:inline-flex;align-items:center;justify-content:center;border:1.5px solid var(--ink);border-radius:2px;background:#fff;padding:0 8px}
 .itval.blue{color:var(--blue);border-color:var(--blue)}
 .itcaption{text-align:center;font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--muted);margin-top:10px;letter-spacing:.04em}
@@ -304,13 +328,13 @@ input.long{width:160px;flex:1;min-width:130px}
 .alabel{fill:var(--orange);font-size:10.5px;font-weight:700;font-family:"JetBrains Mono",monospace;paint-order:stroke;stroke:var(--paper);stroke-width:3.5px;stroke-linejoin:round}
 /* left/right pointer arrows from the iterator card up to the nodes */
 .itarrow{fill:none;stroke:var(--teal);stroke-width:2;stroke-dasharray:4 3}
-.itarrow.hot{stroke-width:3;stroke-dasharray:none}
+.itarrow.hot{stroke-width:2;stroke-dasharray:4 3}          /* the pointer being written looks like every other one: dashed, always */
 .itarrowlab{fill:var(--teal);font-size:11px;font-weight:700;font-family:"JetBrains Mono",monospace;paint-order:stroke;stroke:var(--paper);stroke-width:3.5px;stroke-linejoin:round}
 /* persistent iterator cursor: a vertical line that GLIDES between positions */
 #iterFx{position:absolute;inset:0;pointer-events:none;z-index:6;display:none}
 .fxcaret{position:absolute;width:0;border-left:2.5px dashed var(--teal);opacity:0;
   transition:left .42s cubic-bezier(.45,0,.2,1), top .42s ease, height .42s ease, opacity .25s ease}
-.fxlabel{position:absolute;transform:translateX(-50%);font-family:"JetBrains Mono",monospace;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--teal);opacity:0;white-space:nowrap;
+.fxlabel{position:absolute;transform:translateX(-50%);font-family:"JetBrains Mono",monospace;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--teal);background:var(--paper);border:1px solid var(--teal);border-radius:3px;padding:0 5px;opacity:0;white-space:nowrap;z-index:7;
   transition:left .42s cubic-bezier(.45,0,.2,1), top .42s ease, opacity .25s ease}
 .hintinline{font-size:11px;color:var(--muted);font-family:"JetBrains Mono",monospace}
 .llnote{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--muted);margin-bottom:10px}
@@ -365,7 +389,6 @@ input.long{width:160px;flex:1;min-width:130px}
 
 .note{font-size:14px;color:var(--ink);background:var(--teal-soft);border-left:3px solid var(--teal);padding:11px 14px;border-radius:2px;margin-top:16px;min-height:42px}
 .note.err{background:var(--bad-soft);border-left-color:var(--bad);color:#7a1712}
-.note b{font-family:"JetBrains Mono",monospace}
 
 /* ---- transport ---- */
 .transport{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--line)}
@@ -397,16 +420,6 @@ input.long{width:160px;flex:1;min-width:130px}
 .phaselist li.skip .pd{text-decoration:line-through}
 .phaselist li.skip::before{background:#d9d9d4;border-color:#c4c4be;color:#fff;content:"\2013"}
 .phaselist li.skip .pt::after{content:" (skipped)";display:inline-block;text-decoration:none;color:var(--muted);font-weight:400;font-style:italic;font-size:12px}
-.obtn.seqlock{opacity:.5;filter:grayscale(.7);cursor:not-allowed;position:relative;padding-right:30px}
-.obtn.seqlock::after{content:"\1F512";position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:12px}
-.args.seqlock-args{opacity:.4;pointer-events:none}
-.obtn.seqnudge{animation:seqnudge .35s}
-@keyframes seqnudge{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
-.obtn.justunlocked{animation:seqglow 1.6s ease-out 2}
-@keyframes seqglow{0%{box-shadow:0 0 0 0 rgba(207,90,38,.7)}100%{box-shadow:0 0 0 14px rgba(207,90,38,0)}}
-#seqToast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,24px);opacity:0;pointer-events:none;z-index:60;background:var(--ink);color:#fff;font-size:13.5px;padding:10px 16px;border-radius:22px;box-shadow:0 6px 20px rgba(0,0,0,.25);transition:all .3s;max-width:90vw;text-align:center}
-#seqToast.show{opacity:1;transform:translate(-50%,0)}
-@media(prefers-reduced-motion:reduce){.obtn.justunlocked,.obtn.seqnudge{animation:none}}
 .livebox{border:1.5px solid var(--ink);border-radius:4px;background:#1d2b2a;color:#e9f3ef;padding:9px 12px;margin-bottom:12px;font-family:"JetBrains Mono",monospace;font-size:13px}
 .liverow{display:flex;gap:10px;align-items:baseline;line-height:1.7}
 .liverow[hidden]{display:none}
@@ -465,7 +478,6 @@ input.long{width:160px;flex:1;min-width:130px}
 .counter .v{font-family:"JetBrains Mono",monospace;font-size:24px;font-weight:700}
 .counter.lit{border-color:var(--orange);background:var(--orange-soft)}
 .bigO{margin-top:12px;font-size:13px;color:var(--ink);background:var(--orange-soft);border-left:3px solid var(--orange);padding:10px 13px;border-radius:2px;min-height:20px}
-.bigO code{font-family:"JetBrains Mono",monospace;font-weight:700}
 
 .complex,.pawiehome{padding:18px 20px}
 .complex .lead,.pawiehome .lead{font-size:13px;color:var(--muted);margin:6px 0 14px}
@@ -480,7 +492,8 @@ input.long{width:160px;flex:1;min-width:130px}
 .cxtable tr.hot .bigo{color:#7a3414}
 .cxtable tr.hot .opname{font-weight:700}
 .cxprimer{margin-top:14px;font-size:13px;color:var(--ink);background:var(--teal-soft);border-left:3px solid var(--teal);padding:10px 14px;border-radius:2px}
-.cxprimer code{font-family:"JetBrains Mono",monospace;font-weight:700}
+/* explanatory text is plain: no bold, no monospace, no highlight, the same in every box under the picture and the constructor */
+.note b,.note strong,.note code,.bigO b,.bigO strong,.bigO code,.cxprimer b,.cxprimer strong,.cxprimer code,.cxtable .why b,.cxtable .why strong,.cxtable .why code,.phaselist b,.phaselist strong,.phaselist code,.hint b,.hint strong,.hint code{font-weight:inherit;font-family:inherit;font-size:inherit;color:inherit;background:none;padding:0;border:0}
 </style>
 </head>
 <body>
@@ -529,6 +542,16 @@ input.long{width:160px;flex:1;min-width:130px}
     </div>
     <div class="hint" id="buildHint">Type any comma-separated values. . Write <code class="mono">null</code> for a null element. Leave capacity blank to match the size, or set it larger to see empty slots.</div>
 
+    <!-- LinkedList only: the mode switch comes first (plain list or ListIterator), then its constructor, then its methods -->
+    <div class="llmode" id="llmodewrap" style="display:none;margin:0 0 14px">
+      <span class="llmode-label">traverse with</span>
+      <div class="seg">
+        <button class="segbtn active" data-mode="plain">Plain list</button>
+        <button class="segbtn" data-mode="iter">ListIterator</button>
+      </div>
+      <span class="llmode-hint" id="llmodeHint"></span>
+    </div>
+
     <!-- constructor chooser: pick which of the structure's real PA constructors
          to run, then watch it build, step by step. Tabs + defaults are filled
          in per structure by setupCtorChooser(). -->
@@ -542,16 +565,6 @@ input.long{width:160px;flex:1;min-width:130px}
         <button class="btn primary" id="constructBtn">Construct</button>
       </div>
       <div class="hint" id="ctorHint"></div>
-    </div>
-
-    <!-- LinkedList only: switch between the plain list and traversing it with a ListIterator -->
-    <div class="llmode" id="llmodewrap" style="display:none">
-      <span class="llmode-label">traverse with</span>
-      <div class="seg">
-        <button class="segbtn active" data-mode="plain">Plain list</button>
-        <button class="segbtn" data-mode="iter">ListIterator</button>
-      </div>
-      <span class="llmode-hint" id="llmodeHint"></span>
     </div>
 
     <!-- Heap only: the MyMinHeap itself, or the MyPriorityQueue that wraps one -->
@@ -578,11 +591,24 @@ input.long{width:160px;flex:1;min-width:130px}
 
     <!-- iterator operations; shown only in iterator mode -->
     <div class="ops2" id="iterOps" style="display:none">
+      <!-- the order of the PA4 write-up's MyListIterator method table, down the left column, then the right -->
       <div class="opcol">
         <div class="oplist">
+          <button class="btn primary obtn" data-act="ithasnext">hasNext()</button>
+          <div class="args"></div>
           <button class="btn primary obtn" data-act="itnext">next()</button>
           <div class="args"></div>
+          <button class="btn primary obtn" data-act="ithasprev">hasPrevious()</button>
+          <div class="args"></div>
           <button class="btn primary obtn" data-act="itprev">previous()</button>
+          <div class="args"></div>
+          <button class="btn primary obtn" data-act="itnextidx">nextIndex()</button>
+          <div class="args"></div>
+        </div>
+      </div>
+      <div class="opcol">
+        <div class="oplist">
+          <button class="btn primary obtn" data-act="itprevidx">previousIndex()</button>
           <div class="args"></div>
           <button class="btn primary obtn" data-act="itadd">add(e)</button>
           <div class="args"><span class="field"><label>e</label><input type="text" id="vItAdd" class="short" placeholder="value" value="5"></span></div>
@@ -590,18 +616,13 @@ input.long{width:160px;flex:1;min-width:130px}
           <div class="args"><span class="field"><label>e</label><input type="text" id="vItSet" class="short" placeholder="value" value="6"></span></div>
           <button class="btn primary obtn" data-act="itremove">remove()</button>
           <div class="args"></div>
-        </div>
-      </div>
-      <div class="opcol">
-        <div class="oplist">
-          <button class="btn primary obtn" data-act="ithasnext">hasNext()</button>
-          <div class="args"></div>
-          <button class="btn primary obtn" data-act="ithasprev">hasPrevious()</button>
-          <div class="args"></div>
-          <button class="btn primary obtn" data-act="itnextidx">nextIndex()</button>
-          <div class="args"></div>
-          <button class="btn primary obtn" data-act="itprevidx">previousIndex()</button>
-          <div class="args"></div>
+          <button class="btn primary obtn" data-act="itmerge">mergeLists(left, right)</button>
+          <div class="args">
+            <span class="field"><label>left</label><input type="text" id="vItMgL" class="mid" data-free value="1, 2, 2"></span>
+            <label class="mgnull"><input type="checkbox" id="itMgLNull"> null</label>
+            <span class="field"><label>right</label><input type="text" id="vItMgR" class="mid" data-free value="2, 3, 4"></span>
+            <label class="mgnull"><input type="checkbox" id="itMgRNull"> null</label>
+          </div>
         </div>
       </div>
     </div>
@@ -894,7 +915,7 @@ input.long{width:160px;flex:1;min-width:130px}
       <div class="iterbox" id="iterbox" style="display:none"></div>
       <div class="cells" id="cells"></div>
       <!-- persistent iterator cursor overlay: glides between positions across frames -->
-      <div id="iterFx" aria-hidden="true"><div class="fxcaret"></div><div class="fxlabel">iterator</div></div>
+      <div id="iterFx" aria-hidden="true"><div class="fxcaret"></div><div class="fxlabel">cursor</div></div>
       <div class="legend" id="legendArr">
         <span><i class="sw" style="background:#fff"></i> in the list</span>
         <span><i class="sw vn"></i> valid null</span>
@@ -916,9 +937,11 @@ input.long{width:160px;flex:1;min-width:130px}
         <span><i class="sw" style="background:#fff"></i> a node</span>
         <span><i class="sw" style="background:#ece5d4;border-style:dashed"></i> sentinel (head/tail)</span>
         <span><i class="sw" style="border-color:var(--teal);position:relative"><b style="position:absolute;inset:0;color:var(--teal);font-size:11px;line-height:11px;text-align:center">&uarr;</b></i> left / right point to the nodes around the cursor</span>
+        <span><i class="sw" style="background:#fff;width:14px"></i> <code>it</code> is the variable that refers to the iterator object</span>
         <span><i class="sw" style="background:var(--teal-soft);border-color:var(--teal)"></i> last returned (set/remove target)</span>
         <span><i class="sw" style="background:var(--orange-soft);border:1.5px dashed var(--orange)"></i> new node</span>
       </div>
+      <div class="legend" id="legendMerge" style="display:none"></div>
       <div class="legend" id="legendStack" style="display:none">
         <span><i class="sw" style="background:#fff"></i> element</span>
         <span><i class="sw free"></i> free slot</span>
@@ -1153,7 +1176,7 @@ input.long{width:160px;flex:1;min-width:130px}
   </div><!-- /workspace -->
 </div>
 
-<script>window.PAWIE_STATIC=true;window.PAWIE_COLLECT_URL="https://script.google.com/macros/s/AKfycbxC4O5gqsx4hJ2f8oAdQsesj7kjVimagQ1xv72pDFTmdj7rtTJ0ZaUMusPGVRyt8Ise4A/exec";window.PAWIE_STATIC_CONFIG={"structs":["ArrayList","LinkedList"]};</script>
+<script>window.PAWIE_STATIC=true;window.PAWIE_COLLECT_URL="https://script.google.com/macros/s/AKfycbxC4O5gqsx4hJ2f8oAdQsesj7kjVimagQ1xv72pDFTmdj7rtTJ0ZaUMusPGVRyt8Ise4A/exec";window.PAWIE_STATIC_CONFIG={"structs":["ArrayList","LinkedList","Iterator"]};</script>
 <script src="pawie-quiz.js"></script>
 <script src="pawie-local.js"></script>
 <script src="analytics.js"></script>
@@ -1740,6 +1763,23 @@ function paintLive(f){
 function drawFrame(){
   const f = player.frames[player.i];
   if(!f){ renderState(model, {}); return; }
+  { const lm = document.getElementById('legendMerge'), mg = f.kind==='merge';        // mergeLists draws its own kind of picture, so it gets its own legend
+    if(lm){
+      lm.style.display = mg ? '' : 'none';
+      if(mg) lm.innerHTML = f.answer
+        ? '<span><i class="sw" style="background:#fff"></i> a node</span><span><i class="sw" style="background:#ece5d4;border-style:dashed"></i> sentinel (head/tail)</span>'
+        : f.itm
+        ? '<span><i class="sw" style="background:#fff"></i> a node</span><span><i class="sw" style="background:#ece5d4;border-style:dashed"></i> sentinel (head/tail)</span>'
+          +'<span><i class="sw" style="border:0;border-left:2.5px dashed var(--teal);width:0;height:14px"></i> the cursor of that list&rsquo;s iterator</span>'
+          +'<span><i class="sw" style="background:var(--blue-soft);border-color:var(--blue)"></i> next() would return this node</span>'
+          +'<span><i class="sw" style="background:var(--orange);border-color:var(--orange)"></i> the smaller value, chosen</span>'
+          +'<span><i class="sw" style="background:#fff;opacity:.4"></i> already passed</span><span><i class="sw" style="background:var(--orange-soft);border:1.5px dashed var(--orange)"></i> new node in result</span>'
+        : '<span><i class="sw" style="background:#fff"></i> a node</span><span><i class="sw" style="background:#ece5d4;border-style:dashed"></i> sentinel (head/tail)</span>'
+          +'<span><i class="sw" style="background:var(--blue-soft);border-color:var(--blue)"></i> walked over from head by get / add</span>'
+          +'<span><i class="sw" style="background:var(--orange);border-color:var(--orange)"></i> the smaller value, chosen</span>'
+          +'<span><i class="sw" style="background:#fff;opacity:.4"></i> already used</span><span><i class="sw" style="background:var(--orange-soft);border:1.5px dashed var(--orange)"></i> new node in result</span>';
+      if(STRUCT==='linked'){ document.getElementById('legendLL').style.display = (!mg && !ITER) ? '' : 'none'; document.getElementById('legendIter').style.display = (!mg && ITER) ? '' : 'none'; }
+    } }
   if(f.ctorFail) renderCtorFail();
   else if(f.kind==='linked') renderLinked(f); else if(f.kind==='merge') renderMerge(f); else if(f.kind==='stack') renderStack(f); else if(f.kind==='queue' || f.kind==='deque') renderQueue(f); else if(f.kind==='hash') renderHash(f); else if(f.kind==='heap') renderHeap(f); else if(f.kind==='tree') renderTree(f); else renderState(f, f);
   setNote(f.say + (player.counting ? '<div class="startnote">The animation starts in <b>'+player.counting+'</b>s. Press play to start right now.</div>' : ''), f.err);
@@ -1772,85 +1812,8 @@ const ICON_PAUSE = '<svg viewBox="0 0 16 16" width="14" height="14"><rect x="4" 
 
 function noteWatched(){
   if(player.watch==='pending' && player.frames.length>2){ player.watch='done'; awardPet('watch'); }
-  seqNoteDone();
 }
 
-/* ---- ArrayList and LinkedList methods unlock one at a time, in the order of each PA's write-up ----
-   A method opens once the one before it has been watched to its last frame. When every method of a structure is
-   open, its whole set stays open for good. Progress lives in this browser, per signed-in account (or guest), and
-   each structure keeps its own. Constructors and the other structures are never locked. */
-const SEQS = {
-  array: { name:'ArrayList',
-    order:['expandCapacity','getCapacity','add','append','get','set','remove','size','moveTarget'],
-    label:{expandCapacity:'expandCapacity(n)', getCapacity:'getCapacity()', add:'add(i, e)', append:'append(e)', get:'get(i)', set:'set(i, e)', remove:'remove(i)', size:'size()', moveTarget:'moveTargetToEnd(t)'} },
-  linked: { name:'LinkedList',
-    order:['append','add','get','getNth','set','remove','clear','isEmpty','size','merge'],
-    label:{append:'add(e)', add:'add(i, e)', get:'get(i)', getNth:'getNth(i)', set:'set(i, e)', remove:'remove(i)', clear:'clear()', isEmpty:'isEmpty()', size:'size()', merge:'mergeLists(left, right)'} },
-};
-let seqWho = '';
-const seqKs = {};                 // how many methods are open, per structure (1 up to the number of methods)
-const seqKey = st => 'pawie.unlock.'+st+'.v1:' + seqWho;
-const seqKeyOf = act => act==='appendNull' ? 'append' : act;
-const seqCur = () => (ITER ? null : (SEQS[STRUCT] || null));      // the sequence of the structure on screen, if it has one
-function seqLoad(){
-  for(const st of Object.keys(SEQS)){
-    let k = 1;
-    try{ const v = parseInt(localStorage.getItem(seqKey(st)), 10); if(v>=1) k = Math.min(SEQS[st].order.length, v); }catch(e){}
-    seqKs[st] = k;
-  }
-}
-function seqSave(st){ try{ localStorage.setItem(seqKey(st), String(seqKs[st])); }catch(e){} }
-function seqEnsure(){ if(seqKs.array===undefined) seqLoad(); }
-function seqIdx(sq, act){ return sq.order.indexOf(seqKeyOf(act)); }
-function seqLocked(act){
-  seqEnsure();
-  const sq = seqCur(); if(!sq) return false;
-  const i = seqIdx(sq, act); return i>=0 && i >= seqKs[STRUCT];
-}
-function applySeqLocks(){
-  seqEnsure();
-  const sq = seqCur();
-  document.querySelectorAll('.ops2 [data-act]').forEach(b=>{
-    const act = b.getAttribute('data-act'), i = sq ? seqIdx(sq, act) : -1;
-    const lock = !!sq && i>=0 && i >= seqKs[STRUCT];
-    b.classList.toggle('seqlock', lock);
-    if(lock){ b.setAttribute('aria-disabled','true'); b.title = 'Locked. Watch '+sq.label[sq.order[seqKs[STRUCT]-1]]+' to the end to unlock this.'; }
-    else { b.removeAttribute('aria-disabled'); if(b.title && b.title.indexOf('Locked.')===0) b.removeAttribute('title'); }
-    const args = b.nextElementSibling;
-    if(args && args.classList.contains('args')) args.classList.toggle('seqlock-args', lock);
-  });
-}
-function seqToast(text){
-  let t = document.getElementById('seqToast');
-  if(!t){ t = document.createElement('div'); t.id = 'seqToast'; t.setAttribute('role','status'); document.body.appendChild(t); }
-  t.innerHTML = text; t.classList.add('show');
-  clearTimeout(seqToast.h); seqToast.h = setTimeout(()=>t.classList.remove('show'), 3200);
-}
-/* the animation just reached its last frame: if it was the newest open method, open the next one */
-function seqNoteDone(){
-  const sq = seqCur(); if(!sq) return;
-  seqEnsure();
-  const st = STRUCT;
-  if(seqKs[st]>=sq.order.length || player.failed || !player.row) return;      // a constructor has no row: building a list never opens a method
-  if(seqKeyOf(player.code)!==sq.order[seqKs[st]-1]) return;
-  seqKs[st]++; seqSave(st); applySeqLocks();
-  const next = sq.order[seqKs[st]-1], btn = document.querySelector('.ops2 [data-act="'+next+'"]');
-  if(btn){ btn.classList.remove('justunlocked'); void btn.offsetWidth; btn.classList.add('justunlocked'); }
-  seqToast(seqKs[st]>=sq.order.length
-    ? '&#128275; <b>'+sq.label[next]+'</b> unlocked. That is every '+sq.name+' method, all open for good.'
-    : '&#128275; <b>'+sq.label[next]+'</b> unlocked.');
-}
-// a locked method does nothing but explain itself
-document.addEventListener('click', e=>{
-  const b = e.target.closest && e.target.closest('.ops2 [data-act]');
-  if(!b || !seqLocked(b.getAttribute('data-act'))) return;
-  e.stopImmediatePropagation(); e.preventDefault();
-  const sq = seqCur();
-  setNote('<b>'+sq.label[seqKeyOf(b.getAttribute('data-act'))]+'</b> is locked. Watch <b>'+sq.label[sq.order[seqKs[STRUCT]-1]]+'</b> to the end to unlock it.');
-  b.classList.remove('seqnudge'); void b.offsetWidth; b.classList.add('seqnudge');
-}, true);
-document.addEventListener('pawie:signedin', e=>{ seqWho = String((e.detail && e.detail.ident) || '').toLowerCase(); seqLoad(); applySeqLocks(); });
-document.addEventListener('pawie:signedout', ()=>{ seqWho = ''; seqLoad(); applySeqLocks(); });
 function step(d){
   pause();
   const n = player.frames.length;
@@ -2065,6 +2028,7 @@ document.querySelector('.controls').addEventListener('click', e=>{
     else if(act==='ithasprev')result = genItQuery('hasprev');
     else if(act==='itnextidx')result = genItQuery('nextidx');
     else if(act==='itprevidx')result = genItQuery('previdx');
+    else if(act==='itmerge')  result = (MERGE_STEPS ? genItMerge : (L,R,ln,rn)=>genMergeAnswer(L,R,ln,rn,true))(readIntList('vItMgL'), readIntList('vItMgR'), document.getElementById('itMgLNull').checked, document.getElementById('itMgRNull').checked);
     if(result) loadOp(result, true);
     return;
   }
@@ -2165,7 +2129,7 @@ document.querySelector('.controls').addEventListener('click', e=>{
     else if(act==='isEmpty')result = genLLisEmpty();
     else if(act==='size')  result = genLLsize();
     else if(act==='getNth')result = genLLgetNth(readInt('iGetNth'));
-    else if(act==='merge') result = genLLmerge(readIntList('vMgL'), readIntList('vMgR'), document.getElementById('mgLNull').checked, document.getElementById('mgRNull').checked);
+    else if(act==='merge') result = (MERGE_STEPS ? genLLmerge : (L,R,ln,rn)=>genMergeAnswer(L,R,ln,rn,false))(readIntList('vMgL'), readIntList('vMgR'), document.getElementById('mgLNull').checked, document.getElementById('mgRNull').checked);
   } else {
     if(act==='append')     result = genAdd(model.size, readVal('vAppend'), true);
     else if(act==='appendNull') result = genAdd(model.size, null, true);
@@ -2335,15 +2299,11 @@ const PHASES_LL = {
     {id:'return', t:'Return the Node', d:'Hand back the node itself, not its value. get, set and remove all build on this.'},
   ],
   merge: [
-    {id:'setup',   t:'Start an empty result', d:'Both inputs must be non-null. Make a new empty list and read the two sizes with size().'},
-    {id:'compare', t:'Compare the two fronts', d:'get the next unused element of each list and keep the smaller one. A tie goes to the left list.'},
-    {id:'take',    t:'Add the smaller one', d:'add it to the end of result, then move that list\'s index forward.'},
-    {id:'drain',   t:'Copy what is left', d:'When one list runs out, add the rest of the other list in order.'},
-    {id:'done',    t:'Return the result', d:'Hand back the new list. The two inputs are untouched.'},
+    {id:'result', t:'What mergeLists returns', d:'A new sorted list that holds every element of both inputs, duplicates kept. Working out how is the assignment, so this page shows only the answer.'},
   ],
 };
 PHASES_LL.append = PHASES_LL.add;
-const PHASE_TITLES_LL = {add:'How add(i, e) works', append:'How add(e) works', remove:'How remove(i) works', set:'How set(i, e) works', get:'How get(i) works', clear:'How clear() works', isEmpty:'How isEmpty() works', size:'How size() works', getNth:'How getNth(i) works', merge:'How mergeLists(left, right) works'};
+const PHASE_TITLES_LL = {add:'How add(i, e) works', append:'How add(e) works', remove:'How remove(i) works', set:'How set(i, e) works', get:'How get(i) works', clear:'How clear() works', isEmpty:'How isEmpty() works', size:'How size() works', getNth:'How getNth(i) works', merge:'What mergeLists(left, right) returns'};
 
 const CX_LINKED =
   '<tr id="bo-append"><td class="opname">add(e)</td><td class="bigo">O(n)</td><td class="why">Works like add(size, e): walks from the head to the end.</td></tr>'+
@@ -2355,7 +2315,7 @@ const CX_LINKED =
   '<tr id="bo-clear"><td class="opname">clear()</td><td class="bigo">O(1)</td><td class="why">Repoints the sentinels; the chain is dropped.</td></tr>'+
   '<tr id="bo-empty"><td class="opname">isEmpty()</td><td class="bigo">O(1)</td><td class="why">Reads the stored size field.</td></tr>'+
   '<tr id="bo-size"><td class="opname">size()</td><td class="bigo">O(1)</td><td class="why">Reads the stored size field.</td></tr>'+
-  '<tr id="bo-merge"><td class="opname">mergeLists(l, r)</td><td class="bigo">O(n&sup2;)</td><td class="why">MyAlgorithm: one get and one add per element, each walking from the head.</td></tr>';
+  '<tr id="bo-merge"><td class="opname">mergeLists(l, r)</td><td class="bigo">n/a</td><td class="why">MyAlgorithm is your own solution. This page shows only what it returns.</td></tr>';
 const CXP_LINKED = 'A linked list has no random access. Reaching index <code>i</code> means walking <code>i+1</code> links from the head, which is the <code>O(n)</code> cost. Once you are there, inserting or removing is just a few pointer changes, <code>O(1)</code>.';
 let CX_ARRAY = '', CXP_ARRAY = '';
 
@@ -2373,6 +2333,7 @@ function newLL(start){
       newNode:o.newNode||null, detached:o.detached||null,
       cursor:(o.cursor===undefined?null:o.cursor), itstate:o.itstate||null,
       itL:(o.itL===undefined?null:o.itL), itR:(o.itR===undefined?null:o.itR), itHot:o.itHot||null,
+      size:(o.size===undefined?null:o.size),          // the size badge, when it must lag behind the nodes drawn (add/remove change it last)
       caretGap:(o.caretGap===undefined?null:o.caretGap),
       phase:o.phase||null, say:o.say||'', cost:{...cost}, lit:o.lit||null, err:o.err||false,
       run:o.run||'', ret:(o.ret===undefined?null:o.ret)
@@ -2403,15 +2364,17 @@ function genLLadd(index, value, isAppend){
   const code = isAppend ? 'append' : 'add';
   const label = isAppend ? 'add('+fmt(value)+')' : 'add('+index+', '+fmt(value)+')';
   const row = isAppend ? 'bo-append' : 'bo-add';
-  /* the PA lets the two checks run in either order, so when both fail the answer is still right whichever is named first */
+  /* the PA solution's add(index, data) checks the index first, then null, and add(data) only has null to check. The write-up
+     does not fix the order, so when both fail the other exception is named as just as correct */
   const nullBad = value===null, indexBad = (index<0 || index>n);
   if(nullBad || indexBad){
     const both = nullBad && indexBad && !isAppend;
+    const nullFirst = nullBad && !(indexBad && !isAppend);
+    const nullMsg = '<b>NullPointerException</b>: a linked list node cannot hold <b>null</b>.';
+    const indexMsg = '<b>IndexOutOfBoundsException</b>: add allows index in <b>[0, size] = [0, '+n+']</b>, but got <b>'+index+'</b>.';
     g.snap({phase:'check', err:true,
-      say: (nullBad
-        ? '<b>NullPointerException</b>: a linked list node cannot hold <b>null</b>.'
-        : '<b>IndexOutOfBoundsException</b>: add allows index in <b>[0, size] = [0, '+n+']</b>, but got <b>'+index+'</b>.')+
-        (both ? ' (The index <b>'+index+'</b> is also outside [0, '+n+'], so <b>IndexOutOfBoundsException</b> is just as correct. Either check may run first.)' : '')+
+      say: (nullFirst ? nullMsg : indexMsg)+
+        (both ? ' (The value is also <b>null</b>, so <b>NullPointerException</b> is just as correct. Either check may run first.)' : '')+
         ' Nothing changes.'});
     return {frames:g.frames, final:modelLL, code, row, label, bigO:null};
   }
@@ -2649,66 +2612,36 @@ function genLLgetNth(index){
     bigO:'Reaching index '+index+' took <code>'+g.cost.hops+'</code> hop(s) from the head, and the worst case is all <code>n</code> nodes, so <code>getNth</code> is <code>O(n)</code>. Every method that calls it inherits that cost.'};
 }
 
-/* =====================================================================
-   MyAlgorithm.mergeLists(left, right): two sorted lists in, one new sorted list out.
-   The write-up forbids head, tail and size, so it can only use get, add and size(): every get
-   and every add walks from the head, which is what the hop counter shows.
-   ===================================================================== */
-function genLLmerge(L, R, lNull, rNull){
+
+/* ---- mergeLists, answer only: what it returns, never how ----
+   mergeLists is the assignment's problem to solve, so the student site shows only the two inputs and what comes back
+   (the examples and the rules of the write-up), not the steps. */
+const MERGE_STEPS = false;     // the walkthrough is opt-in, even while developing
+function genMergeAnswer(L, R, lNull, rNull, iter){
   const label = 'mergeLists(left, right)';
-  const cost = {hops:0, links:0}, frames = [];
-  let res = [];
-  const snap = o => frames.push({
-    kind:'merge', left:lNull?null:L.slice(), right:rNull?null:R.slice(), result:res.slice(),
-    il:o.il===undefined?null:o.il, ir:o.ir===undefined?null:o.ir, hot:o.hot||null, added:!!o.added,
-    phase:o.phase||null, say:o.say||'', cost:{...cost}, lit:o.lit||null, err:!!o.err,
-    run:o.run||'', ret:(o.ret===undefined?null:o.ret)
+  const cost = iter ? 'The write-up requires your solution to run in <code>O(n)</code>.'
+                    : 'The PA3 write-up sets no running time for mergeLists. It comes back in PA4 with an <code>O(n)</code> requirement.';
+  const done = frames => iter ? {frames, finalIter:modelIter, code:'itmerge', row:'bo-itmerge', label, bigO:frames[0].ret ? cost : null}
+                              : {frames, final:modelLL, code:'merge', row:'bo-merge', label, bigO:frames[0].ret ? cost : null};
+  const frame = o => ({
+    kind:'merge', answer:true, left:lNull?null:L.slice(), right:rNull?null:R.slice(), result:o.result||[], noResult:!!o.noResult,
+    il:null, ir:null, hot:null, added:false, phase:'result', say:o.say, cost:{hops:0, links:0}, lit:null, err:!!o.err,
+    run:label, ret:o.ret===undefined ? null : o.ret
   });
-  const unchanged = {frames, final:modelLL, code:'merge', row:'bo-merge', label, bigO:null};
   if(lNull || rNull){
-    snap({phase:'setup', err:true, run:label,
-      say:'<b>NullPointerException</b>: mergeLists throws when <b>'+(lNull && rNull ? 'left or right' : lNull ? 'left' : 'right')+'</b> is null. No result list is built.'});
-    return unchanged;
+    return done([frame({err:true, noResult:true,
+      say:'<b>NullPointerException</b>: mergeLists throws when <b>'+(lNull && rNull ? 'left or right' : lNull ? 'left' : 'right')+'</b> is null. No result list is built.'})]);
   }
   const sorted = a => a.every((v,i)=>i===0 || a[i-1]<=v);
-  const nL = L.length, nR = R.length, total = nL + nR;
-  const warn = (!sorted(L) || !sorted(R))
-    ? ' <b>Heads up:</b> the write-up promises both lists are sorted, and <b>'+(!sorted(L) ? 'left' : 'right')+'</b> is not, so the result will only be as ordered as the inputs.' : '';
-  snap({phase:'setup', il:0, ir:0, run:label,
-    say:'<b>mergeLists</b> builds a brand-new sorted list from two sorted lists. It may only call MyLinkedList methods such as <b>get</b>, <b>add</b> and <b>size()</b>, never touch <b>head</b>, <b>tail</b> or the <b>size</b> field. Create an empty <b>result</b>. <b>left.size()</b> is <b>'+nL+'</b> and <b>right.size()</b> is <b>'+nR+'</b>.'+warn});
-  let il = 0, ir = 0;
-  const addTo = (v, from) => {                        // result.add(v): add(size, v) walks size hops, then wires five pointers
-    cost.hops += res.length; cost.links += 5; res.push(v);
-  };
-  while(il < nL && ir < nR){
-    const a = L[il], b = R[ir], takeLeft = a <= b;
-    cost.hops += (il+1) + (ir+1);
-    snap({phase:'compare', il, ir, hot:takeLeft?'left':'right', lit:'H', run:'valL = left.get('+il+'), valR = right.get('+ir+')',
-      say:'<b>left.get('+il+')</b> walks '+hopWord(il+1)+' and gives <b>'+a+'</b>. <b>right.get('+ir+')</b> walks '+hopWord(ir+1)+' and gives <b>'+b+'</b>. '
-        + (a===b ? 'They are equal, and <b>compareTo(...) &lt;= 0</b> is true, so the left one goes first.' : takeLeft ? '<b>'+a+'</b> is smaller, so it goes next.' : '<b>'+b+'</b> is smaller, so it goes next.')});
-    const v = takeLeft ? a : b;
-    addTo(v);
-    if(takeLeft) il++; else ir++;
-    snap({phase:'take', il, ir, hot:takeLeft?'left':'right', added:true, lit:'L', run:'result.add('+(takeLeft?'valL':'valR')+')',
-      say:'<b>result.add('+v+')</b> walks to the end of result and wires in a new node. Then <b>'+(takeLeft?'idxLeft':'idxRight')+'</b> moves on to '+(takeLeft?il:ir)+'.'});
+  if(!sorted(L) || !sorted(R)){
+    return done([frame({noResult:true,
+      say:'The write-up promises both lists are sorted in ascending order, and <b>'+(!sorted(L) ? 'left' : 'right')+'</b> is not. Try two sorted lists.'})]);
   }
-  const drain = (arr, start, side) => {
-    for(let k = start; k < arr.length; k++){
-      cost.hops += k+1;
-      const v = arr[k]; addTo(v);
-      if(side==='left') il = k+1; else ir = k+1;
-      snap({phase:'drain', il, ir, hot:side, added:true, lit:'L', run:'result.add('+side+'.get('+k+'))',
-        say:'<b>'+(side==='left'?'right':'left')+'</b> is used up, so <b>'+side+'</b> just continues. <b>'+side+'.get('+k+')</b> walks '+hopWord(k+1)+' and gives <b>'+v+'</b>, and <b>result.add('+v+')</b> puts it at the end.'});
-    }
-  };
-  drain(L, il, 'left'); drain(R, ir, 'right');
-  const out = '['+res.join(', ')+']';
-  snap({phase:'done', il:nL, ir:nR, run:'return result', ret:out,
-    say: total ? 'Every element has been copied across in order. <b>return result</b> gives <b>'+out+'</b>. Neither input list was changed.' : 'Both lists are empty, so the result is empty too. <b>return result</b> gives <b>[]</b>.'});
-  return {frames, final:modelLL, code:'merge', row:'bo-merge', label,
-    bigO: total
-      ? 'Merging <b>'+total+'</b> element(s) took <code>'+cost.hops+'</code> hop(s) in all. Each element costs one <code>get</code> and one <code>add</code>, and every call starts again from the head, so the walks add up like <code>1 + 2 + ... + n</code>. That makes it <code>O(n&sup2;)</code> in the total length, not <code>O(n)</code>.'
-      : 'With nothing to copy there is no walking at all.'};
+  const out = L.concat(R).sort((a,b)=>a-b), text = '['+out.join(', ')+']';
+  return done([frame({result:out, ret:text,
+    say:'<b>mergeLists(left, right)</b> returns <b>'+text+'</b>, a new sorted list with every element of both lists, duplicates kept. How to build it is your assignment. '
+      + (iter ? 'In PA4 the only MyLinkedList methods you may call are <b>listIterator()</b>, <b>iterator()</b> and the constructor, so not even size(), and no MyLinkedList or MyListIterator variables. Any MyListIterator method is fine. Your solution must run in O(n).'
+              : 'In PA3 you may use any MyLinkedList method, but do not reference the head, tail or size fields.')})]);
 }
 
 /* =====================================================================
@@ -2723,33 +2656,66 @@ let modelIter = { nodes:[], idx:0, forward:true, canSet:false };
 
 const PHASES_IT = {
   itnext:   [{id:'look',t:'Peek to the right',d:'next() returns the node just to the right of the cursor.'},
-             {id:'move',t:'Step the cursor forward',d:'The cursor moves one node right and idx grows by one. left becomes the returned node.'}],
+             {id:'move',t:'Step the cursor forward',d:'In this order: left = right, right = right.getNext(), idx++, forward = true, canRemoveOrSet = true.'}],
   itprev:   [{id:'look',t:'Peek to the left',d:'previous() returns the node just to the left of the cursor.'},
-             {id:'move',t:'Step the cursor back',d:'The cursor moves one node left and idx shrinks by one. right becomes the returned node.'}],
+             {id:'move',t:'Step the cursor back',d:'In this order: right = left, left = left.getPrev(), idx--, forward = false, canRemoveOrSet = true.'}],
   itadd:    [{id:'wire',t:'Splice at the cursor',d:'Drop a new node into the gap between left and right with a few pointer writes.'},
              {id:'after',t:'Advance past it',d:'The cursor ends just after the new node, size grows, and remove() is disabled until the next move.'}],
   itset:    [{id:'write',t:'Overwrite last returned',d:'Replace the value in the node the last next()/previous() handed back.'}],
   itremove: [{id:'unlink',t:'Unlink last returned',d:'Bridge the two neighbours of the node the last next()/previous() handed back.'},
              {id:'after',t:'Shrink the list',d:'size drops and remove() is disabled until the next move.'}],
+  itctor:   [{id:'list',t:'Build the list',d:'new MyLinkedList() makes the head and tail sentinels, then each value is added. The iterator comes after, because it needs a list.'},
+             {id:'create',t:'Ask the list for an iterator',d:'list.listIterator() does return new MyListIterator(). The constructor has no parameters: the iterator is an inner class, so it already sees the list.'},
+             {id:'left',t:'left = head',d:'The cursor starts at the front, so the node on its left is the head sentinel.'},
+             {id:'right',t:'right = head.getNext()',d:'The node on its right is the first real node (or the tail if the list is empty).'},
+             {id:'idx',t:'idx = 0',d:'The index of the node next() would return.'},
+             {id:'flags',t:'forward = true, canRemoveOrSet = false',d:'forward may start as true or false, it does not matter, because next() or previous() sets it before remove() or set() can read it. No call has run yet, so remove() and set() are not allowed.'}],
   ithasnext:[{id:'read',t:'idx < size ?',d:'Compare the cursor index with size. No walking.'}],
   ithasprev:[{id:'read',t:'left ≠ head ?',d:'True unless the cursor is at the very front (idx = 0).'}],
   itnextidx:[{id:'read',t:'Return idx',d:'The index next() would return, or size at the end.'}],
   itprevidx:[{id:'read',t:'Return idx − 1',d:'Or −1 when the cursor is at the front.'}],
+  itmerge:  [{id:'result', t:'What mergeLists returns', d:'A new sorted list that holds every element of both inputs, duplicates kept. Working out how is the assignment, so this page shows only the answer.'}],
 };
-const PHASE_TITLES_IT = {itnext:'How next() works', itprev:'How previous() works', itadd:'How add(e) works', itset:'How set(e) works', itremove:'How remove() works', ithasnext:'How hasNext() works', ithasprev:'How hasPrevious() works', itnextidx:'How nextIndex() works', itprevidx:'How previousIndex() works'};
+const PHASE_TITLES_IT = {itnext:'How next() works', itprev:'How previous() works', itadd:'How add(e) works', itset:'How set(e) works', itremove:'How remove() works', ithasnext:'How hasNext() works', ithasprev:'How hasPrevious() works', itnextidx:'How nextIndex() works', itprevidx:'How previousIndex() works', itmerge:'What mergeLists(left, right) returns', itctor:'How list.listIterator() works'};
 
 const CX_ITER =
+  '<tr id="bo-itquery"><td class="opname">hasNext / hasPrevious</td><td class="bigo">O(1)</td><td class="why">Reads idx and size.</td></tr>'+
   '<tr id="bo-itnext"><td class="opname">next() / previous()</td><td class="bigo">O(1)</td><td class="why">Moves the cursor one node.</td></tr>'+
+  '<tr id="bo-itquery2"><td class="opname">nextIndex / previousIndex</td><td class="bigo">O(1)</td><td class="why">Returns idx or idx &minus; 1.</td></tr>'+
   '<tr id="bo-itadd"><td class="opname">add(e)</td><td class="bigo">O(1)</td><td class="why">Splices at the cursor, no walk.</td></tr>'+
   '<tr id="bo-itset"><td class="opname">set(e)</td><td class="bigo">O(1)</td><td class="why">Overwrites the last-returned node.</td></tr>'+
   '<tr id="bo-itremove"><td class="opname">remove()</td><td class="bigo">O(1)</td><td class="why">Unlinks the last-returned node.</td></tr>'+
-  '<tr id="bo-itquery"><td class="opname">hasNext / nextIndex …</td><td class="bigo">O(1)</td><td class="why">Reads idx and size.</td></tr>';
+  '<tr id="bo-itmerge"><td class="opname">mergeLists(l, r)</td><td class="bigo">O(n)</td><td class="why">The write-up requires your MyAlgorithm solution to run in O(n).</td></tr>';
 const CXP_ITER = 'The whole point of an iterator: it keeps a <b>cursor between two nodes</b>, so it never searches from the head. Every operation is <code>O(1)</code>, the sharp contrast with <code>get(i)</code>, <code>add(i)</code>, <code>remove(i)</code> on the list itself, which are <code>O(n)</code> because they walk.';
 
-function itState(size, idx, forward, canSet){
-  return {idx, size, hasNext: idx<size, hasPrev: idx>0, forward, canSet};
+function itState(size, idx, forward, canSet, blank){
+  return {idx, size, hasNext: idx<size, hasPrev: idx>0, forward, canSet, blank:blank||null};   // blank: fields the constructor has not set yet
 }
 const itFinal = (g, idx, forward, canSet) => ({nodes:g.vals.slice(), idx, forward, canSet});
+
+/* ---- list.listIterator(): return new MyListIterator(), which sets the five fields. The constructor has no parameters. ---- */
+function genItCtor(nodes){
+  const g = newLL({nodes}); const n = g.vals.length;
+  const all = {left:true, right:true, idx:true, forward:true, canSet:true};
+  const st = (blank, forward, canSet) => itState(n, 0, forward, canSet, blank);
+  const first = n ? 'n0' : 'T';
+  g.snap({phase:'list', run:'new MyLinkedList()',
+    say:'<b>Line 1.</b> <b>new MyLinkedList()</b> makes the two sentinel nodes, <b>head</b> and <b>tail</b>, pointing at each other. '+(n ? 'Then <b>add</b> puts '+n+' value(s) between them.' : 'The list stays empty: no values were given.')+' <b>list</b> is a <b>MyLinkedList</b>. There is no iterator yet.'});
+  g.snap({phase:'create', itstate:st({...all}, true, false), itL:'H', itR:first, caretGap:0, run:'list.listIterator()',
+    say:'<b>Line 2.</b> <b>list.listIterator()</b> runs <b>return new MyListIterator()</b>. The constructor takes <b>no parameters</b>: <b>MyListIterator</b> is an inner class of the list, so it already sees this list&rsquo;s <b>head</b>, <b>tail</b> and nodes. A new iterator object appears, its five fields not set yet.'});
+  g.snap({phase:'left', itstate:st({...all, left:false}, true, false), itL:'H', itR:first, lit:'L',
+    say:'<b>left = head.</b> The cursor starts at the very front, so the node on its left is the <b>head</b> sentinel.'});
+  g.snap({phase:'right', itstate:st({...all, left:false, right:false}, true, false), itL:'H', itR:first, lit:'L',
+    say:'<b>right = head.getNext().</b> The node on its right is '+(n ? 'the first real node, holding <b>'+fmt(g.vals[0])+'</b>' : 'the <b>tail</b> sentinel, because the list is empty')+'.'});
+  g.snap({phase:'idx', itstate:st({...all, left:false, right:false, idx:false}, true, false), itL:'H', itR:first, caretGap:0,
+    say:'<b>idx = 0.</b> The index of the node <b>next()</b> would return.'});
+  g.snap({phase:'flags', itstate:st({...all, left:false, right:false, idx:false, forward:false}, true, false), itL:'H', itR:first, caretGap:0,
+    say:'<b>forward = true.</b> It could just as well start as <b>false</b>, and it makes no difference. Only <b>remove()</b> and <b>set(e)</b> read it, and both need a <b>next()</b> or <b>previous()</b> call first, which sets it. The write-up\'s examples start with <b>true</b>.'});
+  g.snap({phase:'flags', itstate:st(null, true, false), itL:'H', itR:first, caretGap:0, lit:'L',
+    say:'<b>canRemoveOrSet = false.</b> No <b>next()</b> or <b>previous()</b> has run yet, so <b>remove()</b> and <b>set(e)</b> would throw <b>IllegalStateException</b>. The iterator is ready.'});
+  return {frames:g.frames, finalIter:{nodes:g.vals.slice(), idx:0, forward:true, canSet:false}, code:'itctor', row:null, label:'list.listIterator()',
+    bigO:'The constructor only assigns five fields, so it is <code>O(1)</code>. It does not walk the list.'};
+}
 
 /* ---- next(): return right, step the cursor forward ---- */
 function genItNext(){
@@ -2767,10 +2733,17 @@ function genItNext(){
   g.snap({phase:'look', itL:leftNow, itR:rightNow, caretGap:idx, flags:{[idx]:'itlook'}, itstate:st0, run:'next()',
     say:'<b>next()</b> returns the node just to the <b>right</b> of the cursor, at index <b>'+idx+'</b>, holding <b>'+fmt(v)+'</b>. The cursor then slides forward in two pointer moves.'});
   g.cost.hops++;
-  g.snap({phase:'move', itL:rightNow, itR:rightNow, itHot:'left', caretGap:idx, flags:{[idx]:'itret'}, lit:'H', itstate:itState(n, idx, true, true),
-    say:'<b>Move 1.</b> <b>left</b> jumps forward onto the node we just returned, so for a moment <b>left</b> and <b>right</b> point at the same node.'});
-  g.snap({phase:'move', itL:rightNow, itR:nextNode, itHot:'right', caretGap:idx+1, flags:{[idx]:'itret'}, itstate:itState(n, idx+1, true, true), ret:fmt(v),
-    say:'<b>Move 2.</b> <b>right</b> advances to the following node and the cursor settles one place further along. <b>idx</b> goes from <b>'+idx+'</b> to <b>'+(idx+1)+'</b>. No walk from the head, so <b>O(1)</b>.'});
+  // the fields change in this order: left = right, right = right.getNext(), idx++, forward = true, canRemoveOrSet = true
+  g.snap({phase:'move', itL:rightNow, itR:rightNow, itHot:'left', caretGap:idx, flags:{[idx]:'itret'}, lit:'H', itstate:st0,
+    say:'<b>left = right.</b> <b>left</b> jumps forward onto the node we just returned, so for a moment <b>left</b> and <b>right</b> point at the same node.'});
+  g.snap({phase:'move', itL:rightNow, itR:nextNode, itHot:'right', caretGap:idx, flags:{[idx]:'itret'}, itstate:st0,
+    say:'<b>right = right.getNext().</b> <b>right</b> advances to the following node, so the cursor now sits one place further along. No walk from the head, so <b>O(1)</b>.'});
+  g.snap({phase:'move', itL:rightNow, itR:nextNode, caretGap:idx+1, flags:{[idx]:'itret'}, itstate:itState(n, idx+1, modelIter.forward, modelIter.canSet),
+    say:'<b>idx++.</b> <b>idx</b> goes from <b>'+idx+'</b> to <b>'+(idx+1)+'</b>, the index of the node <b>next()</b> would return now.'});
+  g.snap({phase:'move', itL:rightNow, itR:nextNode, caretGap:idx+1, flags:{[idx]:'itret'}, itstate:itState(n, idx+1, true, modelIter.canSet),
+    say:'<b>forward = true.</b> The last move went forward, so <b>remove()</b> and <b>set(e)</b> will act on the node to the <b>left</b> of the cursor.'});
+  g.snap({phase:'move', itL:rightNow, itR:nextNode, caretGap:idx+1, flags:{[idx]:'itret'}, itstate:itState(n, idx+1, true, true), ret:fmt(v),
+    say:'<b>canRemoveOrSet = true.</b> A node has just been returned, so <b>remove()</b> and <b>set(e)</b> are allowed on it. <b>next()</b> returns <b>'+fmt(v)+'</b>.'});
   return {frames:g.frames, finalIter:itFinal(g, idx+1, true, true), code:'itnext', row:'bo-itnext', label:'next()',
     bigO:'<b>next</b> slides the cursor one node and returns the value it stepped over. It never searches, so it is <code>O(1)</code>, unlike <code>get(i)</code>, which walks <code>i</code> links from the head.'};
 }
@@ -2791,10 +2764,17 @@ function genItPrevious(){
   g.snap({phase:'look', itL:leftNow, itR:rightNow, caretGap:idx, flags:{[idx-1]:'itlook'}, itstate:st0, run:'previous()',
     say:'<b>previous()</b> returns the node just to the <b>left</b> of the cursor, at index <b>'+(idx-1)+'</b>, holding <b>'+fmt(v)+'</b>. The cursor then slides back in two pointer moves.'});
   g.cost.hops++;
-  g.snap({phase:'move', itL:leftNow, itR:leftNow, itHot:'right', caretGap:idx, flags:{[idx-1]:'itret'}, lit:'H', itstate:itState(n, idx, false, true),
-    say:'<b>Move 1.</b> <b>right</b> steps back onto the node we just returned, so for a moment <b>left</b> and <b>right</b> point at the same node.'});
-  g.snap({phase:'move', itL:prevNode, itR:leftNow, itHot:'left', caretGap:idx-1, flags:{[idx-1]:'itret'}, itstate:itState(n, idx-1, false, true), ret:fmt(v),
-    say:'<b>Move 2.</b> <b>left</b> steps back to the node before and the cursor settles one place earlier. <b>idx</b> goes from <b>'+idx+'</b> to <b>'+(idx-1)+'</b>. <b>O(1)</b>.'});
+  // right = left, left = left.getPrev(), idx--, forward = false, canRemoveOrSet = true
+  g.snap({phase:'move', itL:leftNow, itR:leftNow, itHot:'right', caretGap:idx, flags:{[idx-1]:'itret'}, lit:'H', itstate:st0,
+    say:'<b>right = left.</b> <b>right</b> steps back onto the node we just returned, so for a moment <b>left</b> and <b>right</b> point at the same node.'});
+  g.snap({phase:'move', itL:prevNode, itR:leftNow, itHot:'left', caretGap:idx, flags:{[idx-1]:'itret'}, itstate:st0,
+    say:'<b>left = left.getPrev().</b> <b>left</b> steps back to the node before, so the cursor now sits one place earlier. <b>O(1)</b>.'});
+  g.snap({phase:'move', itL:prevNode, itR:leftNow, caretGap:idx-1, flags:{[idx-1]:'itret'}, itstate:itState(n, idx-1, modelIter.forward, modelIter.canSet),
+    say:'<b>idx--.</b> <b>idx</b> goes from <b>'+idx+'</b> to <b>'+(idx-1)+'</b>, the index of the node <b>next()</b> would return now.'});
+  g.snap({phase:'move', itL:prevNode, itR:leftNow, caretGap:idx-1, flags:{[idx-1]:'itret'}, itstate:itState(n, idx-1, false, modelIter.canSet),
+    say:'<b>forward = false.</b> The last move went backward, so <b>remove()</b> and <b>set(e)</b> will act on the node to the <b>right</b> of the cursor.'});
+  g.snap({phase:'move', itL:prevNode, itR:leftNow, caretGap:idx-1, flags:{[idx-1]:'itret'}, itstate:itState(n, idx-1, false, true), ret:fmt(v),
+    say:'<b>canRemoveOrSet = true.</b> A node has just been returned, so <b>remove()</b> and <b>set(e)</b> are allowed on it. <b>previous()</b> returns <b>'+fmt(v)+'</b>.'});
   return {frames:g.frames, finalIter:itFinal(g, idx-1, false, true), code:'itprev', row:'bo-itnext', label:'previous()',
     bigO:'<b>previous</b> slides the cursor back one node and returns it. <code>O(1)</code>.'};
 }
@@ -2828,10 +2808,18 @@ function genItAdd(value){
   cool(aw); g.cost.links++; aw = dropArrow(aw, rightId, leftId, 'prev'); aw.push(A(rightId,'NEW','prev','hot','prev'));
   g.snap({phase:'wire', newNode:nn, arrows:clone(aw), itL:leftId, itR:rightId, caretGap:idx, lit:'L', itstate:st0,
     say:'<b>4.</b> <b>right</b> aims its <b>prev</b> at the new node. It is now linked on both sides.'});
-  // the new node joins the row and the cursor slides past it (left = new node, idx++)
+  // the new node joins the row, then the fields change in the order of the PA solution: left = newNode, idx++, canRemoveOrSet = false, size++
   g.vals.splice(idx, 0, value);
-  g.snap({phase:'after', flags:{[idx]:'itret'}, caretGap:idx+1, itstate:itState(n+1, idx+1, modelIter.forward, false),
-    say:'The cursor <b>slides past the new node</b>, so <b>left</b> now points to it and <b>idx</b> goes from <b>'+idx+'</b> to <b>'+(idx+1)+'</b>. <b>size++</b>. A <b>previous()</b> now would return it, and you cannot <b>remove()</b> straight after <b>add()</b>.'});
+  const newRight = idx===n ? 'T' : 'n'+(idx+1);
+  const addSnap = (size, state, say) => g.snap({phase:'after', size, flags:{[idx]:'itret'}, itL:'n'+idx, itR:newRight, caretGap:state.idx, itstate:state, say});   // the cursor line moves in the frame idx changes
+  addSnap(n, itState(n+1, idx, modelIter.forward, modelIter.canSet),
+    '<b>left = newNode.</b> The cursor slides past the new node: <b>left</b> now points to it, and <b>right</b> stays where it was.');
+  addSnap(n, itState(n+1, idx+1, modelIter.forward, modelIter.canSet),
+    '<b>idx++.</b> <b>idx</b> goes from <b>'+idx+'</b> to <b>'+(idx+1)+'</b>. A <b>previous()</b> now would return the new node.');
+  addSnap(n, itState(n+1, idx+1, modelIter.forward, false),
+    '<b>canRemoveOrSet = false.</b> You cannot <b>remove()</b> or <b>set(e)</b> straight after <b>add()</b>, because no node was returned.');
+  addSnap(n+1, itState(n+1, idx+1, modelIter.forward, false),
+    '<b>size++.</b> The list holds one more node.');
   return {frames:g.frames, finalIter:itFinal(g, idx+1, modelIter.forward, false), code:'itadd', row:'bo-itadd', label:'add('+fmt(value)+')',
     bigO:'<b>add</b> splices a node at the cursor with four pointer writes and no search. <code>O(1)</code>.'};
 }
@@ -2879,20 +2867,34 @@ function genItRemove(){
   const Xid    = 'n'+tIdx;
   const leftId = tIdx===0   ? 'H' : 'n'+(tIdx-1);
   const rightId= tIdx===n-1 ? 'T' : 'n'+(tIdx+1);
+  const fwd = modelIter.forward;
   let au = llChain(llIds(n));
-  g.snap({phase:'unlink', cursor:idx, flags:{[tIdx]:'itret'}, arrows:clone(au), itstate:st0, run:'remove()',
-    say:'The last <b>'+(modelIter.forward?'next()':'previous()')+'</b> returned index <b>'+tIdx+'</b>. <b>remove()</b> deletes that node, and the cursor is already beside it, so there is no search.'});
-  cool(au); g.cost.links++;
-  au = dropArrow(au, leftId, Xid, 'next'); au.push(A(leftId,rightId,'next','hot','next'));
-  g.snap({phase:'unlink', cursor:idx, flags:{[tIdx]:'itret'}, arrows:clone(au), lit:'L', itstate:st0,
-    say:'<b>1.</b> the node before it points its <b>next</b> across the gap.'});
-  cool(au); g.cost.links++;
-  au = dropArrow(au, rightId, Xid, 'prev'); au.push(A(rightId,leftId,'prev','hot','prev'));
-  g.snap({phase:'unlink', cursor:newIdx, detached:[Xid], arrows:clone(au), lit:'L', itstate:itState(n-1, newIdx, modelIter.forward, false),
-    say:'<b>2.</b> the node after it points its <b>prev</b> back. The node is unlinked and the cursor closes over the gap.'});
+  g.snap({phase:'unlink', flags:{[tIdx]:'itret'}, arrows:clone(au), itstate:st0, run:'remove()',
+    say:'The last <b>'+(fwd?'next()':'previous()')+'</b> returned index <b>'+tIdx+'</b>. <b>remove()</b> deletes that node, and the cursor is already beside it, so there is no search.'});
+  // the cursor steps off the doomed node first: forward left = left.getPrev(), backward right = right.getNext()
+  g.snap({phase:'unlink', flags:{[tIdx]:'itret'}, arrows:clone(au), itL:leftId, itR:rightId, itHot:fwd?'left':'right', itstate:st0,
+    say: fwd ? '<b>left = left.getPrev().</b> <b>left</b> steps off the node being removed and onto the node before it.'
+             : '<b>right = right.getNext().</b> <b>right</b> steps off the node being removed and onto the node after it.'});
+  // then the two neighbours are joined, in the order the code runs for this direction
+  const writeNext = () => { cool(au); g.cost.links++; au = dropArrow(au, leftId, Xid, 'next'); au.push(A(leftId,rightId,'next','hot','next')); };
+  const writePrev = () => { cool(au); g.cost.links++; au = dropArrow(au, rightId, Xid, 'prev'); au.push(A(rightId,leftId,'prev','hot','prev')); };
+  const first = fwd ? writeNext : writePrev, second = fwd ? writePrev : writeNext;
+  first();
+  g.snap({phase:'unlink', flags:{[tIdx]:'itret'}, arrows:clone(au), itL:leftId, itR:rightId, lit:'L', itstate:st0,
+    say: fwd ? '<b>left.setNext(right).</b> the node before points its <b>next</b> across the gap.'
+             : '<b>right.setPrev(left).</b> the node after points its <b>prev</b> back across the gap.'});
+  second();
+  g.snap({phase:'unlink', detached:[Xid], arrows:clone(au), itL:leftId, itR:rightId, lit:'L', itstate:st0,
+    say: fwd ? '<b>right.setPrev(left).</b> the node after points its <b>prev</b> back. The node is unlinked.'
+             : '<b>left.setNext(right).</b> the node before points its <b>next</b> across. The node is unlinked.'});
   g.vals.splice(tIdx, 1);
-  g.snap({phase:'after', cursor:newIdx, itstate:itState(n-1, newIdx, modelIter.forward, false),
-    say:'<b>size--</b>. <b>O(1)</b>, the cursor sat right next to the node, so nothing was searched. <b>remove()</b> is now disabled until the next move.'});
+  const newRight = tIdx>=n-1 ? 'T' : 'n'+tIdx;     // the ids close up once the node is gone
+  const snapAfter = (state, say, size) => g.snap({phase:'after', size, itL:leftId, itR:newRight, caretGap:newIdx, itstate:state, say});
+  if(fwd){
+    snapAfter(itState(n-1, newIdx, true, modelIter.canSet), '<b>idx--.</b> <b>idx</b> goes from <b>'+idx+'</b> to <b>'+newIdx+'</b>, because the node that was behind the cursor is gone.', n);
+  }
+  snapAfter(itState(n-1, newIdx, fwd, false), '<b>canRemoveOrSet = false.</b> The node is gone, so <b>remove()</b> and <b>set(e)</b> are disabled until the next <b>next()</b> or <b>previous()</b>.'+(fwd?'':' <b>idx</b> does not change when the removed node was in front of the cursor.'), n);
+  snapAfter(itState(n-1, newIdx, fwd, false), '<b>size--.</b> <b>O(1)</b>, the cursor sat right next to the node, so nothing was searched.');
   return {frames:g.frames, finalIter:itFinal(g, newIdx, modelIter.forward, false), code:'itremove', row:'bo-itremove', label:'remove()',
     bigO:'<b>remove</b> unlinks the last-returned node with two pointer writes, no search. <code>O(1)</code>.'};
 }
@@ -2917,48 +2919,66 @@ function genItQuery(kind){
     bigO='<b>previousIndex</b> returns idx − 1 (or −1). <code>O(1)</code>.'; }
   const answer = kind==='hasnext' ? String(idx<n) : (kind==='hasprev' ? String(idx>0) : (kind==='nextidx' ? String(idx) : String(idx>0 ? idx-1 : -1)));
   g.snap({phase, cursor:idx, itstate:st0, say, run:label, ret:answer});
-  return {frames:g.frames, finalIter:modelIter, code, row:'bo-itquery', label, bigO};
+  return {frames:g.frames, finalIter:modelIter, code, row:(kind==='nextidx'||kind==='previdx')?'bo-itquery2':'bo-itquery', label, bigO};
 }
+
 
 /* ---- render a linked frame: head <-> nodes <-> tail, with real next/prev
    arrows drawn as an SVG overlay so each pointer can be lit and redirected. */
 const SVGNS = 'http://www.w3.org/2000/svg';
 
 /* ---- mergeLists: the two inputs and the growing result, one row each ---- */
+/* switch the gliding cursor overlay off at once, with no fade (used by the pictures that draw their own cursors) */
+function hideIterCaret(){
+  const fx = document.getElementById('iterFx'); if(!fx) return;
+  fx.querySelectorAll('.fxcaret,.fxlabel').forEach(e=>{ e.style.transition = 'none'; e.style.opacity = '0'; void e.offsetWidth; e.style.transition = ''; });
+}
+
 function renderMerge(f){
+  if(f.itm) return renderMergeIt(f);
   const cells = document.getElementById('cells');
   cells.innerHTML = '';
   const host = document.createElement('div'); host.className = 'mgstage';
-  const addRow = (name, vals, idx, tag, hot, grew) => {
-    const row = document.createElement('div'); row.className = 'mgrow';
-    const lab = document.createElement('div'); lab.className = 'mglab'; lab.textContent = name; row.appendChild(lab);
-    if(vals===null){
-      const b = document.createElement('div'); b.className = 'mgempty'; b.textContent = 'null'; row.appendChild(b);
-    } else if(!vals.length){
-      const b = document.createElement('div'); b.className = 'mgempty'; b.textContent = 'empty'; row.appendChild(b);
-    } else {
-      vals.forEach((v, i)=>{
-        if(i){ const a = document.createElement('span'); a.className = 'mgarr'; a.innerHTML = '&harr;'; row.appendChild(a); }
-        const cell = document.createElement('div');
-        let cls = 'lcell';
-        if(idx!==null && idx!==undefined){
-          if(i < idx) cls += ' mgdone';
-          else if(i === idx) cls += hot ? ' target' : ' look';
-        }
-        if(grew && i === vals.length-1) cls += ' new';
-        cell.className = cls;
-        const box = document.createElement('div'); box.className = 'lbox'; box.textContent = fmt(v); cell.appendChild(box);
-        const ptr = document.createElement('div'); ptr.className = 'lptr';
-        if(tag && idx===i) ptr.innerHTML = '<span class="currtag">'+tag+'</span>';
-        cell.appendChild(ptr);
-        row.appendChild(cell);
-      });
+  hideIterCaret();                                       // the linked picture's cursor overlay must not linger over this picture
+  // left, right and result are each a MyLinkedList (head, nodes, tail). get(i) and add(i, e) start at head, so the
+  // nodes they walk over are lit blue and the row says how many hops it took.
+  const addRow = (name, vals, idx, tag, hot, grew, walk, wlab) => {
+    const row = document.createElement('div'); row.className = 'mgrow mgit';
+    const lab = document.createElement('div'); lab.className = 'mglab';
+    lab.innerHTML = '<b>'+name+'</b>'+(wlab ? '<span>'+wlab+'</span>' : '');
+    row.appendChild(lab);
+    if(vals===null || typeof vals==='string'){                       // a null input, a result that was never built, or one that is not shown
+      const b = document.createElement('div'); b.className = 'mgempty'; b.textContent = vals===null ? 'null' : (vals==='absent' ? 'not created' : vals); row.appendChild(b);
+      host.appendChild(row); return;
     }
+    const line = document.createElement('div'); line.className = 'mgitems'; row.appendChild(line);
+    const items = [{sent:'head'}].concat(vals.map((v,i)=>({v,i}))).concat([{sent:'tail'}]);
+    items.forEach((it, k)=>{
+      const cell = document.createElement('div');
+      let cls = 'lcell' + (it.sent ? ' sent' : '');
+      const walked = walk!=null && (it.sent==='head' || (!it.sent && it.i < walk));      // head, then the first `walk` nodes
+      if(!it.sent){
+        if(idx!==null && idx!==undefined){
+          if(it.i < idx) cls += ' mgdone';
+          else if(it.i === idx) cls += hot ? ' target' : ' look';
+        }
+        if(grew && it.i === vals.length-1) cls += ' new';
+      }
+      if(walked) cls += ' onwalk';
+      cell.className = cls;
+      const box = document.createElement('div'); box.className = 'lbox'; box.textContent = it.sent ? it.sent : fmt(it.v); cell.appendChild(box);
+      const ptr = document.createElement('div'); ptr.className = 'lptr';
+      if(tag && !it.sent && idx===it.i) ptr.innerHTML = '<span class="currtag">'+tag+'</span>';
+      cell.appendChild(ptr);
+      line.appendChild(cell);
+      if(k < items.length-1){ const a = document.createElement('span'); a.className = 'mgarr'; a.innerHTML = '&harr;'; line.appendChild(a); }
+    });
     host.appendChild(row);
   };
-  addRow('left',   f.left,  f.il, 'idxLeft',  f.hot==='left',  false);
-  addRow('right',  f.right, f.ir, 'idxRight', f.hot==='right', false);
-  addRow('result', f.result, null, null, false, f.added);
+  const w = f.walk || {}, wl = f.wlab || {};
+  addRow('left',   f.left,  f.il, f.tagL || null, f.hot==='left',  false,   w.left,   wl.left);
+  addRow('right',  f.right, f.ir, f.tagR || null, f.hot==='right', false,   w.right,  wl.right);
+  addRow('result', f.err ? 'absent' : (f.noResult ? 'not shown' : f.result), null, null, false, f.added, w.result, wl.result);
   cells.appendChild(host);
   const bs = document.getElementById('bSize'); if(bs) bs.textContent = 'result size = ' + f.result.length;
 }
@@ -2966,7 +2986,8 @@ function renderMerge(f){
 function renderLinked(f){
   const cells = document.getElementById('cells');
   cells.innerHTML = '';
-  const host = document.createElement('div'); host.className = 'llstage';
+  const host = document.createElement('div'); host.className = 'llstage' + (ITER ? ' iterstage' : '');
+  if(ITER){ const ll = document.createElement('div'); ll.className = 'listlabel'; ll.textContent = 'list : MyLinkedList<Integer>'; host.appendChild(ll); }
   const wrap = document.createElement('div'); wrap.className = 'llrow' + (f.newNode ? ' hasfloat' : '');
   host.appendChild(wrap);
 
@@ -3023,15 +3044,17 @@ function renderLinked(f){
     host.appendChild(card);
     boxById['IT_LEFT']  = card.querySelector('#itLeftBox');
     boxById['IT_RIGHT'] = card.querySelector('#itRightBox');
-    itptrs = [ {from:'IT_LEFT', to:leftId, label:'left', hot:f.itHot==='left'},
-               {from:'IT_RIGHT', to:rightId, label:'right', hot:f.itHot==='right'} ];
+    const bl = s.blank || {};            // a pointer the constructor has not set yet is not drawn
+    itptrs = [];
+    if(!bl.left)  itptrs.push({from:'IT_LEFT',  to:leftId,  label:'left',  hot:f.itHot==='left'});
+    if(!bl.right) itptrs.push({from:'IT_RIGHT', to:rightId, label:'right', hot:f.itHot==='right'});
     // the caret position is decoupled from the card pointers: it follows caretGap
     // (the cursor's between-nodes index) so it can glide smoothly even while the
     // left/right pointers step one at a time and momentarily coincide
     const cg = f.caretGap!=null ? f.caretGap : s.idx;
     const cL = cg<=0 ? 'H' : 'n'+(cg-1);
     const cR = cg>=vals.length ? 'T' : 'n'+cg;
-    if(cL!==cR) gapIds = {leftId:cL, rightId:cR};
+    if(cL!==cR && !bl.left && !bl.right && !bl.idx) gapIds = {leftId:cL, rightId:cR};   // the cursor line appears together with idx, the field that places it
   }
 
   cells.appendChild(host);
@@ -3040,7 +3063,7 @@ function renderLinked(f){
   // node); it reappears and glides on the advance frame
   positionIterCaret((f.itstate && !f.newNode) ? gapIds : null, boxById);
 
-  const bs = document.getElementById('bSize'); if(bs) bs.textContent = 'size = ' + vals.length;
+  const bs = document.getElementById('bSize'); if(bs) bs.textContent = 'size = ' + (f.size!=null ? f.size : vals.length);
 }
 
 /* place the persistent cursor line in the gap between left and right. Because the
@@ -3058,25 +3081,29 @@ function positionIterCaret(gapIds, boxById){
   const top = Math.min(lr.top, rr.top) - vis.top;
   const h   = Math.max(lr.bottom, rr.bottom) - Math.min(lr.top, rr.top);
   caret.style.left = x+'px'; caret.style.top = (top-12)+'px'; caret.style.height = (h+24)+'px'; caret.style.opacity = '1';
-  label.style.left = x+'px'; label.style.top = (top-32)+'px'; label.style.opacity = '1';
+  label.style.left = x+'px'; label.style.top = (top-40)+'px'; label.style.opacity = '1';
 }
 
 /* the MyListIterator object card from the lecture notes: an `it` reference,
-   the left/right node pointers, and the idx / canRemove / forward fields */
+   the left/right node pointers, and the idx / canRemoveOrSet / forward fields */
 function buildIterCard(s){
+  const bl = s.blank || {};
   const card = document.createElement('div'); card.className = 'itercard';
   card.innerHTML =
-    '<div class="itref"><span class="itk">it</span><span class="itrefbox"></span><span class="itrefarrow">&rarr;</span></div>'+
+    '<div class="itref" title="the variable it: a reference to the iterator object"><span class="itk">it</span><span class="itrefbox"></span><span class="itrefarrow">&rarr;</span></div>'+
     '<div class="itfields">'+
       '<div class="itrow itrow-lr">'+
         '<span class="itf"><span class="itk">left</span><span class="itbox" id="itLeftBox"></span></span>'+
         '<span class="itf"><span class="itk">right</span><span class="itbox" id="itRightBox"></span></span>'+
       '</div>'+
-      '<div class="itrow"><span class="itk">idx</span><span class="itval">'+s.idx+'</span></div>'+
-      '<div class="itrow"><span class="itk blue">canRemove</span><span class="itval blue">'+(s.canSet?'true':'false')+'</span></div>'+
-      '<div class="itrow"><span class="itk blue">forward</span><span class="itval blue">'+(s.forward?'true':'false')+'</span></div>'+
+      '<div class="itrow"><span class="itk">idx</span><span class="itval">'+(bl.idx?'?':s.idx)+'</span></div>'+
+      '<div class="itrow"><span class="itk blue">forward</span><span class="itval blue">'+(bl.forward?'?':(s.forward?'true':'false'))+'</span></div>'+
+      '<div class="itrow"><span class="itk blue">canRemoveOrSet</span><span class="itval blue">'+(bl.canSet?'?':(s.canSet?'true':'false'))+'</span></div>'+
     '</div>'+
-    '<div class="itcaption">MyListIterator</div>';
+    '<div class="itcaption">it : ListIterator&lt;Integer&gt;<br>(a MyListIterator on <b>list</b>)</div>';
+  // a pointer field shows a dot once it is set, and its arrow leaves from that dot; '?' until the constructor sets it
+  card.querySelector('#itLeftBox').textContent  = bl.left  ? '?' : '\u25CF';
+  card.querySelector('#itRightBox').textContent = bl.right ? '?' : '\u25CF';
   return card;
 }
 
@@ -3092,7 +3119,7 @@ function drawArrows(host, boxById, arrows, itptrs, gap){
     '<defs>'+
     '<marker id="ahN" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b9b19d"/></marker>'+
     '<marker id="ahH" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#cf5a26"/></marker>'+
-    '<marker id="ahT" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0f6b63"/></marker>'+
+    '<marker id="ahT" viewBox="0 0 10 10" refX="0" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0f6b63"/></marker>'+
     '</defs>';
   const anchor = id => { const b=boxById[id]; if(!b) return null; const r=b.getBoundingClientRect();
     return {cx:r.left+r.width/2-wr.left, l:r.left-wr.left, r:r.right-wr.left, top:r.top-wr.top, bottom:r.bottom-wr.top}; };
@@ -3141,10 +3168,11 @@ function drawArrows(host, boxById, arrows, itptrs, gap){
   // iterator left/right pointers: from the card's field boxes UP to the nodes
   if(itptrs){ itptrs.forEach(p=>{
     const f=anchor(p.from), t=anchor(p.to); if(!f||!t) return;
-    const sx=f.cx, sy=f.top, ex=t.cx, ey=t.bottom;   // field-box top to node-box bottom
+    const sx=f.cx, sy=(f.top+f.bottom)/2, ex=t.cx, ey=t.bottom;   // from the dot in the field box up to the node-box bottom
     const cy1=sy-Math.max((sy-ey)*0.5,30);
     const path=document.createElementNS(SVGNS,'path');
-    path.setAttribute('d','M'+sx+' '+sy+' C'+sx+' '+cy1+' '+ex+' '+(ey+34)+' '+ex+' '+ey);
+    const AH = 11;                                 // arrowhead length: the line ends at the middle of its base, the tip touches the node
+    path.setAttribute('d','M'+sx+' '+sy+' C'+sx+' '+cy1+' '+ex+' '+(ey+AH+48)+' '+ex+' '+(ey+AH));   // the last stretch comes straight up
     path.setAttribute('class','itarrow'+(p.hot?' hot':'')); path.setAttribute('marker-end','url(#ahT)');
     svg.appendChild(path);
   }); }
@@ -3172,24 +3200,7 @@ function genLLBuildResult(tokens){
   });
 }
 
-/* ---- build a list AND reset a fresh ListIterator at the front ---- */
-function buildIter(tokens){
-  const nodes = tokens.filter(t=>t!==null);
-  modelIter = { nodes, idx:0, forward:true, canSet:false };
-  const st = itState(nodes.length, 0, true, false);
-  player.frames = [{kind:'linked', vals:nodes.slice(), flags:{}, curr:null, links:[], cursor:0, itstate:st, phase:null, say:'', cost:{hops:0,links:0}}];
-  player.i = 0; player.row=null; player.bigO=null;
-  renderPhases('itnext'); highlightPhase(null, new Set()); hotRow(null);
-  document.getElementById('bOp').style.display='none';
-  document.getElementById('bigO').innerHTML = 'Run an iterator operation to see its cost. The cursor sits between two nodes, so every operation is <b>O(1)</b>.';
-  setCounters({hops:0,links:0}, null);
-  renderLinked(player.frames[0]);
-  updateTransport();
-  setNote(nodes.length===0
-    ? 'Empty list. A fresh iterator sits between <b>head</b> and <b>tail</b>: idx = 0.'
-    : 'Fresh <b>ListIterator</b> over <b>'+nodes.length+'</b> node(s). The cursor starts at the front (idx = 0): <b>left</b> = head, <b>right</b> = the first node. Use <b>next()</b> / <b>previous()</b> to move it.');
-}
-
+let iterList = null;           // the values the iterator's list was built from (see genItCtor)
 /* ---- relabel the cost counters for the active structure ---- */
 function setCostLabels(isLL, iter){
   const k = document.querySelectorAll('#ctW .k, #ctS .k, #ctC .k');
@@ -3209,7 +3220,6 @@ function setCostLabels(isLL, iter){
 /* highlight the nav button matching the active structure + mode. Iterator is
    the LinkedList in ListIterator mode, so it lights its own nav button. */
 function markActiveStruct(){
-  setTimeout(applySeqLocks, 0);   // STRUCT is already set; the locks apply to the ArrayList and the LinkedList
   let active = 'ArrayList';
   if(STRUCT==='stack') active = 'Stack';
   else if(STRUCT==='queue') active = 'Queue';
@@ -3242,6 +3252,8 @@ function setLLMode(mode){
   document.getElementById('cxbody').innerHTML   = ITER ? CX_ITER : CX_LINKED;
   document.getElementById('cxprimer').innerHTML = ITER ? CXP_ITER : CXP_LINKED;
   setCostLabels(true, ITER);
+  iterList = null;
+  setupCtorChooser();                    // the iterator mode has its own constructor tabs
   constructActive(false);
 }
 
@@ -3330,18 +3342,19 @@ function genCtorArr(tokens, isNull){
    the finished structure.
    ===================================================================== */
 const CTOR_HINT = {
-  array:'All three constructors set up the same two fields, <b>data</b> and <b>size</b>. They differ only in how. Pick one and press Construct. A negative capacity throws <b>IllegalArgumentException</b>, so try <b>-1</b>.',
-  heap:'<b>new MyMinHeap()</b> starts empty; <b>new MyMinHeap(collection)</b> copies the values in, then heapifies them bottom-up. A null collection (or a null inside it) throws <b>NullPointerException</b>.',
-  linked:'The no-arg constructor builds the <b>head</b> and <b>tail</b> sentinels. Any values you list are then added one by one with <b>add(e)</b>. A <b>null</b> in the list is skipped, since <b>add(null)</b> would throw.',
-  stack:'<b>new MyStack(capacity)</b> allocates a <b>MyDeque</b> of that capacity, then <b>push</b>es each listed value (addLast). A capacity of 0 is allowed (the first push grows it to 10) and a negative one throws <b>IllegalArgumentException</b>. A <b>null</b> in the list is skipped.',
-  queue:'<b>new MyQueue(capacity)</b> allocates a <b>MyDeque</b> of that capacity, then <b>enqueue</b>s each listed value (addLast). A capacity of 0 is allowed (the first enqueue grows it to 10) and a negative one throws <b>IllegalArgumentException</b>. A <b>null</b> in the list is skipped.',
-  deque:'<b>new MyDeque(capacity)</b> allocates the circular array with <b>front = rear = 0</b>, then <b>addLast</b>s each listed value. A capacity of 0 is allowed (the first add grows it to 10) and a negative one throws <b>IllegalArgumentException</b>. A <b>null</b> in the list is skipped.',
-  tree:'The no-arg constructor makes an empty tree (root = null). Listed entries are then <b>insert</b>ed one by one: write <code>key:value</code>, or just a key. A <b>null</b> key is skipped, since <b>insert(null, v)</b> would throw.',
-  hashmap:'<b>new MyHashMap()</b> / <b>(capacity)</b> allocate the bucket array; listed <code>key:value</code> entries are then <b>put</b> in. A capacity of 0 or less throws <b>IllegalArgumentException</b>.',
-  hashset:'<b>new MyHashSet()</b> / <b>(capacity)</b> allocate the bucket array; listed elements are then <b>add</b>ed. A capacity of 0 or less throws <b>IllegalArgumentException</b>.',
+  array:'All three constructors set up the same two fields, data and size. They differ only in how. Pick one and press Construct. A negative capacity throws IllegalArgumentException, so try -1.',
+  heap:'new MyMinHeap() starts empty; new MyMinHeap(collection) copies the values in, then heapifies them bottom-up. A null collection (or a null inside it) throws NullPointerException.',
+  linked:'The no-arg constructor builds the head and tail sentinels. Any values you list are then added one by one with add(e). A null in the list is skipped, since add(null) would throw.',
+  iter:'Order matters: an iterator cannot exist without a list, so line 1 builds the MyLinkedList and line 2 asks that list for an iterator.<br>list.listIterator() just runs return new MyListIterator(), a constructor with no parameters, because the iterator is an inner class and already sees the list&rsquo;s head.<br>forward can start as true or false and it does not matter: only remove() and set() read it, and a call to next() or previous() sets it first.',
+  stack:'new MyStack(capacity) allocates a MyDeque of that capacity, then pushes each listed value (addLast). A capacity of 0 is allowed (the first push grows it to 10) and a negative one throws IllegalArgumentException. A null in the list is skipped.',
+  queue:'new MyQueue(capacity) allocates a MyDeque of that capacity, then enqueues each listed value (addLast). A capacity of 0 is allowed (the first enqueue grows it to 10) and a negative one throws IllegalArgumentException. A null in the list is skipped.',
+  deque:'new MyDeque(capacity) allocates the circular array with front = rear = 0, then addLasts each listed value. A capacity of 0 is allowed (the first add grows it to 10) and a negative one throws IllegalArgumentException. A null in the list is skipped.',
+  tree:'The no-arg constructor makes an empty tree (root = null). Listed entries are then inserted one by one: write key:value, or just a key. A null key is skipped, since insert(null, v) would throw.',
+  hashmap:'new MyHashMap() / (capacity) allocate the bucket array; listed key:value entries are then put in. A capacity of 0 or less throws IllegalArgumentException.',
+  hashset:'new MyHashSet() / (capacity) allocate the bucket array; listed elements are then added. A capacity of 0 or less throws IllegalArgumentException.',
 };
 const CTOR_ARR_DEFAULT = {
-  array:'8, 1, 4', heap:'8, 1, 4', linked:'8, 1, 4', stack:'8, 1, 4', deque:'8, 1, 4',
+  array:'8, 1, 4', heap:'8, 1, 4', linked:'8, 1, 4', iter:'8, 1, 4', stack:'8, 1, 4', deque:'8, 1, 4',
   queue:'8, 1, 4', tree:'8:A, 3:B, 10:C, 1:D, 6:E', hashmap:'8, 1, 4', hashset:'8, 1, 4',
 };
 /* the active structure's constructor tabs (id, label, and which inputs show) */
@@ -3357,6 +3370,9 @@ function ctorDefs(){
   ] : [
     {id:'heap0', label:'new MyMinHeap()'},
     {id:'heapC', label:'new MyMinHeap(collection)', el:true, nul:true, elLabel:'collection', nulLabel:'null collection'},
+  ];
+  if(STRUCT==='linked' && ITER) return [          // PA4: one Construct runs both lines; the values belong to the list in line 1
+    {id:'it0', label:'list.listIterator()', el:true, elLabel:'then add'},
   ];
   if(STRUCT==='linked') return [
     {id:'ll0', label:'new MyLinkedList()', el:true},
@@ -3384,23 +3400,33 @@ function ctorDefs(){
   }
   return [];
 }
-function ctorHintKey(){ return STRUCT==='hash' ? (HASHMODE==='set'?'hashset':'hashmap') : STRUCT; }
+function ctorHintKey(){ return (STRUCT==='linked' && ITER) ? 'iter' : STRUCT==='hash' ? (HASHMODE==='set'?'hashset':'hashmap') : STRUCT; }
 
 let activeCtor = 'ctor0';
 /* render the tabs and argument inputs for the active structure */
 function setupCtorChooser(){
   const defs = ctorDefs();
   if(!defs.length) return;
-  document.getElementById('ctorTabs').innerHTML =
-    defs.map(d=>'<button class="ctortab" data-ctor="'+d.id+'">'+d.label+'</button>').join('');
+  { const ca = document.getElementById('caArr'), row = document.querySelector('#ctorChooser .ctorargrow');     // the values box goes back to its row before the tabs are rebuilt
+    if(ca && row && ca.parentNode!==row) row.insertBefore(ca, row.querySelector('#caNull')); }
+  document.getElementById('ctorTabs').innerHTML = (STRUCT==='linked' && ITER)
+    ? '<div class="ctorcode">'+
+        '<div class="cl"><code>MyLinkedList&lt;Integer&gt; list = new MyLinkedList&lt;&gt;()</code><span class="cslot" id="ctorSlot"></span></div>'+
+        '<div class="cl"><code>ListIterator&lt;Integer&gt; it&nbsp;&nbsp;= list.listIterator()</code><span class="cnote">no arguments</span></div>'+
+      '</div>'
+    : defs.map(d=>'<button class="ctortab" data-ctor="'+d.id+'">'+d.label+'</button>').join('');
   // sensible default tab: show a populated example, the array/collection
   // constructor for ArrayList/Heap, otherwise the structure's first tab.
-  const def = STRUCT==='array' ? 'ctorA' : (STRUCT==='heap' ? 'heapC' : defs[0].id);
+  const def = (STRUCT==='linked' && ITER) ? 'it0' : STRUCT==='array' ? 'ctorA' : (STRUCT==='heap' ? 'heapC' : defs[0].id);
   document.getElementById('ctorArr').value = CTOR_ARR_DEFAULT[ctorHintKey()] || '3, 1, 4';
   document.getElementById('ctorCap').value = STRUCT==='array' ? 5 : (STRUCT==='hash' ? HASH_DEFAULT_CAP : 5);
   document.getElementById('ctorArr').disabled = false;
   document.getElementById('ctorNull').checked = false;
   ctorSelect(def);
+  if(STRUCT==='linked' && ITER){          // the values are the input of line 1, so they sit on line 1
+    const slot = document.getElementById('ctorSlot'), ca = document.getElementById('caArr');
+    if(slot && ca) slot.appendChild(ca);
+  }
 }
 function curCtorDef(){ const defs = ctorDefs(); return defs.find(d=>d.id===activeCtor) || defs[0]; }
 function ctorSelect(kind){
@@ -3444,7 +3470,20 @@ function ctorResult(){
 function constructActive(animate){
   pause();
   if(animate){ track('ctor_used', {struct:curStruct(), ctor:activeCtor}); awardPet('ctor', curStruct()+':'+activeCtor); }
-  if(ITER){ lockOps(false); buildIter(document.getElementById('ctorArr').value.split(',').map(parseToken).filter(t=>t!==undefined)); return; }
+  if(ITER){
+    if(!animate){                                                           // like every structure: nothing is drawn until Construct
+      iterList = null;
+      loadOp(genItCtor(document.getElementById('ctorArr').value.split(',').map(parseToken).filter(t=>t!==undefined && t!==null)), false, {toEnd:true, noReact:true});   // only to show how the constructor works
+      blankStage(); lockOps(true); return;
+    }
+    // one Construct: the list (line 1), then its iterator (line 2)
+    iterList = document.getElementById('ctorArr').value.split(',').map(parseToken).filter(t=>t!==undefined && t!==null);
+    lockOps(false);
+    document.getElementById('iterFx').style.display = 'block';          // blankStage hid the cursor overlay
+    loadOp(genItCtor(iterList), true, {noReact:true});
+    setCounters({hops:0,links:0}, null);
+    return;
+  }
   const built = ctorResult();
   loadOp(built, !!animate, {toEnd:!animate, noReact:true});
   if(!animate) blankStage();
@@ -6646,6 +6685,7 @@ setVisibleStructs(['ArrayList']);      // hide the rest right away; the server's
   const STATIC = !!window.PAWIE_STATIC;             // static site: no server, Pawie is kept in this browser (pawie-local.js)
   const nameEl = document.getElementById('pawieName');
   let wardrobe = null;                              // { hats:[{id,name,level}], outfits:[...] } from the server
+  let wardrobeOpen = false;                         // when the config says so, every hat and outfit can be worn whatever the XP
   let structsEnabled = ['ArrayList'];               // which structures students may see (from the server)
   const applyStructs = ()=> setVisibleStructs(structsEnabled);
   let emailOn = false;                              // server tells us if verification / reset mail is enabled
@@ -6797,7 +6837,7 @@ setVisibleStructs(['ArrayList']);      // hide the rest right away; the server's
       : '<button type="button" class="wd-btn locked" disabled title="Locked. Earn '+locked+' XP to unlock.">'+esc(label)+' &middot; '+locked+' XP</button>';
     const row = slot => '<div class="wd-row"><span class="wd-lab">'+SLOT_LABEL[slot]+'</span>'
       + btn(slot, 'none', NONE_LABEL[slot], !!session, 0)
-      + wardrobe.slots[slot].map(i => { const own = !!session && xp >= i.xp; return btn(slot, i.id, i.name, own, own ? 0 : i.xp); }).join('')
+      + wardrobe.slots[slot].map(i => { const own = !!session && (wardrobeOpen || xp >= i.xp); return btn(slot, i.id, i.name, own, own ? 0 : i.xp); }).join('')
       + '</div>';
     return '<div class="wd">'+wardrobe.order.map(row).join('')+'</div>';
   }
@@ -6989,12 +7029,21 @@ setVisibleStructs(['ArrayList']);      // hide the rest right away; the server's
   });
   // load the server's settings and any previous session, then decide whether to show the gate
   const cfgLoaded = api('/api/config').then(c=>{
-    emailOn = !!c.emailEnabled; wardrobe = c.wardrobe || null; if(c.paSchedule) _C.PA_SCHEDULE = c.paSchedule; requireLogin = !!c.requireLogin;
+    emailOn = !!c.emailEnabled; wardrobe = c.wardrobe || null; wardrobeOpen = !!c.wardrobeOpen; if(c.paSchedule) _C.PA_SCHEDULE = c.paSchedule; requireLogin = !!c.requireLogin;
     if(Array.isArray(c.structs) && c.structs.length) structsEnabled = c.structs;
     applyStructs(); return true;
   }).catch(()=>false);
   const meLoaded = (STATIC || tokenGet()) ? api('/api/me').then(signedIn).catch(e=>{ if(e.status===401) signedOut(); }) : Promise.resolve();
+  // the page opens on the iterator when it is open to this visitor and nothing else was picked meanwhile
+  let navTouched = false;
+  document.getElementById('structNav').addEventListener('click', ()=>{ navTouched = true; }, true);
+  const openOnIterator = ()=>{
+    if(navTouched || !ITER_OPEN) return;
+    const b = document.querySelector('#structNav .struct[data-struct="Iterator"]');
+    if(b && b.style.display!=='none') b.click();
+  };
   Promise.all([cfgLoaded, meLoaded]).then(([reachable])=>{
+    openOnIterator();
     if(reachable && !session && !STATIC && (requireLogin || !gateSkipped())) showGate();
   });
 
@@ -7075,7 +7124,7 @@ setVisibleStructs(['ArrayList']);      // hide the rest right away; the server's
       text:'Press <b>Construct</b> to build it. The picture below stays empty until you do.' },
     { target:()=>firstOps(),
       title:'Choose a method',
-      text:'Once it is built, press a method here to watch it run one step at a time. In ArrayList the methods unlock one at a time: watch one to the end to open the next.' },
+      text:'Once it is built, press a method here to watch it run one step at a time.' },
     { title:'You are ready',
       text:'That is all: pick a constructor, press Construct, then choose a method. You can open this tour again any time with the <b>Tutorial</b> button at the top.' },
   ];

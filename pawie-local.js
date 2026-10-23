@@ -47,7 +47,8 @@
     return { weeks: 6, weeklyXp: WEEKLY_XP, dailyXp: DAILY_XP_CAP, order: ['hat', 'outfit'], slots };
   })();
   const ITEMS = Object.entries(WARDROBE.slots).flatMap(([slot, list]) => list.map((i) => Object.assign({}, i, { slot }))).sort((a, b) => a.xp - b.xp);
-  const owned = (slot, id, xp) => id === 'none' || (WARDROBE.slots[slot] || []).some((i) => i.id === id && xp >= i.xp);
+  let allOpen = () => false;
+  const owned = (slot, id, xp) => id === 'none' || (WARDROBE.slots[slot] || []).some((i) => i.id === id && (allOpen() || xp >= i.xp));
   const MAX_XP = ITEMS[ITEMS.length - 1].xp;
   const QUIZ_PER_DAY = 5;
 
@@ -307,7 +308,7 @@
     body = body || {};
     switch (path) {
       case '/api/config':
-        return { emailEnabled: false, wardrobe: WARDROBE, structs: CFG.structs, requireLogin: false, paSchedule: Q.PA_SCHEDULE };
+        return Object.assign({ emailEnabled: false, wardrobe: WARDROBE, structs: CFG.structs, requireLogin: false, paSchedule: Q.PA_SCHEDULE }, allOpen() ? { wardrobeOpen: true } : {});
       case '/api/me': return account();
       case '/api/auth/logout': return {};
       case '/api/pet/event': return petEvent(body);

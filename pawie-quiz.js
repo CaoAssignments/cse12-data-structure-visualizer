@@ -9,6 +9,10 @@ window.PawieQuiz = {
   "LinkedList": {
    "start": "2026-10-16",
    "due": "2026-10-22"
+  },
+  "Iterator": {
+   "start": "2026-10-23",
+   "due": "2026-10-29"
   }
  },
  "QUIZ_DAYS": {
@@ -743,6 +747,372 @@ window.PawieQuiz = {
      "why": "The write-up says mergeLists throws a NullPointerException when left or right is null."
     }
    ]
+  ],
+  "Iterator": [
+   [
+    {
+     "q": "Where does the cursor of a ListIterator sit?",
+     "opt": [
+      "Between two nodes",
+      "On a node",
+      "Always at the head"
+     ],
+     "ans": 0,
+     "why": "The cursor sits in the gap between two nodes, so it always has a node on its left and a node on its right. Either one may be a sentinel."
+    },
+    {
+     "q": "A MyLinkedList holds 3 elements. How many positions can its iterator's cursor be in?",
+     "opt": [
+      "3",
+      "4",
+      "5"
+     ],
+     "ans": 1,
+     "why": "One before the first element, one between each pair, and one after the last. That is size + 1 positions in total."
+    },
+    {
+     "q": "How many parameters does the MyListIterator constructor take?",
+     "opt": [
+      "One: the list",
+      "Two: head and tail",
+      "None"
+     ],
+     "ans": 2,
+     "why": "MyListIterator is an inner class of MyLinkedList, so it already sees the head of the list it belongs to. The constructor only sets the starting fields."
+    },
+    {
+     "q": "Right after the constructor runs, what are left, right and idx?",
+     "opt": [
+      "left is head, right is the first node, idx is 0",
+      "left is the first node, right is the second node, idx is 1",
+      "left is tail, right is head, idx is size"
+     ],
+     "ans": 0,
+     "why": "A fresh iterator starts at the very front, so left is the head sentinel, right is head.getNext() and idx is 0. canRemoveOrSet starts as false."
+    },
+    {
+     "q": "How does code outside the list get an iterator?",
+     "opt": [
+      "new ListIterator()",
+      "list.listIterator()",
+      "new MyListIterator()"
+     ],
+     "ans": 1,
+     "why": "ListIterator is an interface, so it cannot be created with new. MyListIterator is an inner class that belongs to one list. The list methods listIterator() and iterator() just return new MyListIterator()."
+    }
+   ],
+   [
+    {
+     "q": "When does hasNext() return true?",
+     "opt": [
+      "When the list is not empty",
+      "When the cursor is at the start",
+      "When an element node comes after the cursor"
+     ],
+     "ans": 2,
+     "why": "hasNext() is true when going forward from the cursor reaches an element node. The tail sentinel is not an element."
+    },
+    {
+     "q": "What does next() do?",
+     "opt": [
+      "Returns the element on the right and moves the cursor right by one node",
+      "Returns the element on the left and moves the cursor left by one node",
+      "Returns the size of the list and leaves the cursor where it is"
+     ],
+     "ans": 0,
+     "why": "next() returns the element of the node on the right of the cursor, then the cursor steps past that node."
+    },
+    {
+     "q": "What happens when next() is called at the end of the list?",
+     "opt": [
+      "It returns null",
+      "It throws NoSuchElementException",
+      "It wraps around to the first element"
+     ],
+     "ans": 1,
+     "why": "At the end, right is the tail sentinel, so there is no element to return and the call must throw NoSuchElementException."
+    },
+    {
+     "q": "After a successful next(), how does idx change?",
+     "opt": [
+      "It goes down by 1",
+      "It stays the same",
+      "It goes up by 1"
+     ],
+     "ans": 2,
+     "why": "idx is the index of the node next() would return, so moving past one node adds 1."
+    },
+    {
+     "q": "previous() is called when idx is 3. What is returned and what is idx afterwards?",
+     "opt": [
+      "The element at index 2, and idx becomes 2",
+      "The element at index 3, and idx becomes 4",
+      "The element at index 3, and idx becomes 2"
+     ],
+     "ans": 0,
+     "why": "previous() returns the node on the left of the cursor, which is index idx - 1, and the cursor moves back one node, so idx goes down to 2."
+    }
+   ],
+   [
+    {
+     "q": "The cursor is at the end of a list of size 4. What does nextIndex() return?",
+     "opt": [
+      "3",
+      "4",
+      "-1"
+     ],
+     "ans": 1,
+     "why": "nextIndex() is the index next() would return, and at the end of the list that is the size."
+    },
+    {
+     "q": "The cursor is at the start of the list. What does previousIndex() return?",
+     "opt": [
+      "0",
+      "It throws NoSuchElementException",
+      "-1"
+     ],
+     "ans": 2,
+     "why": "There is no node on the left, so previousIndex() returns -1 and does not throw."
+    },
+    {
+     "q": "Where does add(e) put the new element?",
+     "opt": [
+      "Right before the element that next() would return",
+      "At the end of the list",
+      "At the head of the list"
+     ],
+     "ans": 0,
+     "why": "add inserts at the cursor, so the new node goes between left and right, right before the element next() would return."
+    },
+    {
+     "q": "Right after add(e), what does previous() return?",
+     "opt": [
+      "The element that was before the new one",
+      "The newly added element",
+      "It throws IllegalStateException"
+     ],
+     "ans": 1,
+     "why": "add leaves the cursor just after the new node, so the new node is on the left and previous() returns it."
+    },
+    {
+     "q": "add(e) is called when idx is 2. What is idx afterwards?",
+     "opt": [
+      "2",
+      "1",
+      "3"
+     ],
+     "ans": 2,
+     "why": "The cursor moves past the new node, so idx goes up by 1 and the size goes up by 1."
+    }
+   ],
+   [
+    {
+     "q": "What is canRemoveOrSet for?",
+     "opt": [
+      "It says whether remove() and set() may be called right now",
+      "It says whether the list is empty",
+      "It says which way the iterator last moved"
+     ],
+     "ans": 0,
+     "why": "It is false at the start and after add or remove, and true after next or previous."
+    },
+    {
+     "q": "After next(), which node does set(e) change?",
+     "opt": [
+      "The node on the right of the cursor",
+      "The node on the left of the cursor",
+      "The first node of the list"
+     ],
+     "ans": 1,
+     "why": "next() returned the node it just passed, and that node is now on the left of the cursor."
+    },
+    {
+     "q": "After previous(), which node does remove() delete?",
+     "opt": [
+      "The node on the left of the cursor",
+      "The tail sentinel",
+      "The node on the right of the cursor"
+     ],
+     "ans": 2,
+     "why": "previous() returned the node it just passed going backward, and that node is now on the right of the cursor."
+    },
+    {
+     "q": "Why does the iterator keep the forward field?",
+     "opt": [
+      "To remember which side the last returned node is on, for set and remove",
+      "To count how many nodes were visited",
+      "To decide when hasNext() is true"
+     ],
+     "ans": 0,
+     "why": "forward is true after next() and false after previous(), so set and remove know whether to act on left or right."
+    },
+    {
+     "q": "After remove() finishes, what is canRemoveOrSet?",
+     "opt": [
+      "true",
+      "false",
+      "It keeps its old value"
+     ],
+     "ans": 1,
+     "why": "A second remove() or a set() is not allowed until the next call to next() or previous()."
+    }
+   ],
+   [
+    {
+     "q": "Which exception does add(null) throw?",
+     "opt": [
+      "IllegalStateException",
+      "NoSuchElementException",
+      "NullPointerException"
+     ],
+     "ans": 2,
+     "why": "The write-up says add and set throw a NullPointerException when the element is null."
+    },
+    {
+     "q": "Which exception does remove() throw right after add()?",
+     "opt": [
+      "IllegalStateException",
+      "NoSuchElementException",
+      "IndexOutOfBoundsException"
+     ],
+     "ans": 0,
+     "why": "add sets canRemoveOrSet to false, and remove needs a next() or previous() call first, otherwise it throws IllegalStateException."
+    },
+    {
+     "q": "Which exception does previous() throw at the start of the list?",
+     "opt": [
+      "IllegalStateException",
+      "NoSuchElementException",
+      "NullPointerException"
+     ],
+     "ans": 1,
+     "why": "There is no element on the left, so previous() throws NoSuchElementException."
+    },
+    {
+     "q": "Inside MyListIterator, which of these is not allowed?",
+     "opt": [
+      "Using the getters and setters of Node",
+      "Defining helper methods inside MyListIterator",
+      "Calling a MyLinkedList method such as get(i)"
+     ],
+     "ans": 2,
+     "why": "If an iterator method uses a MyLinkedList method it earns 0 for that method. Node methods and helpers inside the inner class are fine."
+    },
+    {
+     "q": "What access should the instance variables of MyListIterator have?",
+     "opt": [
+      "The default (package) access",
+      "private",
+      "public static"
+     ],
+     "ans": 0,
+     "why": "The write-up says not to make instance variables private, so they keep the default access modifier."
+    }
+   ],
+   [
+    {
+     "q": "How is MyListIteratorCustomTester.java graded?",
+     "opt": [
+      "Each test must pass on every implementation",
+      "Each test must pass on a good implementation and fail on a bad one",
+      "The file only has to compile"
+     ],
+     "ans": 1,
+     "why": "A test that fails on a good implementation is wrong, and a test that passes on a bad one is not rigorous enough."
+    },
+    {
+     "q": "One of your tests passes on a bad implementation. What does that mean?",
+     "opt": [
+      "The bad implementation is actually fine",
+      "The test earns extra points",
+      "The test may be wrong or not rigorous enough"
+     ],
+     "ans": 2,
+     "why": "Try adding more asserts so the bad implementation is caught."
+    },
+    {
+     "q": "What should testNextEnd do?",
+     "opt": [
+      "Call next when the iterator is at the end of a list",
+      "Call next on a list with one element",
+      "Call hasNext at the start of a list"
+     ],
+     "ans": 0,
+     "why": "It checks the case where there is no next element, so the exception must be thrown."
+    },
+    {
+     "q": "Which exception should testCantSet expect?",
+     "opt": [
+      "NullPointerException",
+      "IllegalStateException",
+      "NoSuchElementException"
+     ],
+     "ans": 1,
+     "why": "set is called while canRemoveOrSet is false, with a valid non-null element, so it must throw IllegalStateException."
+    },
+    {
+     "q": "What must you not change in MyListIteratorCustomTester.java?",
+     "opt": [
+      "The test bodies",
+      "The imports",
+      "The test headers"
+     ],
+     "ans": 2,
+     "why": "The headers must stay exactly as given so the grader can find your tests. You write the bodies."
+    }
+   ],
+   [
+    {
+     "q": "In PA4, what may mergeLists call on a MyLinkedList?",
+     "opt": [
+      "Only listIterator(), iterator() and the constructor",
+      "get and size",
+      "Any method, as in PA3"
+     ],
+     "ans": 0,
+     "why": "Not even size() is allowed this time. The work is done through iterators."
+    },
+    {
+     "q": "What running time must the PA4 mergeLists have?",
+     "opt": [
+      "O(n squared)",
+      "O(n)",
+      "O(log n)"
+     ],
+     "ans": 1,
+     "why": "A loop of get(i) calls is O(n squared) because every get walks from the head. The write-up asks for O(n) and hints at using the iterator instead of get(i)."
+    },
+    {
+     "q": "left is 1, 2, 2 and right is 2, 3, 4. What does mergeLists return?",
+     "opt": [
+      "1, 2, 3, 4",
+      "1, 2, 2, 3, 4",
+      "1, 2, 2, 2, 3, 4"
+     ],
+     "ans": 2,
+     "why": "Duplicates are kept, so the result holds all six elements in sorted order."
+    },
+    {
+     "q": "What does mergeLists do when left or right is null?",
+     "opt": [
+      "It throws NullPointerException",
+      "It returns an empty list",
+      "It returns the other list"
+     ],
+     "ans": 0,
+     "why": "The write-up says it throws a NullPointerException when left or right is null."
+    },
+    {
+     "q": "What does the write-up say about the two lists given to mergeLists?",
+     "opt": [
+      "Both are sorted in ascending order, there may be duplicates, and the sizes may differ",
+      "Both have the same size and no duplicates",
+      "Both are sorted in descending order"
+     ],
+     "ans": 0,
+     "why": "The write-up says you are given two lists sorted in ascending order, that there may be duplicates, and that the list sizes may not be equal."
+    }
+   ]
   ]
  },
  "JOKES_DAYS": {
@@ -790,6 +1160,29 @@ window.PawieQuiz = {
    ],
    [
     "Why did add at index 0 feel quick? The head was already standing right there."
+   ]
+  ],
+  "Iterator": [
+   [
+    "Why does the iterator never get lost? Its cursor always sits between two elements and knows both."
+   ],
+   [
+    "The iterator is an excellent tour guide. It only ever shows you the next sight."
+   ],
+   [
+    "previous asked next for directions. Next said, I only go the other way."
+   ],
+   [
+    "nextIndex and previousIndex are siblings. They are always exactly one apart."
+   ],
+   [
+    "hasPrevious is the iterator's rear view mirror."
+   ],
+   [
+    "An iterator and a list walk into a node. Only one of them remembers where it was."
+   ],
+   [
+    "What did the cursor say after add? Now I am right after the new guy."
    ]
   ]
  }
