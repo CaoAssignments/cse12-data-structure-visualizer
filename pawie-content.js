@@ -63,7 +63,7 @@ window.PawieContent = {
   ],
 
   // PA schedule (start and due dates). The server's /api/config overrides this with quiz-bank.js, so edit the dates there.
-  // The quiz questions themselves live in quiz-bank.js on the server and are released day by day.
+  // The quiz questions themselves live in quiz-bank.js on the server. Every day of a structure's quiz is open once the structure is.
   PA_SCHEDULE: {
     ArrayList: { start: "2026-10-09", due: "2026-10-15" }
   },

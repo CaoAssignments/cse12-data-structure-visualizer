@@ -265,6 +265,8 @@ input.long{width:160px;flex:1;min-width:130px}
 .mgit .lcell.sent .lbox{min-width:40px;font-size:9px;letter-spacing:.03em}
 .mgit .mgarr{padding-top:8px;font-size:12px}
 .mgit .mgempty{height:36px;margin-top:0}
+/* hasFraudulentTxns: one array row, its name on a line of its own above the cells */
+.frrow{flex-wrap:wrap}.frrow .mglab{width:100%}
 .lcell.onwalk .lbox{opacity:1;background:var(--blue-soft);border-color:var(--blue);color:var(--blue)}
 .lcell.onwalk.target .lbox{background:var(--orange);border-color:var(--orange);color:#fff}
 .lcell.sent.onwalk .lbox{color:var(--blue)}
@@ -552,6 +554,16 @@ input.long{width:160px;flex:1;min-width:130px}
       <span class="llmode-hint" id="llmodeHint"></span>
     </div>
 
+    <!-- Hashing only: like LinkedList, the choice comes first (a HashMap or a HashSet), since it decides which constructors are offered -->
+    <div class="llmode" id="hashmodewrap" style="display:none;margin:0 0 14px">
+      <span class="llmode-label">use as</span>
+      <div class="seg">
+        <button class="segbtn active" data-mode="map">HashMap</button>
+        <button class="segbtn" data-mode="set">HashSet</button>
+      </div>
+      <span class="llmode-hint" id="hashmodeHint"></span>
+    </div>
+
     <!-- constructor chooser: pick which of the structure's real PA constructors
          to run, then watch it build, step by step. Tabs + defaults are filled
          in per structure by setupCtorChooser(). -->
@@ -575,16 +587,6 @@ input.long{width:160px;flex:1;min-width:130px}
         <button class="segbtn" data-mode="pq">MyPriorityQueue</button>
       </div>
       <span class="llmode-hint" id="heapmodeHint"></span>
-    </div>
-
-    <!-- Hashing only: the two options inside Hashing, a HashMap or a HashSet -->
-    <div class="llmode" id="hashmodewrap" style="display:none">
-      <span class="llmode-label">use as</span>
-      <div class="seg">
-        <button class="segbtn active" data-mode="map">HashMap</button>
-        <button class="segbtn" data-mode="set">HashSet</button>
-      </div>
-      <span class="llmode-hint" id="hashmodeHint"></span>
     </div>
 
     <hr class="cdivider">
@@ -753,62 +755,72 @@ input.long{width:160px;flex:1;min-width:130px}
       </div>
     </div>
 
-    <!-- HashMap operations; shown only in HashMap mode -->
+    <!-- HashMap operations; shown only in HashMap mode. The order of the PA5 write-up's MyHashMap method table, then MyAlgorithm -->
     <div class="ops2" id="hmapOps" style="display:none">
       <div class="opcol">
         <div class="oplist">
+          <button class="btn primary obtn" data-act="hget">get(k)</button>
+          <div class="args"><span class="field"><label>k</label><input type="text" id="vHGetKey" class="short" placeholder="key" value="F"></span></div>
           <button class="btn primary obtn" data-act="hput">put(k, v)</button>
           <div class="args">
-            <span class="field"><label>k</label><input type="text" id="vHKey" class="short" placeholder="key" value="D"></span>
-            <span class="field"><label>v</label><input type="text" id="vHVal" class="short" placeholder="value" value="4"></span>
+            <span class="field"><label>k</label><input type="text" id="vHKey" class="short" placeholder="key" value="A"></span>
+            <span class="field"><label>v</label><input type="text" id="vHVal" class="short" placeholder="value" value="8"></span>
           </div>
-          <button class="btn primary obtn" data-act="hget">get(k)</button>
-          <div class="args"><span class="field"><label>k</label><input type="text" id="vHGetKey" class="short" placeholder="key" value="A"></span></div>
           <button class="btn primary obtn" data-act="hremove">remove(k)</button>
-          <div class="args"><span class="field"><label>k</label><input type="text" id="vHRemoveKey" class="short" placeholder="key" value="G"></span></div>
+          <div class="args"><span class="field"><label>k</label><input type="text" id="vHRemoveKey" class="short" placeholder="key" value="null"></span></div>
+          <button class="btn primary obtn" data-act="hsize">size()</button>
+          <div class="args"></div>
+          <button class="btn primary obtn" data-act="hcap">getCapacity()</button>
+          <div class="args"></div>
         </div>
       </div>
       <div class="opcol">
         <div class="oplist">
-          <button class="btn primary obtn" data-act="hsize">size()</button>
+          <button class="btn primary obtn" data-act="hclear">clear()</button>
           <div class="args"></div>
-          <button class="btn primary obtn" data-act="hcap">getCapacity()</button>
+          <button class="btn primary obtn" data-act="hisempty">isEmpty()</button>
           <div class="args"></div>
           <button class="btn primary obtn" data-act="hexpand">expandCapacity()</button>
           <div class="args"></div>
           <button class="btn primary obtn" data-act="hgethash">getHash(k, cap)</button>
           <div class="args">
             <span class="field"><label>k</label><input type="text" id="vHHashKey" class="short" placeholder="key" value="A"></span>
-            <span class="field"><label>cap</label><input type="number" id="vHHashCap" class="short" value="5" step="1"></span>
+            <span class="field"><label>cap</label><input type="number" id="vHHashCap" class="short" value="0" step="1"></span>
           </div>
-          <button class="btn primary obtn" data-act="hisempty">isEmpty()</button>
-          <div class="args"></div>
-          <button class="btn primary obtn" data-act="hclear">clear()</button>
-          <div class="args"></div>
+          <button class="btn primary obtn" data-act="hfraud">hasFraudulentTxns(ids, c)</button>
+          <div class="args">
+            <span class="field"><label>ids</label><input type="text" id="vHmFrIds" class="mid" data-free value="1, 2, 3, 1"></span>
+            <span class="field"><label>c</label><input type="number" id="vHmFrCert" class="short" value="2" step="1"></span>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- HashSet operations; shown only in HashSet mode -->
+    <!-- HashSet operations; shown only in HashSet mode. The order of the PA5 write-up's MyHashSet method table, then MyAlgorithm -->
     <div class="ops2" id="hsetOps" style="display:none">
       <div class="opcol">
         <div class="oplist">
           <button class="btn primary obtn" data-act="hadd">add(e)</button>
-          <div class="args"><span class="field"><label>e</label><input type="text" id="vHAdd" class="short" placeholder="element" value="bird"></span></div>
-          <button class="btn primary obtn" data-act="hcontains">contains(e)</button>
-          <div class="args"><span class="field"><label>e</label><input type="text" id="vHContains" class="short" placeholder="element" value="cat"></span></div>
+          <div class="args"><span class="field"><label>e</label><input type="text" id="vHAdd" class="short" placeholder="element" value="8"></span></div>
           <button class="btn primary obtn" data-act="hsremove">remove(e)</button>
-          <div class="args"><span class="field"><label>e</label><input type="text" id="vHSRemove" class="short" placeholder="element" value="dog"></span></div>
+          <div class="args"><span class="field"><label>e</label><input type="text" id="vHSRemove" class="short" placeholder="element" value="3"></span></div>
+          <button class="btn primary obtn" data-act="hcontains">contains(e)</button>
+          <div class="args"><span class="field"><label>e</label><input type="text" id="vHContains" class="short" placeholder="element" value="null"></span></div>
+          <button class="btn primary obtn" data-act="hsize">size()</button>
+          <div class="args"></div>
         </div>
       </div>
       <div class="opcol">
         <div class="oplist">
-          <button class="btn primary obtn" data-act="hsize">size()</button>
+          <button class="btn primary obtn" data-act="hclear">clear()</button>
           <div class="args"></div>
           <button class="btn primary obtn" data-act="hisempty">isEmpty()</button>
           <div class="args"></div>
-          <button class="btn primary obtn" data-act="hclear">clear()</button>
-          <div class="args"></div>
+          <button class="btn primary obtn" data-act="hfraud">hasFraudulentTxns(ids, c)</button>
+          <div class="args">
+            <span class="field"><label>ids</label><input type="text" id="vHsFrIds" class="mid" data-free value="0, 1, 2, 0, 1, 1"></span>
+            <span class="field"><label>c</label><input type="number" id="vHsFrCert" class="short" value="2" step="1"></span>
+          </div>
         </div>
       </div>
     </div>
@@ -1176,7 +1188,7 @@ input.long{width:160px;flex:1;min-width:130px}
   </div><!-- /workspace -->
 </div>
 
-<script>window.PAWIE_STATIC=true;window.PAWIE_COLLECT_URL="https://script.google.com/macros/s/AKfycbxC4O5gqsx4hJ2f8oAdQsesj7kjVimagQ1xv72pDFTmdj7rtTJ0ZaUMusPGVRyt8Ise4A/exec";window.PAWIE_STATIC_CONFIG={"structs":["ArrayList","LinkedList","Iterator"]};</script>
+<script>window.PAWIE_STATIC=true;window.PAWIE_COLLECT_URL="https://script.google.com/macros/s/AKfycbxC4O5gqsx4hJ2f8oAdQsesj7kjVimagQ1xv72pDFTmdj7rtTJ0ZaUMusPGVRyt8Ise4A/exec";window.PAWIE_STATIC_CONFIG={"structs":["ArrayList","LinkedList","Iterator","Hashing"]};</script>
 <script src="pawie-quiz.js"></script>
 <script src="pawie-local.js"></script>
 <script src="analytics.js"></script>
@@ -1780,8 +1792,9 @@ function drawFrame(){
           +'<span><i class="sw" style="background:#fff;opacity:.4"></i> already used</span><span><i class="sw" style="background:var(--orange-soft);border:1.5px dashed var(--orange)"></i> new node in result</span>';
       if(STRUCT==='linked'){ document.getElementById('legendLL').style.display = (!mg && !ITER) ? '' : 'none'; document.getElementById('legendIter').style.display = (!mg && ITER) ? '' : 'none'; }
     } }
+  if(STRUCT==='hash') document.getElementById('legendHash').style.display = f.kind==='fraud' ? 'none' : '';   // hasFraudulentTxns draws an array, not the table
   if(f.ctorFail) renderCtorFail();
-  else if(f.kind==='linked') renderLinked(f); else if(f.kind==='merge') renderMerge(f); else if(f.kind==='stack') renderStack(f); else if(f.kind==='queue' || f.kind==='deque') renderQueue(f); else if(f.kind==='hash') renderHash(f); else if(f.kind==='heap') renderHeap(f); else if(f.kind==='tree') renderTree(f); else renderState(f, f);
+  else if(f.kind==='linked') renderLinked(f); else if(f.kind==='merge') renderMerge(f); else if(f.kind==='stack') renderStack(f); else if(f.kind==='queue' || f.kind==='deque') renderQueue(f); else if(f.kind==='hash') renderHash(f); else if(f.kind==='fraud') renderFraud(f); else if(f.kind==='heap') renderHeap(f); else if(f.kind==='tree') renderTree(f); else renderState(f, f);
   setNote(f.say + (player.counting ? '<div class="startnote">The animation starts in <b>'+player.counting+'</b>s. Press play to start right now.</div>' : ''), f.err);
   const completed = new Set(player.frames.slice(0, player.i).map(x=>x.phase));
   const skipped = new Set();
@@ -2099,6 +2112,7 @@ document.querySelector('.controls').addEventListener('click', e=>{
       else if(act==='hsize')     result = genHsize(true);
       else if(act==='hisempty')  result = genHisEmpty(true);
       else if(act==='hclear')    result = genHclear(true);
+      else if(act==='hfraud')    result = fraudOp('vHsFrIds', 'vHsFrCert', true);
     } else {
       if(act==='hput')           result = genHput(readVal('vHKey'), readVal('vHVal'), false);
       else if(act==='hget')      result = genHget(readVal('vHGetKey'), false);
@@ -2113,6 +2127,7 @@ document.querySelector('.controls').addEventListener('click', e=>{
         result = genHexpand();
       }
       else if(act==='hgethash')  result = genHgetHash(readVal('vHHashKey'), readInt('vHHashCap'));
+      else if(act==='hfraud')    result = fraudOp('vHmFrIds', 'vHmFrCert', false);
     }
     if(result) loadOp(result, true);
     return;
@@ -2682,7 +2697,7 @@ function genLLmerge(L, R, lNull, rNull){
 /* ---- mergeLists, answer only: what it returns, never how ----
    mergeLists is the assignment's problem to solve, so the student site shows only the two inputs and what comes back
    (the examples and the rules of the write-up), not the steps. */
-const MERGE_REVEAL = {"pa3":true,"pa4":false};
+const MERGE_REVEAL = {"pa3":true,"pa4":true};
 function genMergeAnswer(L, R, lNull, rNull, iter){
   const label = 'mergeLists(left, right)';
   const cost = iter ? 'The write-up requires your solution to run in <code>O(n)</code>.'
@@ -2753,6 +2768,18 @@ PHASES_LL.merge = [
     {id:'done',    t:'Return the result', d:'Hand back the new list. The two inputs are untouched.'},
   ];
 PHASE_TITLES_LL.merge = 'How mergeLists(left, right) works';
+}
+// PA4 is past its due date, so its walkthrough is shown. setPA4Phases() picks what the panel describes.
+const PA4_ANSWER_PHASES = PHASES_IT.itmerge, PA4_ANSWER_TITLE = PHASE_TITLES_IT.itmerge;
+const PA4_STEP_PHASES = [{id:'setup',   t:'Open three iterators', d:'Both inputs must be non-null. Make an empty result and ask each of the three lists for a listIterator(). Nothing else of MyLinkedList is allowed, not even size().'},
+             {id:'compare', t:'Read both fronts', d:'While leftIt.hasNext() and rightIt.hasNext(), call next() on each to read the two front values. A tie goes to the left list.'},
+             {id:'take',    t:'Add the smaller one', d:'resultIt.add() puts it at the end of result, no walk.'},
+             {id:'undo',    t:'Step the other back', d:'The bigger value was only peeked at, so previous() on its iterator puts it back to be compared again.'},
+             {id:'drain',   t:'Copy what is left', d:'When one list runs out, keep calling next() on the other and add each value to result.'},
+             {id:'done',    t:'Return the result', d:'Hand back the new list. Every element was visited a constant number of times, so the whole merge is O(n).'}];
+function setPA4Phases(){
+  PHASES_IT.itmerge = MERGE_REVEAL.pa4 ? PA4_STEP_PHASES : PA4_ANSWER_PHASES;
+  PHASE_TITLES_IT.itmerge = MERGE_REVEAL.pa4 ? 'How mergeLists(left, right) works' : PA4_ANSWER_TITLE;
 }
 
 const CX_ITER =
@@ -2999,6 +3026,67 @@ function genItQuery(kind){
   return {frames:g.frames, finalIter:modelIter, code, row:(kind==='nextidx'||kind==='previdx')?'bo-itquery2':'bo-itquery', label, bigO};
 }
 
+/* ---- MyAlgorithm.mergeLists(left, right) written with MyListIterator (PA4 Part 3) ----
+   Same problem as PA3, but no MyLinkedList method may be called (not even size()); only listIterator() and the
+   constructor. Each input gets an iterator. Both are read with next(); the winner goes into result with add(), and
+   the loser is put back with previous(). Every step is O(1), so the whole merge is O(n). */
+function genItMerge(L, R, lNull, rNull){
+  const label = 'mergeLists(left, right)';
+  const cost = {hops:0, links:0}, frames = [];
+  let res = [], curL = 0, curR = 0;                       // curL / curR: nextIndex() of leftIt / rightIt
+  const snap = o => frames.push({
+    kind:'merge', itm:true, left:lNull?null:L.slice(), right:rNull?null:R.slice(), result:res.slice(),
+    il:o.il===undefined?curL:o.il, ir:o.ir===undefined?curR:o.ir, hl:o.hl===undefined?null:o.hl, hr:o.hr===undefined?null:o.hr, ht:o.ht||'val',
+    hot:o.hot||null, added:!!o.added,
+    phase:o.phase||null, say:o.say||'', cost:{...cost}, lit:o.lit||null, err:!!o.err,
+    run:o.run||'', ret:(o.ret===undefined?null:o.ret)
+  });
+  const unchanged = {frames, finalIter:modelIter, code:'itmerge', row:'bo-itmerge', label, bigO:null};
+  if(lNull || rNull){
+    snap({phase:'setup', il:null, ir:null, err:true, run:label,
+      say:'<b>NullPointerException</b>: mergeLists throws when <b>'+(lNull && rNull ? 'left or right' : lNull ? 'left' : 'right')+'</b> is null, before any iterator is made. No result list is built.'});
+    return unchanged;
+  }
+  const sorted = a => a.every((v,i)=>i===0 || a[i-1]<=v);
+  const nL = L.length, nR = R.length, total = nL + nR;
+  const warn = (!sorted(L) || !sorted(R))
+    ? ' <b>Heads up:</b> the write-up promises both lists are sorted, and <b>'+(!sorted(L) ? 'left' : 'right')+'</b> is not, so the result will only be as ordered as the inputs.' : '';
+  snap({phase:'setup', run:label,
+    say:'<b>mergeLists</b> with iterators. The write-up forbids every <b>MyLinkedList</b> method here (yes, even <b>size()</b>) except <b>listIterator()</b> and the constructor. Make an empty <b>result</b>, then open <b>resultIt</b>, <b>leftIt</b> and <b>rightIt</b>. Each cursor starts at the front, and <b>hasNext()</b> tells us when a list is used up.'+warn});
+  const addTo = v => { res.push(v); cost.links += 4; };      // resultIt.add(v): four pointer writes at the cursor, no walk
+  while(curL < nL && curR < nR){
+    const a = L[curL], b = R[curR], takeLeft = a <= b;
+    curL++; curR++; cost.hops += 2;
+    snap({phase:'compare', hl:curL-1, hr:curR-1, hot:takeLeft?'left':'right', lit:'H', run:'valL = leftIt.next(), valR = rightIt.next()',
+      say:'Both <b>hasNext()</b> are true. <b>leftIt.next()</b> returns <b>'+a+'</b> and <b>rightIt.next()</b> returns <b>'+b+'</b>, one hop each. '
+        + (a===b ? 'They are equal, and <b>compareTo(...) &lt;= 0</b> is true, so the left one goes first.' : takeLeft ? '<b>'+a+'</b> is smaller, so it goes next.' : '<b>'+b+'</b> is smaller, so it goes next.')});
+    const v = takeLeft ? a : b;
+    addTo(v);
+    snap({phase:'take', hl:curL-1, hr:curR-1, hot:takeLeft?'left':'right', added:true, lit:'L', run:'resultIt.add('+(takeLeft?'valL':'valR')+')',
+      say:'<b>resultIt.add('+v+')</b> splices <b>'+v+'</b> in at the cursor of result. It is already at the end, so nothing is walked.'});
+    if(takeLeft) curR--; else curL--;
+    cost.hops++;
+    snap({phase:'undo', hot:takeLeft?'left':'right', lit:'H', run:(takeLeft?'rightIt':'leftIt')+'.previous()',
+      say:'<b>'+(takeLeft?'valR':'valL')+'</b> ('+(takeLeft?b:a)+') was only read, not used. <b>'+(takeLeft?'rightIt':'leftIt')+'.previous()</b> steps that cursor back one node, so '+(takeLeft?b:a)+' is the front of its list again and will be compared next round. One hop.'});
+  }
+  const drain = (arr, side) => {
+    while((side==='left' ? curL : curR) < arr.length){
+      const k = side==='left' ? curL : curR, v = arr[k];
+      if(side==='left') curL++; else curR++;
+      cost.hops++; addTo(v);
+      snap({phase:'drain', ht:'copied', hl:side==='left'?k:null, hr:side==='right'?k:null, hot:side, added:true, lit:'L', run:'resultIt.add('+side+'It.next())',
+        say:'<b>'+(side==='left'?'rightIt':'leftIt')+'.hasNext()</b> is false, so <b>'+side+'</b> just continues. <b>'+side+'It.next()</b> returns <b>'+v+'</b> and <b>resultIt.add('+v+')</b> puts it at the end.'});
+    }
+  };
+  drain(L, 'left'); drain(R, 'right');
+  const out = '['+res.join(', ')+']';
+  snap({phase:'done', run:'return result', ret:out,
+    say: total ? 'Every element has been copied across in order. <b>return result</b> gives <b>'+out+'</b>. Neither input list was changed.' : 'Both lists are empty, so neither <b>hasNext()</b> is true and the result is empty too. <b>return result</b> gives <b>[]</b>.'});
+  return {frames, finalIter:modelIter, code:'itmerge', row:'bo-itmerge', label,
+    bigO: total
+      ? 'Merging <b>'+total+'</b> element(s) took <code>'+cost.hops+'</code> cursor hop(s) and <code>'+cost.links+'</code> pointer writes in all. Every <code>next()</code>, <code>previous()</code> and <code>add()</code> starts where the cursor already is, so each element costs a constant amount of work. That is <code>O(n)</code> in the total length, where the <code>get</code> / <code>add</code> version of PA3 was <code>O(n&sup2;)</code>.'
+      : 'With nothing to copy there is no walking at all.'};
+}
 
 /* ---- render a linked frame: head <-> nodes <-> tail, with real next/prev
    arrows drawn as an SVG overlay so each pointer can be lit and redirected. */
@@ -3009,6 +3097,53 @@ const SVGNS = 'http://www.w3.org/2000/svg';
 function hideIterCaret(){
   const fx = document.getElementById('iterFx'); if(!fx) return;
   fx.querySelectorAll('.fxcaret,.fxlabel').forEach(e=>{ e.style.transition = 'none'; e.style.opacity = '0'; void e.offsetWidth; e.style.transition = ''; });
+}
+/* mergeLists written with MyListIterator: left, right and result are each a real MyLinkedList (head, nodes, tail)
+   with the dashed cursor of their own iterator sitting between two nodes. The cursor is what moves. */
+function renderMergeIt(f){
+  const cells = document.getElementById('cells');
+  cells.innerHTML = '';
+  const host = document.createElement('div'); host.className = 'mgstage';
+  hideIterCaret();                                       // the linked picture's cursor overlay must not linger over this picture
+  const addRow = (name, itName, vals, idx, hot, grew, held, heldTag) => {
+    const row = document.createElement('div'); row.className = 'mgrow mgit';
+    const lab = document.createElement('div'); lab.className = 'mglab';
+    lab.innerHTML = '<b>'+name+'</b>'+((vals===null || vals==='absent' || idx==null) ? '' : '<span>'+itName+' &middot; idx = '+idx+'</span>');
+    row.appendChild(lab);
+    if(vals===null || vals==='absent'){                              // a null input has no iterator, and a result that was never built has none either
+      const b = document.createElement('div'); b.className = 'mgempty'; b.textContent = vals===null ? 'null' : 'not created'; row.appendChild(b);
+      host.appendChild(row); return;
+    }
+    const line = document.createElement('div'); line.className = 'mgitems'; row.appendChild(line);
+    const hasHeld = held!==null && held!==undefined;
+    const items = [{sent:'head'}].concat(vals.map((v,i)=>({v,i}))).concat([{sent:'tail'}]);
+    items.forEach((it, k)=>{
+      const cell = document.createElement('div');
+      let cls = 'lcell' + (it.sent ? ' sent' : '');
+      if(!it.sent){
+        const at = hasHeld ? held : idx;                            // the node next() just returned, else the one next() would return
+        if(it.i < at) cls += ' mgdone';
+        else if(it.i === at) cls += hot ? ' target' : ' look';
+        if(grew && it.i === vals.length-1) cls += ' new';
+      }
+      cell.className = cls;
+      const box = document.createElement('div'); box.className = 'lbox'; box.textContent = it.sent ? it.sent : fmt(it.v); cell.appendChild(box);
+      const ptr = document.createElement('div'); ptr.className = 'lptr';
+      if(!it.sent && hasHeld && it.i === held) ptr.innerHTML = '<span class="currtag">'+(heldTag || 'copied')+'</span>';
+      cell.appendChild(ptr);
+      line.appendChild(cell);
+      if(k === idx){                                                // the cursor sits between this node and the next one
+        const cur = document.createElement('div'); cur.className = 'mgcur'; cur.innerHTML = '<i>'+itName+'</i>'; line.appendChild(cur);
+      }
+      if(k < items.length-1){ const a = document.createElement('span'); a.className = 'mgarr'; a.innerHTML = '&harr;'; line.appendChild(a); }
+    });
+    host.appendChild(row);
+  };
+  addRow('left',   'leftIt',   f.left,   f.il, f.hot==='left',  false,   f.hl, f.ht==='copied' ? 'copied' : 'valL');
+  addRow('right',  'rightIt',  f.right,  f.ir, f.hot==='right', false,   f.hr, f.ht==='copied' ? 'copied' : 'valR');
+  addRow('result', 'resultIt', f.err ? 'absent' : f.result, f.result.length, false, f.added, null, null);
+  cells.appendChild(host);
+  const bs = document.getElementById('bSize'); if(bs) bs.textContent = 'result size = ' + f.result.length;
 }
 
 function renderMerge(f){
@@ -3427,12 +3562,12 @@ const CTOR_HINT = {
   queue:'new MyQueue(capacity) allocates a MyDeque of that capacity, then enqueues each listed value (addLast). A capacity of 0 is allowed (the first enqueue grows it to 10) and a negative one throws IllegalArgumentException. A null in the list is skipped.',
   deque:'new MyDeque(capacity) allocates the circular array with front = rear = 0, then addLasts each listed value. A capacity of 0 is allowed (the first add grows it to 10) and a negative one throws IllegalArgumentException. A null in the list is skipped.',
   tree:'The no-arg constructor makes an empty tree (root = null). Listed entries are then inserted one by one: write key:value, or just a key. A null key is skipped, since insert(null, v) would throw.',
-  hashmap:'new MyHashMap() / (capacity) allocate the bucket array; listed key:value entries are then put in. A capacity of 0 or less throws IllegalArgumentException.',
+  hashmap:'new MyHashMap() / (capacity) allocate the bucket array; listed key:value entries (like A:1, the String key A mapped to the Integer 1) are then put in, in order. A capacity of 0 or less throws IllegalArgumentException.',
   hashset:'new MyHashSet() / (capacity) allocate the bucket array; listed elements are then added. A capacity of 0 or less throws IllegalArgumentException.',
 };
 const CTOR_ARR_DEFAULT = {
   array:'8, 1, 4', heap:'8, 1, 4', linked:'8, 1, 4', iter:'8, 1, 4', stack:'8, 1, 4', deque:'8, 1, 4',
-  queue:'8, 1, 4', tree:'8:A, 3:B, 10:C, 1:D, 6:E', hashmap:'8, 1, 4', hashset:'8, 1, 4',
+  queue:'8, 1, 4', tree:'8:A, 3:B, 10:C, 1:D, 6:E', hashmap:'H:8, A:1, D:4', hashset:'8, 1, 4',
 };
 /* the active structure's constructor tabs (id, label, and which inputs show) */
 function ctorDefs(){
@@ -5547,15 +5682,17 @@ const PHASES_HMAP = {
     {id:'compute', t:'Mask and mod', d:'Take the key’s hashCode, clear the sign bit (& 0x7fffffff), then % capacity. The result is always between 0 and capacity - 1, and the table is not changed.'},
   ],
 };
-const PHASE_TITLES_HMAP = {put:'How put(k, v) works', get:'How get(k) works', remove:'How remove(k) works', size:'How size() works', isEmpty:'How isEmpty() works', clear:'How clear() works', getCapacity:'How getCapacity() works', expandCapacity:'How expandCapacity() works', getHash:'How getHash(k, cap) works'};
+const FRAUD_ANSWER_PHASES = [{id:'result', t:'What hasFraudulentTxns returns', d:'true when two distinct indices i and j hold the same merchant ID and Math.abs(i - j) <= certainty, false otherwise. Working out how is the assignment, so for now try to work out the solution yourself. A detailed walkthrough will be shared after the PA is due.'}];
+PHASES_HMAP.hasFraudulentTxns = FRAUD_ANSWER_PHASES;
+const PHASE_TITLES_HMAP = {hasFraudulentTxns:'What hasFraudulentTxns(ids, c) returns', put:'How put(k, v) works', get:'How get(k) works', remove:'How remove(k) works', size:'How size() works', isEmpty:'How isEmpty() works', clear:'How clear() works', getCapacity:'How getCapacity() works', expandCapacity:'How expandCapacity() works', getHash:'How getHash(k, cap) works'};
 
 const PHASES_HSET = {
   add: [
     {id:'guard', t:'Reject null', d:'A HashSet never stores null, so add rejects it first.'},
-    {id:'load',  t:'At max load?', d:'The set is a HashMap underneath. Before inserting, if size reached 80% of capacity the table doubles and everything is rehashed.'},
+    {id:'load',  t:'At max load?', d:'The set is a HashMap underneath, and add calls its put whether or not the element is new. put first checks the load: if size reached 80% of capacity the table doubles and everything is rehashed.'},
     {id:'hash',  t:'Hash the element', d:'getHash turns the element into the one bucket index where it can live.'},
     {id:'walk',  t:'Search the chain', d:'Walk that bucket’s chain. If the element is already there, the set is unchanged; if not, it is new.'},
-    {id:'place', t:'Insert the element', d:'A new element is appended to the chain (value is a shared placeholder). add returns true; an element already present returns false.'},
+    {id:'place', t:'Insert the element', d:'A new element is appended to the end of the chain, its value the DEFAULT_OBJECT placeholder. add returns true. An element already present only has its value put again, and add returns false.'},
     {id:'size',  t:'Grow the size', d:'A new element adds one to size. An element already present leaves size unchanged.'},
   ],
   contains: [
@@ -5575,24 +5712,28 @@ const PHASES_HSET = {
   isEmpty: [{id:'read', t:'Check the size field', d:'isEmpty just asks whether the stored size is 0.'}],
   clear:   [{id:'clear',t:'Drop every bucket', d:'Empty every bucket and reset size to 0. Capacity is unchanged.'}],
 };
-const PHASE_TITLES_HSET = {add:'How add(e) works', contains:'How contains(e) works', remove:'How remove(e) works', size:'How size() works', isEmpty:'How isEmpty() works', clear:'How clear() works'};
+PHASES_HSET.hasFraudulentTxns = FRAUD_ANSWER_PHASES;
+const PHASE_TITLES_HSET = {hasFraudulentTxns:'What hasFraudulentTxns(ids, c) returns', add:'How add(e) works', contains:'How contains(e) works', remove:'How remove(e) works', size:'How size() works', isEmpty:'How isEmpty() works', clear:'How clear() works'};
 
 const CX_HMAP =
-  '<tr id="bo-hput"><td class="opname">put(k, v)</td><td class="bigo">O(1)*</td><td class="why">Hash to a bucket, walk a short chain. A rare resize rehashes all n.</td></tr>'+
   '<tr id="bo-hget"><td class="opname">get(k)</td><td class="bigo">O(1)</td><td class="why">Hash to a bucket, scan only that chain.</td></tr>'+
+  '<tr id="bo-hput"><td class="opname">put(k, v)</td><td class="bigo">O(1)*</td><td class="why">Hash to a bucket, walk a short chain. A rare resize rehashes all n.</td></tr>'+
   '<tr id="bo-hremove"><td class="opname">remove(k)</td><td class="bigo">O(1)</td><td class="why">Hash to a bucket, unlink within that chain.</td></tr>'+
   '<tr id="bo-hsize"><td class="opname">size()</td><td class="bigo">O(1)</td><td class="why">Reads the stored size field.</td></tr>'+
   '<tr id="bo-hcap"><td class="opname">getCapacity()</td><td class="bigo">O(1)</td><td class="why">Reads the bucket array length.</td></tr>'+
+  '<tr id="bo-hclear"><td class="opname">clear()</td><td class="bigo">O(capacity)</td><td class="why">Nulls every bucket.</td></tr>'+
+  '<tr id="bo-hisempty"><td class="opname">isEmpty()</td><td class="bigo">O(1)</td><td class="why">Reads the stored size field.</td></tr>'+
   '<tr id="bo-hexpand"><td class="opname">expandCapacity()</td><td class="bigo">O(n)</td><td class="why">Rehashes every node into a table twice as big.</td></tr>'+
   '<tr id="bo-hgethash"><td class="opname">getHash(k, cap)</td><td class="bigo">O(1)</td><td class="why">One mask and one mod on the key’s hash code.</td></tr>'+
-  '<tr id="bo-hclear"><td class="opname">clear()</td><td class="bigo">O(capacity)</td><td class="why">Nulls every bucket.</td></tr>';
+  '<tr id="bo-hfraud"><td class="opname">hasFraudulentTxns</td><td class="bigo">O(n)</td><td class="why">The write-up requires your MyAlgorithm solution to run in O(n).</td></tr>';
 const CX_HSET =
-  '<tr id="bo-hadd"><td class="opname">add(e)</td><td class="bigo">O(1)*</td><td class="why">Delegates to map.put: hash, walk a short chain. Rare resize rehashes all n.</td></tr>'+
-  '<tr id="bo-hcontains"><td class="opname">contains(e)</td><td class="bigo">O(1)</td><td class="why">Delegates to map.get: hash, scan one chain.</td></tr>'+
+  '<tr id="bo-hadd"><td class="opname">add(e)</td><td class="bigo">O(1)*</td><td class="why">Calls map.put either way: hash, walk a short chain. Rare resize rehashes all n.</td></tr>'+
   '<tr id="bo-hsremove"><td class="opname">remove(e)</td><td class="bigo">O(1)</td><td class="why">Delegates to map.remove: unlink in one chain.</td></tr>'+
+  '<tr id="bo-hcontains"><td class="opname">contains(e)</td><td class="bigo">O(1)</td><td class="why">Delegates to the map: hash, scan one chain.</td></tr>'+
   '<tr id="bo-hssize"><td class="opname">size()</td><td class="bigo">O(1)</td><td class="why">Reads the underlying map’s size.</td></tr>'+
+  '<tr id="bo-hsclear"><td class="opname">clear()</td><td class="bigo">O(capacity)</td><td class="why">Nulls every bucket.</td></tr>'+
   '<tr id="bo-hsisempty"><td class="opname">isEmpty()</td><td class="bigo">O(1)</td><td class="why">Reads the stored size field.</td></tr>'+
-  '<tr id="bo-hsclear"><td class="opname">clear()</td><td class="bigo">O(capacity)</td><td class="why">Nulls every bucket.</td></tr>';
+  '<tr id="bo-hfraud"><td class="opname">hasFraudulentTxns</td><td class="bigo">O(n)</td><td class="why">The write-up requires your MyAlgorithm solution to run in O(n).</td></tr>';
 const CXP_HASH = 'Big-O here is the <b>average</b> case. With a good hash function the entries spread evenly, so each bucket holds about <code>n / capacity</code> nodes, a small constant kept that way by resizing at 80% load. So <b>put</b>, <b>get</b>, and <b>remove</b> average <code>O(1)</code>.<br><b>Worst case</b> is <code>O(n)</code>: if every key collides into one bucket, the chain is just a linked list and you scan all <code>n</code>.<br><b>*amortized</b>: a <code>put</code> that triggers a resize rehashes all <code>n</code> entries, but averaged over many puts that is still <code>O(1)</code>.';
 
 /* ---- frame builder for hashing operations ----
@@ -5794,7 +5935,7 @@ function genHsize(isSet){
 function genHisEmpty(isSet){
   const g = newHash(modelHash, isSet?'set':'map');
   g.snap({phase:'read', run:'isEmpty()', ret:String(g.size===0), say:'<b>isEmpty</b> asks whether size is 0: '+(g.size===0?'<b>true</b>':'<b>false</b>')+' (size = '+g.size+').'});
-  return {frames:g.frames, final:modelHash, row:isSet?'bo-hsisempty':'bo-hsize', code:'isEmpty', label:'isEmpty()',
+  return {frames:g.frames, final:modelHash, row:isSet?'bo-hsisempty':'bo-hisempty', code:'isEmpty', label:'isEmpty()',
     bigO:'<b>isEmpty</b> reads the stored size field, so it is <code>O(1)</code>.'};
 }
 function genHclear(isSet){
@@ -5839,6 +5980,61 @@ function genHgetCapacity(){
   g.snap({phase:'read', run:'getCapacity()', ret:String(g.table.length), say:'<b>getCapacity</b> returns the length of the bucket array: <b>'+g.table.length+'</b>. It only changes when the table is resized.'});
   return {frames:g.frames, final:modelHash, row:'bo-hcap', code:'getCapacity', label:'getCapacity()',
     bigO:'<b>getCapacity</b> reads the array length, a stored property, so it is <code>O(1)</code>.'};
+}
+
+/* ---- MyAlgorithm.hasFraudulentTxns(merchantIds, certainty), answer only: what it returns, never how ----
+   It is the assignment's problem to solve, so the student site shows the input and what comes back (the examples
+   and the rules of the write-up), not the steps. The answer is worked out here with two plain loops. */
+function genHfraud(ids, certainty, isSet){
+  const label = 'hasFraudulentTxns(ids, '+certainty+')';
+  const frame = o => ({kind:'fraud', ids:ids.slice(), certainty, pair:o.pair||null, phase:'result', say:o.say, err:!!o.err,
+    cost:{probes:0, writes:0, rehashes:0}, lit:null, run:label, ret:o.ret===undefined ? null : o.ret});
+  const done = (f, bigO) => ({frames:[f], final:modelHash, row:'bo-hfraud', code:'hasFraudulentTxns', label, bigO});
+  if(certainty <= 0){
+    return done(frame({err:true, say:'<b>IllegalArgumentException</b>: hasFraudulentTxns throws when <b>certainty</b> is 0 or less, and it is <b>'+certainty+'</b>.'}), null);
+  }
+  let pair = null;                                      // the first two equal IDs at most certainty apart, by where the second one is
+  for(let j=0;j<ids.length && !pair;j++)
+    for(let i=Math.max(0, j-certainty);i<j;i++) if(ids[i]===ids[j]){ pair = [i, j]; break; }
+  const why = pair
+    ? ' Merchant ID <b>'+ids[pair[0]]+'</b> is at index i = '+pair[0]+' and again at index j = '+pair[1]+', and Math.abs(i - j) = '+(pair[1]-pair[0])+' &le; '+certainty+'.'
+    : (ids.length < 2 ? ' There are fewer than two transactions, so no two distinct indices can match.' : ' Every merchant ID that repeats is more than '+certainty+' space(s) from its other copy, or no merchant ID repeats at all.');
+  return done(frame({pair, ret:String(!!pair),
+    say:'<b>hasFraudulentTxns</b> returns <b>'+(!!pair)+'</b>.'+why+' How to check it is your assignment, so for now try to work out the solution yourself. A detailed walkthrough will be shared after the PA is due. '
+      + 'Use <b>MyHashSet</b> and/or <b>MyHashMap</b>, and your solution must run in O(n).'}),
+    'The write-up requires your solution to run in <code>O(n)</code>.');
+}
+/* the ids box is an int[], so every entry must be a whole number. Anything else, or too many to draw, refuses the call
+   with a note instead of quietly changing the list, which would move the indices and change the answer. */
+const FRAUD_MAX = 12;
+function fraudOp(idsId, certId, isSet){
+  const toks = document.getElementById(idsId).value.split(',').map(t=>t.trim()).filter(t=>t!=='');
+  const bad = toks.find(t=>!/^-?\d+$/.test(t) || Math.abs(Number(t)) > MAX_ELEM);
+  if(bad!==undefined){ setNote('<b>merchantIds</b> is an <b>int[]</b>, so every ID must be a whole number from -'+MAX_ELEM+' to '+MAX_ELEM+'. <b>'+bad.replace(/[&<>]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))+'</b> is not one.', true); return null; }
+  if(toks.length > FRAUD_MAX){ setNote('Use at most '+FRAUD_MAX+' IDs, so the picture stays readable. This list has '+toks.length+'.', true); return null; }
+  return genHfraud(toks.map(Number), readInt(certId), isSet);
+}
+function renderFraud(f){
+  const objbox = document.getElementById('objbox'); if(objbox) objbox.style.display='none';
+  const cells = document.getElementById('cells'); cells.innerHTML = '';
+  const host = document.createElement('div'); host.className = 'mgstage';
+  const row = document.createElement('div'); row.className = 'mgrow mgit frrow';
+  const lab = document.createElement('div'); lab.className = 'mglab';
+  lab.innerHTML = '<b>merchantIds</b><span>certainty = '+f.certainty+'</span>';
+  row.appendChild(lab);
+  const line = document.createElement('div'); line.className = 'mgitems'; row.appendChild(line);
+  if(!f.ids.length){ const b = document.createElement('div'); b.className = 'mgempty'; b.textContent = 'empty array'; line.appendChild(b); }
+  f.ids.forEach((v, i)=>{
+    const cell = document.createElement('div');
+    cell.className = 'lcell' + (f.pair && f.pair.includes(i) ? ' target' : '');
+    const box = document.createElement('div'); box.className = 'lbox'; box.textContent = fmt(v); cell.appendChild(box);
+    const ptr = document.createElement('div'); ptr.className = 'lptr'; ptr.textContent = i; cell.appendChild(ptr);
+    line.appendChild(cell);
+  });
+  host.appendChild(row);
+  cells.appendChild(host);
+  document.getElementById('bSize').textContent = 'length = ' + f.ids.length;
+  document.getElementById('bCap').textContent = 'certainty = ' + f.certainty;
 }
 
 function HBIGO_PUT(isSet){
@@ -5975,7 +6171,7 @@ function genHashBuildResult(capArg, tokens, isSet){
     return ctorFailed({
       frames:[{kind:'hash', mode:isSet?'set':'map', table:[], size:0, cap:0, ha:null, look:null, act:null, ghost:null, fresh:false,
         calc:null, resize:null, phase:null, cost:{probes:0,writes:0,rehashes:0}, lit:null, err:true,
-        say:'<b>'+ctorName+'</b>'+(isSet ? ' passes the capacity to <b>new MyHashMap('+cap+')</b>, which' : '')+' throws <b>IllegalArgumentException</b>, because the initial capacity must be positive (0 or negative is invalid). No '+(isSet?'set':'map')+' is created.'}],
+        say:'<b>'+ctorName+'</b> throws <b>IllegalArgumentException</b>, because the initial capacity must be positive (0 or negative is invalid). No '+(isSet?'set':'map')+' is created.'}],
       final:modelHash, code:isSet?'add':'put', row:null, label:ctorName, bigO:null});
   }
   // parse tokens into [key, value] entries (same rules as before)
@@ -6024,7 +6220,7 @@ function setHashMode(mode){
   document.getElementById('cxbody').innerHTML = isSet ? CX_HSET : CX_HMAP;
   document.getElementById('cxprimer').innerHTML = CXP_HASH;
   document.getElementById('hashmodeHint').innerHTML = isSet
-    ? 'a set is a map whose values are one shared placeholder, so we show keys only'
+    ? 'a set is a map whose values are all DEFAULT_OBJECT, a placeholder, so we show keys only'
     : 'keys map to values; keys that collide chain inside a bucket';
   setCostLabels(false);
   // the HashMap/HashSet choice changes which constructors are offered
@@ -6554,7 +6750,7 @@ setVisibleStructs(['ArrayList']);      // hide the rest right away; the server's
   };
 
   function poseOnly(kind){ const d=REACT[kind]||REACT.ok; wake(); reactKind=kind; reactFrame=d.f; reactStart=performance.now(); reactUntil=reactStart+2200; animateClass(d.cls); }
-  // ---- jokes: released by date exactly like the quiz (served by the server, 7 days of 1 joke about the current
+  // ---- jokes: released by date, one a day (served by the server, 7 days of 1 joke about the current
   // structure). Days that have come stay open to read again, later days are locked. No answers and no XP. ----
   let jokeList = null, jokeDay = 0, jokeIdx = 0;
   function jokeChips(){
@@ -6625,11 +6821,12 @@ setVisibleStructs(['ArrayList']);      // hide the rest right away; the server's
     return Math.max(1, Math.min(total, n));
   }
   // ---- the daily quiz is served by the server ----
-  // A day's questions only reach the browser once its date has come, and the answers only come back after all
-  // of that day's questions are answered. A day that was missed can still be made up, but earns no XP.
+  // Every day of a structure's quiz is open once the structure is, and the answers only come back after all of that
+  // day's questions are answered. Answering on or ahead of a day's date earns XP. A day whose date has passed can be made up, but earns no XP.
   let quizList = null, quizDay = 0;
   const fmtDate = iso => new Date(iso+'T00:00:00Z').toLocaleDateString('en-US', {month:'short', day:'numeric', timeZone:'UTC'});
-  const isMissed = d => d.open && !d.done && d.date < quizList.today;
+  const xpBy = d => d.xpBy || d.date;                    // the last date the day earns XP (later than its date when the PA went up late)
+  const isMissed = d => d.open && !d.done && xpBy(d) < quizList.today;
   function showQuestion(item, head, meta){
     // shuffle the options so the right answer is not always the first one
     const order = item.opt.map((_,i)=>i).sort(()=>Math.random()-0.5);
@@ -6642,7 +6839,7 @@ setVisibleStructs(['ArrayList']);      // hide the rest right away; the server's
     const L = quizList;
     return '<div class="qd-row">'+L.days.map(d=>{
       const cls = 'qd'+(d.day===quizDay?' on':'')+(d.done?' done':'')+(isMissed(d)?' missed':'')+(!d.open?' locked':'')+(d.date===L.today?' today':'');
-      const tip = !d.open ? 'Opens '+fmtDate(d.date) : (d.done ? 'Finished' : (isMissed(d) ? 'Missed on '+fmtDate(d.date)+'. You can make it up, but it earns no XP.' : 'Open'));
+      const tip = !d.open ? 'Opens '+fmtDate(d.date) : (d.done ? 'Finished' : (isMissed(d) ? 'Missed on '+fmtDate(xpBy(d))+'. You can make it up, but it earns no XP.' : 'Open. Answer by '+fmtDate(xpBy(d))+' to earn XP.'));
       return '<button type="button" class="'+cls+'" data-qd="'+d.day+'"'+(d.open?'':' disabled')+' title="'+esc(tip)+'" aria-label="Day '+d.day+': '+esc(tip)+'">'+d.day+(d.done?'<i>&#10003;</i>':'')+'</button>';
     }).join('')+'</div>';
   }
@@ -7111,16 +7308,19 @@ setVisibleStructs(['ArrayList']);      // hide the rest right away; the server's
     applyStructs(); return true;
   }).catch(()=>false);
   const meLoaded = (STATIC || tokenGet()) ? api('/api/me').then(signedIn).catch(e=>{ if(e.status===401) signedOut(); }) : Promise.resolve();
-  // the page opens on the iterator when it is open to this visitor and nothing else was picked meanwhile
+  // the page opens on the newest assignment open to this visitor (Hashing, else the iterator) when nothing else was picked meanwhile
   let navTouched = false;
   document.getElementById('structNav').addEventListener('click', ()=>{ navTouched = true; }, true);
-  const openOnIterator = ()=>{
-    if(navTouched || !ITER_OPEN) return;
-    const b = document.querySelector('#structNav .struct[data-struct="Iterator"]');
-    if(b && b.style.display!=='none') b.click();
+  const openOnCurrent = ()=>{
+    if(navTouched) return;
+    for(const name of ['Hashing', 'Iterator']){
+      if(name==='Iterator' && !ITER_OPEN) continue;
+      const b = document.querySelector('#structNav .struct[data-struct="'+name+'"]');
+      if(b && b.style.display!=='none'){ b.click(); return; }
+    }
   };
   Promise.all([cfgLoaded, meLoaded]).then(([reachable])=>{
-    openOnIterator();
+    openOnCurrent();
     if(reachable && !session && !STATIC && (requireLogin || !gateSkipped())) showGate();
   });
 

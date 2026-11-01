@@ -13,6 +13,11 @@ window.PawieQuiz = {
   "Iterator": {
    "start": "2026-10-23",
    "due": "2026-10-29"
+  },
+  "Hashing": {
+   "start": "2026-10-30",
+   "due": "2026-11-05",
+   "opened": "2026-10-31"
   }
  },
  "QUIZ_DAYS": {
@@ -1113,6 +1118,371 @@ window.PawieQuiz = {
      "why": "The write-up says you are given two lists sorted in ascending order, that there may be duplicates, and that the list sizes may not be equal."
     }
    ]
+  ],
+  "Hashing": [
+   [
+    {
+     "q": "How does MyHashMap handle two keys that land in the same bucket?",
+     "opt": [
+      "Separate chaining: a linked list of nodes in that bucket",
+      "It moves the second key to the next empty bucket",
+      "It replaces the older key"
+     ],
+     "ans": 0,
+     "why": "The write-up uses separate chaining. Each bucket of the Node array holds a linked list of the (key, value) nodes that hashed there."
+    },
+    {
+     "q": "What kind of linked list holds the nodes of one bucket?",
+     "opt": [
+      "A doubly linked list with head and tail sentinels",
+      "A singly linked list with no sentinel nodes",
+      "A circular linked list"
+     ],
+     "ans": 1,
+     "why": "The write-up says not to use sentinel nodes and that this is a singly linked list, which is different from PA3."
+    },
+    {
+     "q": "What are the two instance variables of MyHashMap?",
+     "opt": [
+      "Node[] hashTable and int size",
+      "Node head and Node tail",
+      "Object[] data and int capacity"
+     ],
+     "ans": 0,
+     "why": "hashTable is the underlying array of the hash table, and size is the number of (key, value) pairs currently stored."
+    },
+    {
+     "q": "What capacity does new MyHashMap() start with?",
+     "opt": [
+      "10",
+      "16",
+      "5"
+     ],
+     "ans": 2,
+     "why": "The no-argument constructor initializes the hash table with a default initial capacity of 5."
+    },
+    {
+     "q": "What does new MyHashMap(0) do?",
+     "opt": [
+      "Makes a table of capacity 5 instead",
+      "Throws IllegalArgumentException",
+      "Makes a table with no buckets"
+     ],
+     "ans": 1,
+     "why": "The write-up says the constructor throws an IllegalArgumentException if initialCapacity is 0 or negative."
+    }
+   ],
+   [
+    {
+     "q": "What does get(key) return when the key is not in the map?",
+     "opt": [
+      "null",
+      "It throws NoSuchElementException",
+      "0"
+     ],
+     "ans": 0,
+     "why": "get returns the value the key maps to, or null if the key is not in the hash map."
+    },
+    {
+     "q": "What does get(null) do?",
+     "opt": [
+      "Returns null",
+      "Throws NullPointerException",
+      "Returns the first value in the table"
+     ],
+     "ans": 1,
+     "why": "MyHashMap never stores null keys, so get throws a NullPointerException when the key is null."
+    },
+    {
+     "q": "put(\"A\", 1) is called on a map that already maps \"A\" to 9. What does put return?",
+     "opt": [
+      "null",
+      "1",
+      "9"
+     ],
+     "ans": 2,
+     "why": "put returns the value previously mapped to the key, here 9, and \"A\" now maps to 1. It returns null only when the key was not in the map before."
+    },
+    {
+     "q": "When does put check whether the table needs to grow?",
+     "opt": [
+      "At the start, before it tries to add the mapping",
+      "After the new node is added",
+      "Only when a bucket's chain gets long"
+     ],
+     "ans": 0,
+     "why": "At the start of put, before attempting to add the mapping, it checks whether size is at least 80% of the capacity, and if so it doubles the capacity."
+    },
+    {
+     "q": "A new key hashes to a bucket that already has a chain of nodes. Where does its node go?",
+     "opt": [
+      "At the front of the chain",
+      "At the end of the chain",
+      "In the next empty bucket"
+     ],
+     "ans": 1,
+     "why": "The write-up says that if a hash collision happens, the new node is added to the end of the linked list."
+    }
+   ],
+   [
+    {
+     "q": "What does remove(key) return when the key is in the map?",
+     "opt": [
+      "true",
+      "The value that was mapped to the key",
+      "The removed node"
+     ],
+     "ans": 1,
+     "why": "remove returns the value previously mapped to the key, or null if the key was not in the hash map."
+    },
+    {
+     "q": "What does remove(key) return when the key is not in the map?",
+     "opt": [
+      "false",
+      "It throws NoSuchElementException",
+      "null"
+     ],
+     "ans": 2,
+     "why": "Nothing is removed and remove returns null. Only a null key throws (NullPointerException)."
+    },
+    {
+     "q": "After remove finds the key in the middle of a chain, what has to be fixed?",
+     "opt": [
+      "The previous node's next must skip over the removed node",
+      "Every bucket must be rehashed",
+      "The capacity must shrink"
+     ],
+     "ans": 0,
+     "why": "The write-up says to adjust the Node linked list to reflect the removal, so the node before it now points past it."
+    },
+    {
+     "q": "What does size() return?",
+     "opt": [
+      "The number of buckets",
+      "The number of (key, value) pairs in the map",
+      "The number of buckets that are not empty"
+     ],
+     "ans": 1,
+     "why": "size is the number of (key, value) pairs in the hash map. The number of buckets is the capacity, which getCapacity() returns."
+    },
+    {
+     "q": "A map has capacity 10 and holds 3 pairs. What do getCapacity() and isEmpty() return?",
+     "opt": [
+      "10 and false",
+      "3 and false",
+      "10 and true"
+     ],
+     "ans": 0,
+     "why": "getCapacity returns the capacity of the table, 10. isEmpty returns true only when the map has no pairs, and it has 3."
+    }
+   ],
+   [
+    {
+     "q": "A new MyHashMap() of capacity 5 already holds 4 pairs. You put a new key. What happens first?",
+     "opt": [
+      "Nothing special, the key is added and the table grows next time",
+      "The capacity doubles to 10 and every pair is rehashed",
+      "put throws because the table is full"
+     ],
+     "ans": 1,
+     "why": "4 is 80% of 5, so size is at the maximum load. put calls expandCapacity first, doubling to 10, and then adds the new pair."
+    },
+    {
+     "q": "What does expandCapacity do to the capacity?",
+     "opt": [
+      "Adds 5",
+      "Doubles it",
+      "Sets it to the number of pairs"
+     ],
+     "ans": 1,
+     "why": "expandCapacity doubles the capacity of the hash table and rehashes all (key, value) pairs into the new table."
+    },
+    {
+     "q": "In which order does expandCapacity rehash the old buckets?",
+     "opt": [
+      "From the last index down to 0",
+      "In the order the keys were first put",
+      "From index 0 up to index n minus 1"
+     ],
+     "ans": 2,
+     "why": "The write-up says to rehash elements in ascending order, from index 0 to index n minus 1 of hashTable."
+    },
+    {
+     "q": "Two keys share a bucket before expandCapacity. After it runs, where are they?",
+     "opt": [
+      "Always still together in one bucket",
+      "Each in the bucket getHash gives it for the new capacity, which may differ",
+      "In the same bucket index they had before"
+     ],
+     "ans": 1,
+     "why": "Every pair is rehashed with the new capacity, so keys that collided before can end up in different buckets."
+    },
+    {
+     "q": "What does getHash(key, 0) do?",
+     "opt": [
+      "Throws IllegalArgumentException",
+      "Returns 0",
+      "Throws NullPointerException"
+     ],
+     "ans": 0,
+     "why": "getHash checks its arguments first: a null key throws NullPointerException, and a capacity of 0 or less throws IllegalArgumentException."
+    }
+   ],
+   [
+    {
+     "q": "What does MyHashSet store its elements in?",
+     "opt": [
+      "An array of elements",
+      "A MyHashMap whose keys are the elements",
+      "A MyLinkedList"
+     ],
+     "ans": 1,
+     "why": "MyHashSet is the set ADT built on a MyHashMap. The elements are the keys, and every value is a placeholder."
+    },
+    {
+     "q": "What value does MyHashSet put next to each element in its hashMap?",
+     "opt": [
+      "The element itself",
+      "null",
+      "DEFAULT_OBJECT"
+     ],
+     "ans": 2,
+     "why": "public static final Object DEFAULT_OBJECT is the placeholder value stored with every key of the underlying hashMap. A MyHashMap never stores null values."
+    },
+    {
+     "q": "What does add(e) return when e is already in the set?",
+     "opt": [
+      "false",
+      "true",
+      "It throws IllegalArgumentException"
+     ],
+     "ans": 0,
+     "why": "add returns true if the set did not already contain the element, and false otherwise."
+    },
+    {
+     "q": "add(e) is called with an element that is already in the set. Does it still call the map's put?",
+     "opt": [
+      "No, it returns right away",
+      "Yes, put is called in either case",
+      "Only if the table is at max load"
+     ],
+     "ans": 1,
+     "why": "The write-up says to call put in either case, so the value is replaced if it differs and expandCapacity is called if needed."
+    },
+    {
+     "q": "What does contains(null) do?",
+     "opt": [
+      "Returns false",
+      "Returns true if null was added",
+      "Throws NullPointerException"
+     ],
+     "ans": 2,
+     "why": "MyHashSet never stores null elements, and add, remove and contains each throw a NullPointerException for a null element."
+    }
+   ],
+   [
+    {
+     "q": "testMyHashMapPutKeyAlreadyExists in CustomTester checks which call?",
+     "opt": [
+      "put with a key that is already in the hash table",
+      "put with a null key",
+      "get with a key that is not in the table"
+     ],
+     "ans": 0,
+     "why": "The test table describes it as calling put in MyHashMap with a key that already exists in the hash table."
+    },
+    {
+     "q": "A custom test passes on the good implementation and also passes on a bad one. What does that mean?",
+     "opt": [
+      "It earns full points",
+      "It may be wrong or not rigorous enough, so add more asserts",
+      "The bad implementation is actually correct"
+     ],
+     "ans": 1,
+     "why": "A test is graded by passing on a good implementation and failing on a bad one. A test that passes on a bad one may need more asserts."
+    },
+    {
+     "q": "What should testMyHashSetRemoveDoesNotExist expect?",
+     "opt": [
+      "remove returns false and the set is unchanged",
+      "remove throws NoSuchElementException",
+      "remove returns null"
+     ],
+     "ans": 0,
+     "why": "MyHashSet's remove returns true if the set contained the element and false otherwise. Nothing is removed."
+    },
+    {
+     "q": "With the keys spread evenly, what is the average running time of get?",
+     "opt": [
+      "O(n)",
+      "O(log n)",
+      "O(1)"
+     ],
+     "ans": 2,
+     "why": "getHash points to one bucket, and with the load kept at or under 80% the chain there stays short on average."
+    },
+    {
+     "q": "What is the worst case running time of get?",
+     "opt": [
+      "O(1)",
+      "O(n), when every key is in one bucket's chain",
+      "O(n squared)"
+     ],
+     "ans": 1,
+     "why": "If every key collides into one bucket, get has to walk a chain of all n nodes."
+    }
+   ],
+   [
+    {
+     "q": "merchantIds is [1, 2, 3, 1] and certainty is 3. What does hasFraudulentTxns return?",
+     "opt": [
+      "true",
+      "false",
+      "It throws IllegalArgumentException"
+     ],
+     "ans": 0,
+     "why": "Merchant ID 1 is at indices i = 0 and j = 3, and Math.abs(i - j) is 3, which is at most certainty. This is Example 1 of the write-up."
+    },
+    {
+     "q": "merchantIds is [7] and certainty is 1. What does it return?",
+     "opt": [
+      "true",
+      "false",
+      "It throws IllegalArgumentException"
+     ],
+     "ans": 1,
+     "why": "The spec needs two distinct indices i and j with the same merchant ID. With one transaction there is no second index, so it returns false."
+    },
+    {
+     "q": "What does hasFraudulentTxns do when certainty is 0?",
+     "opt": [
+      "Returns false",
+      "Returns true",
+      "Throws IllegalArgumentException"
+     ],
+     "ans": 2,
+     "why": "The write-up says to throw an IllegalArgumentException if certainty is less than or equal to 0."
+    },
+    {
+     "q": "merchantIds is [5, 8, 5] and certainty is 1. What does it return?",
+     "opt": [
+      "true",
+      "false"
+     ],
+     "ans": 1,
+     "why": "Merchant ID 5 is at indices i = 0 and j = 2, and Math.abs(i - j) is 2, which is more than certainty 1."
+    },
+    {
+     "q": "Which running time does your hasFraudulentTxns need for full credit?",
+     "opt": [
+      "O(n)",
+      "O(n log n)",
+      "O(n squared)"
+     ],
+     "ans": 0,
+     "why": "To get full credit the implementation needs to be O(n), using MyHashSet and/or MyHashMap."
+    }
+   ]
   ]
  },
  "JOKES_DAYS": {
@@ -1183,6 +1553,29 @@ window.PawieQuiz = {
    ],
    [
     "What did the cursor say after add? Now I am right after the new guy."
+   ]
+  ],
+  "Hashing": [
+   [
+    "Why do hash tables throw the best parties? Everyone gets a bucket instantly, unless two guests have the same hash."
+   ],
+   [
+    "A hash function's favorite saying is, same key, same bucket, every time."
+   ],
+   [
+    "Why can't our HashMap store a null key? It throws a NullPointerException before the first handshake."
+   ],
+   [
+    "The key and the value are inseparable. Remove one and the whole entry is gone."
+   ],
+   [
+    "What did the key say to the hash function? Please be consistent."
+   ],
+   [
+    "Why did put on an existing key feel like redecorating? It replaced the old value in place."
+   ],
+   [
+    "Why are sets so lean? A set is a map whose values never matter."
    ]
   ]
  }

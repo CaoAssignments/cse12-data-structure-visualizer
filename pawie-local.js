@@ -205,23 +205,24 @@
     return { gained: add, capped: add < gain + streakBonus, streakBonus, unlockedNow, pet: petView() };
   }
 
-  // ---- the daily quiz and jokes: released by date ----
+  // ---- the daily quiz: every day open once the structure is open (mirrors auth.js). The jokes are released by date ----
   const quizToday = () => CFG.quizToday || dayKey();
   const isoDay = (iso) => Math.floor(Date.parse(iso + 'T00:00:00Z') / 86400000);
   const dateOfQuizDay = (start, day) => new Date((isoDay(start) + day - 1) * 86400000).toISOString().slice(0, 10);
+  // the last date a quiz day earns XP: its own date, or the due date for a day dated before the PA was opened to students
+  const xpByOfQuizDay = (sched, date) => (sched.opened && date < sched.opened ? sched.due : date);
   const seeAll = () => isStaff();
 
   function quizList(body) {
     const struct = String(body.struct || '');
     const days = Q.QUIZ_DAYS[struct], sched = Q.PA_SCHEDULE[struct];
     if (!days || !sched) return { struct, scheduled: false };
-    const today = quizToday(), all = seeAll(), quiz = load().quiz;
+    const today = quizToday(), quiz = load().quiz;
     const out = days.map((qs, i) => {
-      const day = i + 1, date = dateOfQuizDay(sched.start, day), open = all || date <= today;
-      if (!open) return { day, date, open: false };
+      const day = i + 1, date = dateOfQuizDay(sched.start, day), xpBy = xpByOfQuizDay(sched, date);
       const answered = qs.map((_, k) => k).filter((k) => quiz[struct + ':' + day + ':' + k]);
       const done = answered.length >= qs.length;
-      const entry = { day, date, open: true, answered, done, questions: qs.map((it) => ({ q: it.q, opt: it.opt })) };
+      const entry = { day, date, xpBy, open: true, answered, done, questions: qs.map((it) => ({ q: it.q, opt: it.opt })) };
       if (done) {
         entry.results = qs.map((it, k) => ({ chosen: quiz[struct + ':' + day + ':' + k].chosen, ans: it.ans, why: it.why }));
         entry.onTime = qs.every((_, k) => !!quiz[struct + ':' + day + ':' + k].on_time);
@@ -248,12 +249,11 @@
     const qs = days[day - 1];
     if (!Number.isInteger(idx) || idx < 0 || idx >= qs.length) fail(400, 'Unknown question.');
     if (!Number.isInteger(chosen) || chosen < 0 || chosen >= qs[idx].opt.length) fail(400, 'Pick one of the options.');
-    const today = quizToday(), date = dateOfQuizDay(sched.start, day);
-    if (!isStaff() && date > today) fail(403, "That day's questions are not open yet.", 'locked');
+    const today = quizToday(), xpBy = xpByOfQuizDay(sched, dateOfQuizDay(sched.start, day));
     const save = load(), key = struct + ':' + day + ':' + idx;
     let gained = 0, unlockedNow = [], pet;
     if (!save.quiz[key]) {
-      const onTime = date === today;
+      const onTime = xpBy >= today;                          // on its day or ahead of it
       save.quiz[key] = { chosen, on_time: onTime ? 1 : 0, ts: Date.now() };
       persist();
       if (onTime) {
@@ -262,7 +262,7 @@
       }
     }
     const done = qs.every((_, k) => save.quiz[struct + ':' + day + ':' + k]);
-    const reply = Object.assign({ saved: true, gained, unlockedNow, done, onTime: date === today }, pet ? { pet } : {});
+    const reply = Object.assign({ saved: true, gained, unlockedNow, done, onTime: xpBy >= today }, pet ? { pet } : {});
     if (done) reply.results = qs.map((it, k) => ({ chosen: save.quiz[struct + ':' + day + ':' + k].chosen, ans: it.ans, why: it.why }));
     return reply;
   }
