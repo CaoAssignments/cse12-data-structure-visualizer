@@ -1577,6 +1577,29 @@ window.PawieQuiz = {
    [
     "Why are sets so lean? A set is a map whose values never matter."
    ]
+  ],
+  "StackQueue": [
+   [
+    "Why was the stack so polite? It always lets the last one in leave first."
+   ],
+   [
+    "Why was the queue so fair? First in, first out, no cutting."
+   ],
+   [
+    "Why did the stack overflow? Nobody told it where the top was."
+   ],
+   [
+    "Why did the queue reach the end of the array and keep going? Modular arithmetic."
+   ],
+   [
+    "Pushing past capacity? The deque quietly expands behind the scenes."
+   ],
+   [
+    "Why is the queue relaxed about resizing? It copies everything in order, starting from the front."
+   ],
+   [
+    "The stack asked the queue for advice. The queue said, wait your turn. The stack said, I go first."
+   ]
   ]
  }
 };

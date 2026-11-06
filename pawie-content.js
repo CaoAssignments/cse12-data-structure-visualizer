@@ -8,8 +8,9 @@
 // Style rule: do NOT use em dashes or semicolons in any copy. Use periods and
 // commas instead.
 //
-// QUIZ keys must match the visualizer's structures: ArrayList, LinkedList,
-// Iterator, Deque, Stack, Queue (plus a "default" pool used elsewhere). Each question:
+// QUIZ keys must match the visualizer's nav tabs (their data-struct): ArrayList, LinkedList,
+// Iterator, StackQueue (PA6, which holds MyDeque, MyStack and MyQueue), plus a "default"
+// pool used elsewhere. Each question:
 //   { q: "...", opt: ["a","b","c"], ans: <index of correct option>, why: "..." }
 
 window.PawieContent = {
@@ -121,7 +122,21 @@ window.PawieContent = {
         opt: ["It's shorter to type", "It avoids re-walking from the head each time", "It uses less memory"], ans: 1,
         why: "get(i) in a loop is O(n squared). The iterator walks once, so O(n) total." }
     ],
-    Stack: [
+    StackQueue: [
+      // Part 1, MyDeque
+      { q: "What does addFirst do to the front index?",
+        opt: ["It steps front back one slot, wrapping to the end if needed", "It resets front to 0", "It shifts every element right"], ans: 0,
+        why: "The new element goes just before front, so front moves back one slot and wraps around if it was at index 0. Nothing is shifted." },
+      { q: "You remove the last element of a deque. What happens to front and rear?",
+        opt: ["Both are reset to 0", "They stay where they were", "front moves and rear resets"], ans: 1,
+        why: "The write-up says not to reset them. When the deque is empty front and rear are equal, and the next add uses that same slot." },
+      { q: "After expandCapacity, where are the elements?",
+        opt: ["At the same indices as before", "Contiguous from index 0, with front 0", "Reversed"], ans: 1,
+        why: "The elements are copied in logical order starting at front, so front becomes 0 and rear becomes size minus 1 (or 0 when empty)." },
+      { q: "When does a deque with capacity 0 expand to a default?",
+        opt: ["It is a constructor error", "On the first add, to capacity 10", "Never, it stays at 0"], ans: 1,
+        why: "Capacity 0 is allowed. A full deque doubles, but doubling 0 gives 0, so expandCapacity sets the default capacity of 10 instead." },
+      // Part 2, MyStack
       { q: "Push 1, 2, 3, then pop, pop. What comes out?",
         opt: ["1 then 2", "3 then 2", "2 then 3"], ans: 1,
         why: "LIFO means Last In, First Out. The most recent push pops first." },
@@ -136,9 +151,8 @@ window.PawieContent = {
         why: "peek reads the top element but leaves it in place." },
       { q: "A stack is built on a deque. Which pairing keeps LIFO order?",
         opt: ["push is addLast and pop is removeLast", "push is addLast and pop is removeFirst", "push is addFirst and pop is removeLast"], ans: 0,
-        why: "Push and pop have to work the same end. The write-up lets you pick either end as long as every stack method agrees. This visualizer uses the back: addLast, removeLast and peekLast." }
-    ],
-    Queue: [
+        why: "Push and pop have to work the same end. The write-up lets you pick either end as long as every stack method agrees. This visualizer uses the back: addLast, removeLast and peekLast." },
+      // Part 3, MyQueue
       { q: "Enqueue 1, 2, 3, then dequeue. What comes out?",
         opt: ["3", "1", "2"], ans: 1,
         why: "FIFO means First In, First Out. The earliest arrival leaves first." },
@@ -154,20 +168,6 @@ window.PawieContent = {
       { q: "Why back a queue with a circular array?",
         opt: ["To reuse freed front slots without shifting", "To keep it sorted", "To save on element type"], ans: 0,
         why: "Wrapping lets front and rear cycle, so you don't shift everything on each dequeue." }
-    ],
-    Deque: [
-      { q: "What does addFirst do to the front index?",
-        opt: ["It steps front back one slot, wrapping to the end if needed", "It resets front to 0", "It shifts every element right"], ans: 0,
-        why: "The new element goes just before front, so front moves back one slot and wraps around if it was at index 0. Nothing is shifted." },
-      { q: "You remove the last element of a deque. What happens to front and rear?",
-        opt: ["Both are reset to 0", "They stay where they were", "front moves and rear resets"], ans: 1,
-        why: "The write-up says not to reset them. When the deque is empty front and rear are equal, and the next add uses that same slot." },
-      { q: "After expandCapacity, where are the elements?",
-        opt: ["At the same indices as before", "Contiguous from index 0, with front 0", "Reversed"], ans: 1,
-        why: "The elements are copied in logical order starting at front, so front becomes 0 and rear becomes size minus 1 (or 0 when empty)." },
-      { q: "When does a deque with capacity 0 expand to a default?",
-        opt: ["It is a constructor error", "On the first add, to capacity 10", "Never, it stays at 0"], ans: 1,
-        why: "Capacity 0 is allowed. A full deque doubles, but doubling 0 gives 0, so expandCapacity sets the default capacity of 10 instead." }
     ],
     default: [
       { q: "Big-O notation measures what?",

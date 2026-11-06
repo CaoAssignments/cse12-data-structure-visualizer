@@ -108,7 +108,9 @@ input.long{width:160px;flex:1;min-width:130px}
 .ctorarg label,#caNone{font-size:12.5px;color:var(--muted);font-family:"JetBrains Mono",monospace}
 .ctorchk{font-size:11px;color:var(--muted);font-family:"JetBrains Mono",monospace;cursor:pointer}
 .ctorchk input{vertical-align:middle;margin-right:3px}
-.complex h3,.runtime h3,.codehd h3,.pawiehome h3{font-family:"Fraunces",serif;font-weight:600;font-size:16px;margin:0}
+.complex h3,.runtime h3,.codehd h3,.pawiehome h3,.panelhd{font-family:"Fraunces",serif;font-weight:600;font-size:16px;margin:0}
+/* the heading of a panel that has no other header row (the controls and the stage) */
+.panelhd{margin-bottom:12px}
 /* two columns of operations: core element ops on the left, utilities on the right */
 .ops2.locked{opacity:.5}
 .ops2.locked .obtn{cursor:not-allowed}
@@ -515,9 +517,7 @@ input.long{width:160px;flex:1;min-width:130px}
     <button class="struct" data-struct="LinkedList">LinkedList</button>
     <button class="struct" data-struct="Iterator">Iterator</button>
     <button class="struct" data-struct="Hashing">HashTable</button>
-    <button class="struct" data-struct="Deque">Deque</button>
-    <button class="struct" data-struct="Stack">Stack</button>
-    <button class="struct" data-struct="Queue">Queue</button>
+    <button class="struct" data-struct="StackQueue" title="PA6: MyDeque, MyStack and MyQueue">Stack and Queue</button>
     <button class="struct" data-struct="Heap">Heap / PQ</button>
     <button class="struct" data-struct="Tree">BinarySearchTree</button>
   </nav>
@@ -534,6 +534,7 @@ input.long{width:160px;flex:1;min-width:130px}
 
   <!-- controls: build a list, then run operations (single panel) -->
   <div class="panel controls">
+    <h3 class="panelhd">Constructor and methods</h3>
     <div class="ctrlrow" id="buildRow">
       <label>initial list</label>
       <input type="text" id="initVals" class="long" placeholder="e.g. 1, 2, 3  or  5, null, 8" value="3, 1, 4">
@@ -562,6 +563,17 @@ input.long{width:160px;flex:1;min-width:130px}
         <button class="segbtn" data-mode="set">HashSet</button>
       </div>
       <span class="llmode-hint" id="hashmodeHint"></span>
+    </div>
+
+    <!-- PA6 only: the MyDeque itself, or the MyStack / MyQueue built on one. Like Hashing, the choice comes first, since it decides the constructor -->
+    <div class="llmode" id="dqmodewrap" style="display:none;margin:0 0 14px">
+      <span class="llmode-label">use as</span>
+      <div class="seg">
+        <button class="segbtn active" data-mode="Deque">MyDeque</button>
+        <button class="segbtn" data-mode="Stack">MyStack</button>
+        <button class="segbtn" data-mode="Queue">MyQueue</button>
+      </div>
+      <span class="llmode-hint" id="dqmodeHint"></span>
     </div>
 
     <!-- constructor chooser: pick which of the structure's real PA constructors
@@ -629,49 +641,54 @@ input.long{width:160px;flex:1;min-width:130px}
       </div>
     </div>
 
-    <!-- Deque operations (PA6: MyDeque, the circular array under the stack and the queue); shown only for Deque -->
+    <!-- PA6 Part 1, MyDeque: the order of its method table (size, expandCapacity, addFirst, addLast, removeFirst, removeLast, peekFirst, peekLast), then MyAlgorithm -->
     <div class="ops2" id="dequeOps" style="display:none">
       <div class="opcol">
         <div class="oplist">
+          <button class="btn primary obtn" data-act="dqsize">size()</button>
+          <div class="args"></div>
+          <button class="btn primary obtn" data-act="dqexpand">expandCapacity()</button>
+          <div class="args"></div>
           <button class="btn primary obtn" data-act="dqaddfirst">addFirst(e)</button>
           <div class="args"><span class="field"><label>e</label><input type="text" id="vDqFirst" class="short" placeholder="value" value="7"></span></div>
           <button class="btn primary obtn" data-act="dqaddlast">addLast(e)</button>
           <div class="args"><span class="field"><label>e</label><input type="text" id="vDqLast" class="short" placeholder="value" value="9"></span></div>
           <button class="btn primary obtn" data-act="dqremovefirst">removeFirst()</button>
           <div class="args"></div>
-          <button class="btn primary obtn" data-act="dqremovelast">removeLast()</button>
-          <div class="args"></div>
         </div>
       </div>
       <div class="opcol">
         <div class="oplist">
+          <button class="btn primary obtn" data-act="dqremovelast">removeLast()</button>
+          <div class="args"></div>
           <button class="btn primary obtn" data-act="dqpeekfirst">peekFirst()</button>
           <div class="args"></div>
           <button class="btn primary obtn" data-act="dqpeeklast">peekLast()</button>
           <div class="args"></div>
-          <button class="btn primary obtn" data-act="dqsize">size()</button>
-          <div class="args"></div>
-          <button class="btn primary obtn" data-act="dqexpand">expandCapacity()</button>
-          <div class="args"></div>
+          <button class="btn primary obtn" data-act="brackets">isValidBrackets(input)</button>
+          <div class="args">
+            <span class="field"><label>input</label><input type="text" id="vBrDq" class="mid" data-free value="({}[])"></span>
+            <label class="mgnull"><input type="checkbox" id="brDqNull"> null</label>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Stack operations (PA: MyStack over a MyDeque); shown only for Stack -->
+    <!-- PA6 Part 2, MyStack over a MyDeque: the order of its method table (empty, push, pop, peek, size) -->
     <div class="ops2" id="stackOps" style="display:none">
       <div class="opcol">
         <div class="oplist">
+          <button class="btn primary obtn" data-act="empty">empty()</button>
+          <div class="args"></div>
           <button class="btn primary obtn" data-act="push">push(e)</button>
           <div class="args"><span class="field"><label>e</label><input type="text" id="vPush" class="short" placeholder="value" value="7"></span></div>
           <button class="btn primary obtn" data-act="pop">pop()</button>
-          <div class="args"></div>
-          <button class="btn primary obtn" data-act="peek">peek()</button>
           <div class="args"></div>
         </div>
       </div>
       <div class="opcol">
         <div class="oplist">
-          <button class="btn primary obtn" data-act="empty">empty()</button>
+          <button class="btn primary obtn" data-act="peek">peek()</button>
           <div class="args"></div>
           <button class="btn primary obtn" data-act="size">size()</button>
           <div class="args"></div>
@@ -679,21 +696,21 @@ input.long{width:160px;flex:1;min-width:130px}
       </div>
     </div>
 
-    <!-- Queue operations (PA: MyQueue over a MyDeque); shown only for Queue -->
+    <!-- PA6 Part 3, MyQueue over a MyDeque: the order of its method table (empty, enqueue, dequeue, peek, size) -->
     <div class="ops2" id="queueOps" style="display:none">
       <div class="opcol">
         <div class="oplist">
+          <button class="btn primary obtn" data-act="empty">empty()</button>
+          <div class="args"></div>
           <button class="btn primary obtn" data-act="enqueue">enqueue(e)</button>
           <div class="args"><span class="field"><label>e</label><input type="text" id="vEnq" class="short" placeholder="value" value="7"></span></div>
           <button class="btn primary obtn" data-act="dequeue">dequeue()</button>
-          <div class="args"></div>
-          <button class="btn primary obtn" data-act="peek">peek()</button>
           <div class="args"></div>
         </div>
       </div>
       <div class="opcol">
         <div class="oplist">
-          <button class="btn primary obtn" data-act="empty">empty()</button>
+          <button class="btn primary obtn" data-act="peek">peek()</button>
           <div class="args"></div>
           <button class="btn primary obtn" data-act="size">size()</button>
           <div class="args"></div>
@@ -904,6 +921,7 @@ input.long{width:160px;flex:1;min-width:130px}
   <!-- stage: visualization | concept -->
   <div class="stage">
     <div class="panel vis">
+      <h3 class="panelhd">Step-by-step view</h3>
       <div class="transport">
         <button class="tbtn" id="tRestart" title="Restart (Home)" aria-label="Restart"><svg viewBox="0 0 16 16" width="13" height="13"><rect x="3" y="3" width="1.7" height="10"/><path d="M13 3 6.2 8 13 13 Z"/></svg></button>
         <button class="tbtn" id="tPrev" title="Step back (&larr;)" aria-label="Step back"><svg viewBox="0 0 16 16" width="13" height="13"><path d="M11 3 5 8l6 5z"/></svg></button>
@@ -1188,7 +1206,7 @@ input.long{width:160px;flex:1;min-width:130px}
   </div><!-- /workspace -->
 </div>
 
-<script>window.PAWIE_STATIC=true;window.PAWIE_COLLECT_URL="https://script.google.com/macros/s/AKfycbxC4O5gqsx4hJ2f8oAdQsesj7kjVimagQ1xv72pDFTmdj7rtTJ0ZaUMusPGVRyt8Ise4A/exec";window.PAWIE_STATIC_CONFIG={"structs":["ArrayList","LinkedList","Iterator","Hashing"]};</script>
+<script>window.PAWIE_STATIC=true;window.PAWIE_COLLECT_URL="https://script.google.com/macros/s/AKfycbxC4O5gqsx4hJ2f8oAdQsesj7kjVimagQ1xv72pDFTmdj7rtTJ0ZaUMusPGVRyt8Ise4A/exec";window.PAWIE_STATIC_CONFIG={"structs":["ArrayList","LinkedList","Iterator","Hashing","StackQueue"]};</script>
 <script src="pawie-quiz.js"></script>
 <script src="pawie-local.js"></script>
 <script src="analytics.js"></script>
@@ -1793,8 +1811,9 @@ function drawFrame(){
       if(STRUCT==='linked'){ document.getElementById('legendLL').style.display = (!mg && !ITER) ? '' : 'none'; document.getElementById('legendIter').style.display = (!mg && ITER) ? '' : 'none'; }
     } }
   if(STRUCT==='hash') document.getElementById('legendHash').style.display = f.kind==='fraud' ? 'none' : '';   // hasFraudulentTxns draws an array, not the table
+  if(STRUCT==='deque') document.getElementById('legendDeque').style.display = f.kind==='brackets' ? 'none' : '';   // so does isValidBrackets: the String, not the deque
   if(f.ctorFail) renderCtorFail();
-  else if(f.kind==='linked') renderLinked(f); else if(f.kind==='merge') renderMerge(f); else if(f.kind==='stack') renderStack(f); else if(f.kind==='queue' || f.kind==='deque') renderQueue(f); else if(f.kind==='hash') renderHash(f); else if(f.kind==='fraud') renderFraud(f); else if(f.kind==='heap') renderHeap(f); else if(f.kind==='tree') renderTree(f); else renderState(f, f);
+  else if(f.kind==='linked') renderLinked(f); else if(f.kind==='merge') renderMerge(f); else if(f.kind==='stack') renderStack(f); else if(f.kind==='queue' || f.kind==='deque') renderQueue(f); else if(f.kind==='hash') renderHash(f); else if(f.kind==='fraud') renderFraud(f); else if(f.kind==='brackets') renderBrackets(f); else if(f.kind==='heap') renderHeap(f); else if(f.kind==='tree') renderTree(f); else renderState(f, f);
   setNote(f.say + (player.counting ? '<div class="startnote">The animation starts in <b>'+player.counting+'</b>s. Press play to start right now.</div>' : ''), f.err);
   const completed = new Set(player.frames.slice(0, player.i).map(x=>x.phase));
   const skipped = new Set();
@@ -2062,6 +2081,7 @@ document.querySelector('.controls').addEventListener('click', e=>{
     else if(act==='dqpeekfirst')     result = genDequePeek(true);
     else if(act==='dqpeeklast')      result = genDequePeek(false);
     else if(act==='dqsize')          result = genDequeSize();
+    else if(act==='brackets')        result = bracketsOp('Dq');
     else if(act==='dqexpand'){
       // every click doubles the array, so stop before the picture stops being readable
       if(modelDeque.data.length * 2 > DEQUE_UI_MAX_CAP){ setNote('The array already has <b>'+modelDeque.data.length+'</b> slots. Doubling again would make the picture too big to read, so Construct a smaller deque to start over.', true); return; }
@@ -2212,6 +2232,14 @@ document.getElementById('heapmodewrap').addEventListener('click', e=>{
   if(mode!==HEAPMODE) setHeapMode(mode);
 });
 
+/* MyDeque ⇄ MyStack ⇄ MyQueue toggle (the PA6 tab only). Each one keeps its own object, so switching
+   lands on that class's constructor, the same as opening the tab. */
+document.getElementById('dqmodewrap').addEventListener('click', e=>{
+  const b = e.target.closest('.segbtn'); if(!b) return;
+  const mode = b.getAttribute('data-mode');
+  if(PA6_STRUCT[mode]!==STRUCT) setStruct(mode);
+});
+
 /* HashMap ⇄ HashSet toggle (Hashing only) */
 document.getElementById('hashmodewrap').addEventListener('click', e=>{
   const b = e.target.closest('.segbtn'); if(!b) return;
@@ -2228,7 +2256,9 @@ document.getElementById('hashmodewrap').addEventListener('click', e=>{
    Names are the buttons' data-struct values; '*' means all. */
 let ITER_OPEN = false;      // is the ListIterator open to this user? It is the 'Iterator' entry of the same list
 function setVisibleStructs(list){
-  const enabled = Array.isArray(list) && list.length ? list : ['ArrayList'];
+  let enabled = Array.isArray(list) && list.length ? list : ['ArrayList'];
+  // PA6's three classes share one tab now; a list that still names any of them opens that tab
+  if(enabled.some(n=>n in PA6_STRUCT)) enabled = enabled.concat('StackQueue');
   const all = enabled.includes('*');
   ITER_OPEN = all || enabled.includes('Iterator');
   const lm = document.getElementById('llmodewrap');             // the Plain list / ListIterator toggle inside LinkedList
@@ -2249,9 +2279,13 @@ document.getElementById('structNav').addEventListener('click', e=>{
   if(btn.classList.contains('active') && isBuilt() && document.getElementById('workspace').style.display!=='none') return;
   const ws = document.getElementById('workspace');
   const ph = document.getElementById('placeholder');
-  if(name==='ArrayList' || name==='LinkedList' || name==='Stack' || name==='Queue' || name==='Deque' || name==='Hashing' || name==='Heap' || name==='Tree'){
+  if(name==='ArrayList' || name==='LinkedList' || name==='Hashing' || name==='Heap' || name==='Tree'){
     ws.style.display=''; ph.style.display='none';
     setStruct(name);
+  } else if(name==='StackQueue'){
+    // PA6 opens on Part 1 of the write-up, the MyDeque that MyStack and MyQueue are built on
+    ws.style.display=''; ph.style.display='none';
+    setStruct('Deque');
   } else if(name==='Iterator'){
     // Iterator is the LinkedList traversed with a ListIterator
     ws.style.display=''; ph.style.display='none';
@@ -3433,9 +3467,7 @@ function setCostLabels(isLL, iter){
    the LinkedList in ListIterator mode, so it lights its own nav button. */
 function markActiveStruct(){
   let active = 'ArrayList';
-  if(STRUCT==='stack') active = 'Stack';
-  else if(STRUCT==='queue') active = 'Queue';
-  else if(STRUCT==='deque') active = 'Deque';
+  if(STRUCT==='stack' || STRUCT==='queue' || STRUCT==='deque') active = 'StackQueue';
   else if(STRUCT==='hash') active = 'Hashing';
   else if(STRUCT==='heap') active = 'Heap';
   else if(STRUCT==='tree') active = 'Tree';
@@ -3797,11 +3829,14 @@ document.getElementById('ctorNull').addEventListener('change', e=>{
 });
 document.getElementById('ctorArr').addEventListener('keydown', e=>{ if(e.key==='Enter') constructActive(true); });
 
+/* PA6 (MyDeque, MyStack and MyQueue) is one tab, StackQueue, with a switch between its three classes.
+   setStruct still takes the class's name, and each class keeps its own STRUCT, model and generators. */
+const PA6_STRUCT = {Deque:'deque', Stack:'stack', Queue:'queue'};
 /* ---- switch the whole workspace between structures ---- */
 function setStruct(name){
   pause();
   track('struct_open', {struct:name});
-  STRUCT = {LinkedList:'linked', Stack:'stack', Queue:'queue', Deque:'deque', Hashing:'hash', Heap:'heap', Tree:'tree'}[name] || 'array';
+  STRUCT = {LinkedList:'linked', ...PA6_STRUCT, Hashing:'hash', Heap:'heap', Tree:'tree'}[name] || 'array';
   const isLL = STRUCT==='linked', isStack = STRUCT==='stack', isQueue = STRUCT==='queue', isDq = STRUCT==='deque',
         isHash = STRUCT==='hash', isHeap = STRUCT==='heap', isTree = STRUCT==='tree';
   const isCirc = isStack || isQueue || isDq;   // Stack, Queue and Deque share the circular-array UI
@@ -3843,6 +3878,14 @@ function setStruct(name){
   document.getElementById('llmodewrap').style.display = (isLL && ITER_OPEN) ? '' : 'none';
   // the HashMap/HashSet toggle only makes sense for Hashing
   document.getElementById('hashmodewrap').style.display = isHash ? '' : 'none';
+  // the MyDeque/MyStack/MyQueue toggle only makes sense for the PA6 tab
+  document.getElementById('dqmodewrap').style.display = isCirc ? '' : 'none';
+  if(isCirc){
+    document.querySelectorAll('#dqmodewrap .segbtn').forEach(b=>b.classList.toggle('active', PA6_STRUCT[b.getAttribute('data-mode')]===STRUCT));
+    document.getElementById('dqmodeHint').innerHTML = isDq
+      ? 'the circular array that MyStack and MyQueue are built on'
+      : (isStack ? 'a MyDeque used from one end only: last in, first out' : 'a MyDeque that adds at the back and removes from the front: first in, first out');
+  }
   // the MyMinHeap/MyPriorityQueue toggle only makes sense for the Heap tab
   document.getElementById('heapmodewrap').style.display = isHeap ? '' : 'none';
   document.getElementById('hmapOps').style.display = 'none';
@@ -3863,7 +3906,7 @@ function setStruct(name){
     linked:[PHASES_LL, PHASE_TITLES_LL, CX_LINKED, CXP_LINKED],
     stack: [PHASES_STACK, PHASE_TITLES_STACK, CX_STACK, CXP_STACK],
     queue: [PHASES_QUEUE, PHASE_TITLES_QUEUE, CX_QUEUE, CXP_QUEUE],
-    deque: [PHASES_DEQUE, PHASE_TITLES_DEQUE, CX_DEQUE, CXP_DEQUE],
+    deque: [PHASES_DEQUE, PHASE_TITLES_DEQUE, CX_DEQUE_ALL(), CXP_DEQUE],
     heap:  [PHASES_HEAP, PHASE_TITLES_HEAP, CX_HEAP, CXP_HEAP],
     tree:  [PHASES_TREE, PHASE_TITLES_TREE, CX_TREE, CXP_TREE],
   }[STRUCT] || [PHASES, PHASE_TITLES, CX_ARRAY, CXP_ARRAY];   // (hash fills these in itself, in setHashMode)
@@ -3903,7 +3946,7 @@ let modelStack = { data:new Array(STACK_DEFAULT_CAP).fill(null), size:0, front:0
 
 const PHASES_STACK = {
   push: [
-    {id:'guard', t:'Reject null', d:'A stack cannot hold null, so push rejects it before anything else.'},
+    {id:'guard', t:'Reject null', d:'A stack cannot hold null. push hands the element to addLast, and addLast throws NullPointerException before anything else.'},
     {id:'full',  t:'Room to grow?', d:'If the backing array is full (size = capacity), the deque must expand before adding.'},
     {id:'grow',  t:'Expand the array', d:'Allocate a doubled array and copy every element across, keeping them contiguous from index 0. Rare, but O(n).'},
     {id:'slot',  t:'Move rear', d:'rear steps one slot forward to the next free spot, where the new top will go. On an empty deque, rear stays.'},
@@ -3932,10 +3975,10 @@ const PHASES_STACK = {
 const PHASE_TITLES_STACK = {push:'How push(e) works', pop:'How pop() works', peek:'How peek() works', empty:'How empty() works', size:'How size() works'};
 
 const CX_STACK =
+  '<tr id="bo-empty"><td class="opname">empty()</td><td class="bigo">O(1)</td><td class="why">Reads the stored size field.</td></tr>'+
   '<tr id="bo-push"><td class="opname">push(e)</td><td class="bigo">O(1)*</td><td class="why">addLast: one write and a pointer nudge. A rare resize copies all n.</td></tr>'+
   '<tr id="bo-pop"><td class="opname">pop()</td><td class="bigo">O(1)</td><td class="why">removeLast: clears rear, steps the pointer.</td></tr>'+
   '<tr id="bo-peek"><td class="opname">peek()</td><td class="bigo">O(1)</td><td class="why">Reads the rear slot directly.</td></tr>'+
-  '<tr id="bo-empty"><td class="opname">empty()</td><td class="bigo">O(1)</td><td class="why">Reads the stored size field.</td></tr>'+
   '<tr id="bo-stsize"><td class="opname">size()</td><td class="bigo">O(1)</td><td class="why">Reads the stored size field.</td></tr>';
 const CXP_STACK = 'A <code>MyStack</code> is a thin wrapper over a <code>MyDeque</code>. <b>push</b>, <b>pop</b>, and <b>peek</b> all act on the <b>back</b> (rear) end, so the elements stay contiguous, <b>front</b> never moves, and each operation is <code>O(1)</code>.<br><b>*amortized</b>: a <code>push</code> is usually <code>O(1)</code>, but the rare resize that doubles a full array copies all <code>n</code> elements. Averaged over many pushes, that still works out to <code>O(1)</code>.';
 
@@ -3998,7 +4041,7 @@ function dequeExpand(g, manual){
   g.snap({phase:'grow', resize:{old:oldArr.slice(), new:newArr.slice(), pointer:'new', front:0, size:g.size},
     say:'Repoint <b>data</b> at the new array: <b>front = 0</b>, <b>rear = '+g.rear+'</b>. The elements stay contiguous from index 0.'});
   g.snap({phase:'grow', resize:{old:oldArr.slice(), new:newArr.slice(), pointer:'new', oldDead:true, front:0, size:g.size},
-    say:'Nothing points at the old array, so it is <b>garbage-collected</b>. Capacity is now <b>'+newCap+'</b>, with room to push again.'});
+    say:'Nothing points at the old array, so it is <b>garbage-collected</b>. Capacity is now <b>'+newCap+'</b>, with room to add again.'});
 }
 
 /* ---- push(value) = addLast(value) ---- */
@@ -4006,7 +4049,7 @@ function genStackPush(value){
   const g = newDeque(modelStack);
   const label = 'push('+fmt(value)+')';
   if(value===null){
-    g.snap({phase:'guard', err:true, say:'<b>NullPointerException</b>: a stack cannot hold <b>null</b>. Nothing changes.'});
+    g.snap({phase:'guard', err:true, say:'<b>push(null)</b> calls <b>theStack.addLast(null)</b>, and MyDeque throws <b>NullPointerException</b>: null cannot be an element, because it marks an empty slot. Nothing changes.'});
     return {frames:g.frames, final:modelStack, code:'push', row:'bo-push', label, bigO:null};
   }
   g.snap({phase:'guard', run:label, say:'<b>push('+fmt(value)+')</b> calls <b>theStack.addLast('+fmt(value)+')</b>: the new element will become the top of the stack.'});
@@ -4217,7 +4260,7 @@ let modelQueue = { data:new Array(QUEUE_DEFAULT_CAP).fill(null), size:0, front:0
 
 const PHASES_QUEUE = {
   enqueue: [
-    {id:'guard', t:'Reject null', d:'A queue cannot hold null, so enqueue rejects it before anything else.'},
+    {id:'guard', t:'Reject null', d:'A queue cannot hold null. enqueue hands the element to addLast, and addLast throws NullPointerException before anything else.'},
     {id:'full',  t:'Room to grow?', d:'If the backing array is full (size = capacity), the deque must expand before adding.'},
     {id:'grow',  t:'Expand the array', d:'Allocate a doubled array and copy every element across in logical order from front, re-basing front to 0. Rare, but O(n).'},
     {id:'slot',  t:'Move rear', d:'rear steps one slot forward (wrapping around the end) to the next free spot at the back. On an empty deque, rear stays.'},
@@ -4246,10 +4289,10 @@ const PHASES_QUEUE = {
 const PHASE_TITLES_QUEUE = {enqueue:'How enqueue(e) works', dequeue:'How dequeue() works', peek:'How peek() works', empty:'How empty() works', size:'How size() works'};
 
 const CX_QUEUE =
+  '<tr id="bo-qempty"><td class="opname">empty()</td><td class="bigo">O(1)</td><td class="why">Reads the stored size field.</td></tr>'+
   '<tr id="bo-enq"><td class="opname">enqueue(e)</td><td class="bigo">O(1)*</td><td class="why">addLast: one write at the back. A rare resize copies all n.</td></tr>'+
   '<tr id="bo-deq"><td class="opname">dequeue()</td><td class="bigo">O(1)</td><td class="why">removeFirst: clears front, steps the pointer.</td></tr>'+
   '<tr id="bo-qpeek"><td class="opname">peek()</td><td class="bigo">O(1)</td><td class="why">Reads the front slot directly.</td></tr>'+
-  '<tr id="bo-qempty"><td class="opname">empty()</td><td class="bigo">O(1)</td><td class="why">Reads the stored size field.</td></tr>'+
   '<tr id="bo-qsize"><td class="opname">size()</td><td class="bigo">O(1)</td><td class="why">Reads the stored size field.</td></tr>';
 const CXP_QUEUE = 'A <code>MyQueue</code> is a thin wrapper over a <code>MyDeque</code>. <b>enqueue</b> adds at the <b>back</b> (addLast) and <b>dequeue</b> / <b>peek</b> act at the <b>front</b> (removeFirst / peekFirst), so it is FIFO. Both <b>front</b> and <b>rear</b> advance and wrap around the circular array. This is where you see <b>front &gt; rear</b>. Each op is <code>O(1)</code>.<br><b>*amortized</b>: an <code>enqueue</code> is usually <code>O(1)</code>, but the rare resize that doubles a full array copies all <code>n</code> elements.';
 
@@ -4258,7 +4301,7 @@ function genQueueEnqueue(value){
   const g = newDeque(modelQueue, 'queue');
   const label = 'enqueue('+fmt(value)+')';
   if(value===null){
-    g.snap({phase:'guard', err:true, say:'<b>NullPointerException</b>: a queue cannot hold <b>null</b>. Nothing changes.'});
+    g.snap({phase:'guard', err:true, say:'<b>enqueue(null)</b> calls <b>theQueue.addLast(null)</b>, and MyDeque throws <b>NullPointerException</b>: null cannot be an element, because it marks an empty slot. Nothing changes.'});
     return {frames:g.frames, final:modelQueue, code:'enqueue', row:'bo-enq', label, bigO:null};
   }
   g.snap({phase:'guard', run:label, say:'<b>enqueue('+fmt(value)+')</b> calls <b>theQueue.addLast('+fmt(value)+')</b>: the new element joins the back of the line.'});
@@ -4495,14 +4538,15 @@ const PHASES_DEQUE = {
 const PHASE_TITLES_DEQUE = {addFirst:'How addFirst(e) works', addLast:'How addLast(e) works', removeFirst:'How removeFirst() works', removeLast:'How removeLast() works', peekFirst:'How peekFirst() works', peekLast:'How peekLast() works', size:'How size() works', expandCapacity:'How expandCapacity() works'};
 
 const CX_DEQUE =
+  '<tr id="bo-dqsize"><td class="opname">size()</td><td class="bigo">O(1)</td><td class="why">Reads the stored size field.</td></tr>'+
+  '<tr id="bo-dqexp"><td class="opname">expandCapacity()</td><td class="bigo">O(n)</td><td class="why">Copies all n elements into an array twice as big.</td></tr>'+
   '<tr id="bo-dqaf"><td class="opname">addFirst(e)</td><td class="bigo">O(1)*</td><td class="why">One write and a front nudge. A rare resize copies all n.</td></tr>'+
   '<tr id="bo-dqal"><td class="opname">addLast(e)</td><td class="bigo">O(1)*</td><td class="why">One write and a rear nudge. A rare resize copies all n.</td></tr>'+
   '<tr id="bo-dqrf"><td class="opname">removeFirst()</td><td class="bigo">O(1)</td><td class="why">Clears front, steps the pointer.</td></tr>'+
   '<tr id="bo-dqrl"><td class="opname">removeLast()</td><td class="bigo">O(1)</td><td class="why">Clears rear, steps the pointer.</td></tr>'+
   '<tr id="bo-dqpf"><td class="opname">peekFirst()</td><td class="bigo">O(1)</td><td class="why">Reads the front slot directly.</td></tr>'+
-  '<tr id="bo-dqpl"><td class="opname">peekLast()</td><td class="bigo">O(1)</td><td class="why">Reads the rear slot directly.</td></tr>'+
-  '<tr id="bo-dqsize"><td class="opname">size()</td><td class="bigo">O(1)</td><td class="why">Reads the stored size field.</td></tr>'+
-  '<tr id="bo-dqexp"><td class="opname">expandCapacity()</td><td class="bigo">O(n)</td><td class="why">Copies all n elements into an array twice as big.</td></tr>';
+  '<tr id="bo-dqpl"><td class="opname">peekLast()</td><td class="bigo">O(1)</td><td class="why">Reads the rear slot directly.</td></tr>';
+const CX_DEQUE_ALL = () => CX_DEQUE + CX_BRACKETS;
 const CXP_DEQUE = 'A <code>MyDeque</code> keeps its elements in a <b>circular array</b> with a <code>front</code> and a <code>rear</code> index. Adding or removing at either end only moves one index, one slot, and an index that falls off one end of the array wraps around to the other end. So every end operation is <code>O(1)</code>, and you will often see <code>front &gt; rear</code> because the elements wrap past the end of the array. When the array is full it doubles and the elements are re-based to start at index 0, which copies all <code>n</code>.<br><b>*amortized</b>: an add is usually <code>O(1)</code>, but the rare resize copies every element. Removing the last element does <b>not</b> reset front and rear to 0.';
 
 /* ---- addFirst(e): the new element goes just before front ---- */
@@ -4648,6 +4692,85 @@ function genDequeExpand(){
   return {frames:g.frames, final:g.final(), code:'expandCapacity', row:'bo-dqexp', label:'expandCapacity()',
     bigO:'<b>expandCapacity</b> copied the <code>'+g.size+'</code> element(s) into an array of '+g.data.length+' (it was '+oldCap+'), so it is <code>O(n)</code>.'};
 }
+
+/* ---- PA6 MyAlgorithm.isValidBrackets(input), answer only: what it returns, never how ----
+   PA6 is still open, so like PA5's hasFraudulentTxns the page shows the input and what comes back, with the rule of the
+   write-up that decides it, not the steps. It is offered only under MyDeque, so the page does not hint whether a stack
+   or a queue is the one to use, and it changes nothing in the deque. */
+const BRACKET_OPEN = '([{', BRACKET_CLOSE = ')]}';
+const BRACKETS_MAX = 40;                                 // characters, so the row stays readable
+const BRACKETS_ANSWER_PHASES = [{id:'result', t:'What isValidBrackets returns', d:'true when every open bracket is closed by a bracket of the same type, in the correct order, and every close bracket has an open bracket of the same type to match. Any other character is ignored, and an empty string is valid. A null input throws NullPointerException. Working out how is the assignment, so for now try to work out the solution yourself. A detailed walkthrough will be shared after the PA is due.'}];
+const BRACKETS_TITLE = 'What isValidBrackets(input) returns';
+const CX_BRACKETS = '<tr id="bo-brackets"><td class="opname">isValidBrackets</td><td class="bigo">O(n)</td><td class="why">The write-up requires your MyAlgorithm solution to use a stack or a queue and run in O(n).</td></tr>';
+/* the answer and the first place the rules break. Worked out here with a plain array, which the page never shows. */
+function bracketsAnswer(str){
+  const open = [];                                       // indices of the open brackets not closed yet
+  for(let i=0;i<str.length;i++){
+    const c = str[i];
+    if(BRACKET_OPEN.includes(c)){ open.push(i); continue; }
+    const k = BRACKET_CLOSE.indexOf(c); if(k<0) continue;
+    if(!open.length) return {ok:false, rule:3, at:i};
+    const j = open.pop();
+    if(BRACKET_OPEN.indexOf(str[j])!==k) return {ok:false, rule:1, at:i, with:j};
+  }
+  if(open.length) return {ok:false, rule:2, at:open[open.length-1]};
+  return {ok:true};
+}
+function genBrackets(input){
+  const final = modelDeque;
+  const esc = t=>String(t).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const label = input===null ? 'isValidBrackets(null)' : 'isValidBrackets("'+input+'")';
+  const frame = o => ({kind:'brackets', input, mark:o.mark||[], bad:o.bad==null ? -1 : o.bad, phase:'result', say:o.say, err:!!o.err,
+    cost:{writes:0, copies:0}, lit:null, run:label, ret:o.ret===undefined ? null : o.ret});
+  const done = (f, bigO) => ({frames:[f], final, row:'bo-brackets', code:'isValidBrackets', label, bigO});
+  if(input===null){
+    return done(frame({err:true, say:'<b>NullPointerException</b>: isValidBrackets throws when <b>input</b> is <b>null</b>.'}), null);
+  }
+  const a = bracketsAnswer(input);
+  const ch = i => '<b>'+esc(input[i])+'</b> at index '+i;
+  const why = a.ok
+    ? (/[()[\]{}]/.test(input) ? ' Every open bracket is closed by a bracket of the same type, in the correct order.' : ' There are no brackets in it at all, so none is left unmatched.')
+    : a.rule===3 ? ' The close bracket '+ch(a.at)+' has no open bracket before it left to match (rule 3).'
+    : a.rule===1 ? ' The close bracket '+ch(a.at)+' would close '+ch(a.with)+', which is a different type (rule 1).'
+    : ' The open bracket '+ch(a.at)+' is never closed (rules 1 and 2).';
+  return done(frame({ret:String(a.ok), bad:a.ok ? -1 : a.at, mark:a.with!=null ? [a.with] : [],
+    say:'<b>isValidBrackets</b> returns <b>'+a.ok+'</b>.'+why+' How to check it is your assignment, so for now try to work out the solution yourself. A detailed walkthrough will be shared after the PA is due. '
+      + 'Use your <b>MyStack</b> or <b>MyQueue</b>, and your solution must run in O(n).'}),
+    'The write-up requires your solution to use a stack or a queue and run in <code>O(n)</code>.');
+}
+/* the input box holds the whole String as typed (commas included); the checkbox passes null instead */
+function bracketsOp(sfx){
+  if(document.getElementById('br'+sfx+'Null').checked) return genBrackets(null);
+  const str = document.getElementById('vBr'+sfx).value;
+  if(str.length > BRACKETS_MAX){ setNote('Use at most '+BRACKETS_MAX+' characters, so the picture stays readable. This input has '+str.length+'.', true); return null; }
+  return genBrackets(str);
+}
+function renderBrackets(f){
+  const objbox = document.getElementById('objbox'); if(objbox) objbox.style.display='none';
+  const cells = document.getElementById('cells'); cells.innerHTML = '';
+  const host = document.createElement('div'); host.className = 'mgstage';
+  const row = document.createElement('div'); row.className = 'mgrow mgit frrow';
+  const lab = document.createElement('div'); lab.className = 'mglab';
+  lab.innerHTML = '<b>input</b><span>'+(f.input===null ? 'null' : 'a String of '+f.input.length+' character(s)')+'</span>';
+  row.appendChild(lab);
+  const line = document.createElement('div'); line.className = 'mgitems'; row.appendChild(line);
+  if(f.input===null || !f.input.length){ const b = document.createElement('div'); b.className = 'mgempty'; b.textContent = f.input===null ? 'null' : 'empty string'; line.appendChild(b); }
+  else [...f.input].forEach((c, i)=>{
+    const cell = document.createElement('div');
+    cell.className = 'lcell' + (i===f.bad || f.mark.includes(i) ? ' target' : '');
+    const box = document.createElement('div'); box.className = 'lbox'; box.textContent = c===' ' ? '␣' : c;
+    if(!/[()[\]{}]/.test(c)) box.style.opacity = '.45';    // only brackets decide the answer
+    cell.appendChild(box);
+    const ptr = document.createElement('div'); ptr.className = 'lptr'; ptr.textContent = i; cell.appendChild(ptr);
+    line.appendChild(cell);
+  });
+  host.appendChild(row);
+  cells.appendChild(host);
+  document.getElementById('bSize').textContent = 'length = ' + (f.input===null ? 0 : f.input.length);
+  document.getElementById('bCap').textContent = f.ret==null ? 'throws' : 'returns ' + f.ret;
+}
+PHASES_DEQUE.isValidBrackets = BRACKETS_ANSWER_PHASES;
+PHASE_TITLES_DEQUE.isValidBrackets = BRACKETS_TITLE;
 
 /* ---- constructor: new MyDeque(capacity) allocates the circular array; listed values are then addLast-ed ---- */
 function genDequeBuildResult(capArg, tokens){
@@ -5624,6 +5747,9 @@ function genTreeBuildResult(tokens){
    ===================================================================== */
 const HASH_DEFAULT_CAP = DEFAULT_CAPACITY;   // 5, the app-wide default
 const HASH_LOAD = 0.8;                        // expand at/above 80% load
+/* the max load as a student reads it: 0.8 * 3 is 2.4000000000000004 in floating point, so round it for display only.
+   The comparisons keep the raw product, the same double Java compares against. */
+const loadShown = cap => Number((HASH_LOAD * cap).toFixed(2));
 const HASH_UI_MAX_CAP = 80;                    // a direct expandCapacity() click stops here, to keep the picture readable
 const HSET_VAL = '•';                    // placeholder value for set keys
 let HASHMODE = 'map';                         // 'map' | 'set'
@@ -5775,7 +5901,7 @@ function hashExpandFrames(g, manual){
     say:(manual ? '<b>expandCapacity()</b> was called directly, so nothing checked the load first. '
                 : 'Max load reached. <b>expandCapacity</b>: ')+
         'capacity '+oldTable.length+' &times; 2 = <b>'+ncap+'</b>. Allocate a new bucket array and rehash every node, bucket 0 upward.'+
-        (early ? ' (The load is '+g.size+' of '+(HASH_LOAD*oldTable.length)+', under the maximum. The PA says this method is meant for the at-or-over-max case, since put calls it then, but a direct call still doubles the table.)' : '')});
+        (early ? ' (The load is '+g.size+' of '+loadShown(oldTable.length)+', under the maximum. The PA says this method is meant for the at-or-over-max case, since put calls it then, but a direct call still doubles the table.)' : '')});
   for(let b=0;b<oldTable.length;b++){
     for(let i=0;i<oldTable[b].length;i++){
       const node = oldTable[b][i];
@@ -5809,7 +5935,7 @@ function genHput(key, value, isSet){
 
   const willExpand = g.size >= HASH_LOAD * g.table.length;
   g.snap({phase:'load',
-    say:'Load check: size <b>'+g.size+'</b> vs 0.8 &times; capacity = <b>'+(HASH_LOAD*g.table.length)+'</b> → '+
+    say:'Load check: size <b>'+g.size+'</b> vs 0.8 &times; capacity = <b>'+loadShown(g.table.length)+'</b> → '+
         (willExpand ? '<b>at/over max load</b>, so grow before inserting.' : '<b>under max load</b>, no growth needed.')});
   if(willExpand) hashExpandFrames(g);
 
@@ -6120,7 +6246,7 @@ function renderHash(f){
   card.innerHTML =
     '<div class="ocname">'+title+'</div>'+
     '<div class="ofield">size = <b>'+f.size+'</b></div>'+
-    '<div class="ofield">capacity = <b>'+f.cap+'</b> <span class="dnote">(max load 0.8 → '+(HASH_LOAD*f.cap)+')</span></div>'+
+    '<div class="ofield">capacity = <b>'+f.cap+'</b> <span class="dnote">(max load 0.8 → '+loadShown(f.cap)+')</span></div>'+
     '<div class="ofield">hashTable <span class="optr">●→</span> <span class="dnote">(Node array, length = '+f.cap+')</span></div>';
   wrap.appendChild(card);
 
@@ -6452,7 +6578,8 @@ setVisibleStructs(['ArrayList']);      // hide the rest right away; the server's
   const LOOK_R = IDLE.slice(); LOOK_R[5] = eyesAt(5, 12);        // looking right
   const YAWN = BLINK.slice(); YAWN[8] = '.DBBBCKKKKCBBBD.'; YAWN[9] = '.DBBBCCKKCCBBBD.';   // eyes shut, mouth wide open
 
-  const STRUCTS = ['ArrayList','LinkedList','Iterator','Hashing','Deque','Stack','Queue','Heap','Tree'];
+  const STRUCTS = ['ArrayList','LinkedList','Iterator','Hashing','StackQueue','Heap','Tree'];
+  const STRUCT_TITLE = {StackQueue:'Stack and Queue'};   // a tab whose data-struct is not a readable name
 
   const el = document.getElementById('pawie');
   const cv = document.getElementById('pawieCanvas');
@@ -6579,7 +6706,7 @@ setVisibleStructs(['ArrayList']);      // hide the rest right away; the server's
   }
 
   // ---- bubble ----
-  function greet(){ const s=activeStruct(); const name=s==='default'?'this':s;
+  function greet(){ const s=activeStruct(); const name=s==='default'?'this':(STRUCT_TITLE[s]||s);
     msg.innerHTML = "Hi, I am <b>Pawie</b>! Want a hand with <b>"+name+"</b>?<div class=\"acc-small\" style=\"margin-top:10px\">Click the things in my home to take a quiz, hear a joke, change outfits or check your XP. Scroll down to find it.</div>"; }
   // ---- the bubble is draggable (by its title) and resizable; position and size are remembered ----
   const BUB_KEY = 'pawieBubble';
@@ -7308,12 +7435,12 @@ setVisibleStructs(['ArrayList']);      // hide the rest right away; the server's
     applyStructs(); return true;
   }).catch(()=>false);
   const meLoaded = (STATIC || tokenGet()) ? api('/api/me').then(signedIn).catch(e=>{ if(e.status===401) signedOut(); }) : Promise.resolve();
-  // the page opens on the newest assignment open to this visitor (Hashing, else the iterator) when nothing else was picked meanwhile
+  // the page opens on the newest assignment open to this visitor (PA6, else Hashing, else the iterator) when nothing else was picked meanwhile
   let navTouched = false;
   document.getElementById('structNav').addEventListener('click', ()=>{ navTouched = true; }, true);
   const openOnCurrent = ()=>{
     if(navTouched) return;
-    for(const name of ['Hashing', 'Iterator']){
+    for(const name of ['StackQueue', 'Hashing', 'Iterator']){
       if(name==='Iterator' && !ITER_OPEN) continue;
       const b = document.querySelector('#structNav .struct[data-struct="'+name+'"]');
       if(b && b.style.display!=='none'){ b.click(); return; }
