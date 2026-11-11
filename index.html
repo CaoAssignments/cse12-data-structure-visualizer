@@ -297,12 +297,31 @@ input.long{width:160px;flex:1;min-width:130px}
 /* iterator mode UI, the mode chooser is an accent box so students pick first */
 .llmode{display:flex;align-items:center;gap:13px;margin-top:14px;flex-wrap:wrap;background:var(--orange-soft);border:1.5px solid var(--orange);border-radius:4px;padding:10px 14px}
 .llmode-label{font-family:"JetBrains Mono",monospace;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--orange)}
-.llmode-hint{font-family:"JetBrains Mono",monospace;font-size:11px;color:#7a3414}
+.llmode-hint{font-family:"JetBrains Mono",monospace;font-size:11px;color:#7a3414;flex:1 1 220px;min-width:0}
 .seg{display:inline-flex;border:1.5px solid var(--orange);border-radius:3px;overflow:hidden;background:var(--paper)}
 .segbtn{font-family:"JetBrains Mono",monospace;font-size:13px;font-weight:500;padding:7px 16px;border:none;background:var(--paper);color:var(--orange);cursor:pointer;transition:all .15s}
 .segbtn+.segbtn{border-left:1.5px solid var(--orange)}
 .segbtn:hover{background:var(--orange-soft)}
 .segbtn.active{background:var(--orange);color:#fff}
+/* a class and the class it is built on, drawn one inside the other: clicking a layer looks at that layer */
+.layer{flex:1 1 320px;min-width:0;border:1.5px dashed var(--orange);border-radius:5px;background:var(--paper);color:#7a3414;padding:8px 12px;cursor:pointer;font-family:"JetBrains Mono",monospace;font-size:11.5px;line-height:1.45;transition:background .15s,color .15s}
+.layer .layer{margin-top:6px}
+.layer-h b{font-size:13px;color:var(--orange);margin-right:9px}
+.layer-in{margin-top:6px;font-size:11px}
+.layer:not(.active):hover:not(:has(.layer:hover)){background:var(--orange-soft)}
+.layer.active{border-style:solid;background:var(--orange);color:#fff}
+.layer.active>.layer-h b,.layer.active>.layer-in b{color:#fff}
+.layer.active .layer{background:var(--paper);color:#7a3414}
+.layer:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.layergroup{flex:1 1 320px;min-width:0;display:flex;flex-direction:column}
+.layergroup>.layer{flex:none}
+.layerrow{display:flex;flex-wrap:wrap;gap:10px}
+.layerrow>.layer{flex:1 1 240px;position:relative}
+/* one arrow under each of MyStack and MyQueue, both pointing down at the one MyDeque they are built on */
+.layerrow>.layer::after{content:"↓";position:absolute;left:50%;top:100%;transform:translateX(-50%);font-size:15px;line-height:20px;font-weight:700;color:var(--orange)}
+.layer-join{font-family:"JetBrains Mono",monospace;font-size:11px;color:#7a3414;margin:22px 0 6px;text-align:center}
+@media (max-width:640px){.layerrow>.layer::after{display:none}.layer-join{margin-top:8px}}
+.objcard.nested{margin:7px 0 2px 16px;box-shadow:none;min-width:0}
 /* the MyListIterator object card (matches the lecture-notes picture) */
 .itercard{position:relative;z-index:1;display:inline-block;margin:14px 0 4px 84px;border:1.5px solid var(--teal);border-radius:5px;background:var(--paper);padding:13px 16px 8px}
 .itref{position:absolute;left:-70px;top:14px;display:flex;flex-direction:row;align-items:center;gap:4px;font-family:"JetBrains Mono",monospace}
@@ -318,7 +337,6 @@ input.long{width:160px;flex:1;min-width:130px}
 .itbox{width:40px;height:24px;border:1.5px solid var(--ink);border-radius:2px;background:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:13px;color:var(--teal);vertical-align:middle}
 .itval{font-family:"JetBrains Mono",monospace;font-size:13px;font-weight:700;min-width:34px;height:24px;display:inline-flex;align-items:center;justify-content:center;border:1.5px solid var(--ink);border-radius:2px;background:#fff;padding:0 8px}
 .itval.blue{color:var(--blue);border-color:var(--blue)}
-.itcaption{text-align:center;font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--muted);margin-top:10px;letter-spacing:.04em}
 .cursw{display:inline-block;width:3px;height:14px;background:var(--teal);border-radius:1px;vertical-align:-2px;margin:0 6px}
 .lcap{font-family:"JetBrains Mono",monospace;font-size:9.5px;letter-spacing:.04em;color:var(--muted);text-transform:uppercase}
 /* the new node's caption sits clear above the box so arrowheads do not touch it */
@@ -565,15 +583,38 @@ input.long{width:160px;flex:1;min-width:130px}
       <span class="llmode-hint" id="hashmodeHint"></span>
     </div>
 
-    <!-- PA6 only: the MyDeque itself, or the MyStack / MyQueue built on one. Like Hashing, the choice comes first, since it decides the constructor -->
-    <div class="llmode" id="dqmodewrap" style="display:none;margin:0 0 14px">
-      <span class="llmode-label">use as</span>
-      <div class="seg">
-        <button class="segbtn active" data-mode="Deque">MyDeque</button>
-        <button class="segbtn" data-mode="Stack">MyStack</button>
-        <button class="segbtn" data-mode="Queue">MyQueue</button>
+    <!-- PA6 only: MyStack and MyQueue are not siblings of MyDeque. Each one sits on top of a MyDeque, drawn here as two layers
+         over one shared base. Like Hashing, the choice comes first, since it decides the constructor -->
+    <div class="llmode" id="dqmodewrap" style="display:none;margin:0 0 14px;align-items:flex-start">
+      <span class="llmode-label" style="padding-top:9px">look at</span>
+      <div class="layergroup">
+        <div class="layerrow">
+          <div class="layer" data-mode="Stack" role="button" tabindex="0" aria-pressed="false">
+            <div class="layer-h"><b>MyStack</b><span>what you use: push, pop and peek all work on the top. The last element in is the first one out.</span></div>
+            <div class="layer-in">Its only field is <b>theStack</b>.</div>
+          </div>
+          <div class="layer" data-mode="Queue" role="button" tabindex="0" aria-pressed="false">
+            <div class="layer-h"><b>MyQueue</b><span>what you use: enqueue adds at the back, and dequeue removes from the front. The first element in is the first one out.</span></div>
+            <div class="layer-in">Its only field is <b>theQueue</b>.</div>
+          </div>
+        </div>
+        <div class="layer-join">Both store no elements by themselves. theStack and theQueue are each a</div>
+        <div class="layer active" data-mode="Deque" role="button" tabindex="0" aria-pressed="true">
+          <div class="layer-h"><b>MyDeque</b><span>how it works: a circular array that can add and remove at both ends. A stack uses only the back end. A queue adds at the back and removes at the front.</span></div>
+        </div>
       </div>
-      <span class="llmode-hint" id="dqmodeHint"></span>
+    </div>
+
+    <!-- Heap only: the MyMinHeap itself, or the MyPriorityQueue that wraps one. Like Hashing and PA6, the choice comes first, since it decides the constructor -->
+    <div class="llmode" id="heapmodewrap" style="display:none;margin:0 0 14px;align-items:flex-start">
+      <span class="llmode-label" style="padding-top:9px">look at</span>
+      <div class="layer" data-mode="pq" role="button" tabindex="0" aria-pressed="false">
+        <div class="layer-h"><b>MyPriorityQueue</b><span>what you use: push adds an element, and peek and pop always give back the smallest one.</span></div>
+        <div class="layer-in">It stores nothing by itself. Its only field is <b>heap</b>, and each of its methods just calls the matching heap method. That heap is a</div>
+        <div class="layer active" data-mode="heap" role="button" tabindex="0" aria-pressed="true">
+          <div class="layer-h"><b>MyMinHeap</b><span>how it works: a complete binary tree stored in a 0-indexed ArrayList. The smallest element is always the root, at index 0.</span></div>
+        </div>
+      </div>
     </div>
 
     <!-- constructor chooser: pick which of the structure's real PA constructors
@@ -589,16 +630,6 @@ input.long{width:160px;flex:1;min-width:130px}
         <button class="btn primary" id="constructBtn">Construct</button>
       </div>
       <div class="hint" id="ctorHint"></div>
-    </div>
-
-    <!-- Heap only: the MyMinHeap itself, or the MyPriorityQueue that wraps one -->
-    <div class="llmode" id="heapmodewrap" style="display:none">
-      <span class="llmode-label">use as</span>
-      <div class="seg">
-        <button class="segbtn active" data-mode="heap">MyMinHeap</button>
-        <button class="segbtn" data-mode="pq">MyPriorityQueue</button>
-      </div>
-      <span class="llmode-hint" id="heapmodeHint"></span>
     </div>
 
     <hr class="cdivider">
@@ -720,13 +751,39 @@ input.long{width:160px;flex:1;min-width:130px}
 
     <!-- Heap / Priority Queue operations (MyMinHeap / MyPriorityQueue); shown only for Heap -->
     <div class="ops2" id="heapOps" style="display:none">
+      <div class="opcol-h" style="grid-column:1/-1;margin-bottom:0" id="heapHelpersHead"></div>
+      <div class="opcol" data-helpercol>
+        <div class="oplist">
+          <button class="btn primary obtn" data-act="hpswap" data-heaponly>swap(from, to)</button>
+          <div class="args"><span class="field"><label>from</label><input type="number" id="iHpSwapA" class="short" value="0" step="1" data-heaponly></span><span class="field"><label>to</label><input type="number" id="iHpSwapB" class="short" value="2" step="1" data-heaponly></span></div>
+          <button class="btn primary obtn" data-act="hpparent" data-heaponly>getParentIdx(index)</button>
+          <div class="args"><span class="field"><label>index</label><input type="number" id="iHpPar" class="short" value="2" step="1" data-heaponly></span></div>
+          <button class="btn primary obtn" data-act="hpleft" data-heaponly>getLeftChildIdx(index)</button>
+          <div class="args"><span class="field"><label>index</label><input type="number" id="iHpLeft" class="short" value="0" step="1" data-heaponly></span></div>
+          <button class="btn primary obtn" data-act="hpright" data-heaponly>getRightChildIdx(index)</button>
+          <div class="args"><span class="field"><label>index</label><input type="number" id="iHpRight" class="short" value="0" step="1" data-heaponly></span></div>
+        </div>
+      </div>
+      <div class="opcol" data-helpercol>
+        <div class="oplist">
+          <button class="btn primary obtn" data-act="hpminchild" data-heaponly>getMinChildIdx(index)</button>
+          <div class="args"><span class="field"><label>index</label><input type="number" id="iHpMin" class="short" value="0" step="1" data-heaponly></span></div>
+          <button class="btn primary obtn" data-act="hpup" data-heaponly>percolateUp(index)</button>
+          <div class="args"><span class="field"><label>index</label><input type="number" id="iHpUp" class="short" value="2" step="1" data-heaponly></span></div>
+          <button class="btn primary obtn" data-act="hpdown" data-heaponly>percolateDown(index)</button>
+          <div class="args"><span class="field"><label>index</label><input type="number" id="iHpDown" class="short" value="0" step="1" data-heaponly></span></div>
+          <button class="btn primary obtn" data-act="hpdelete" data-heaponly>deleteIndex(index)</button>
+          <div class="args"><span class="field"><label>index</label><input type="number" id="iHpDel" class="short" value="1" step="1" data-heaponly></span></div>
+        </div>
+      </div>
+      <div class="opcol-h" style="grid-column:1/-1;margin-bottom:0">Core methods</div>
       <div class="opcol">
         <div class="oplist">
           <button class="btn primary obtn" data-act="hpinsert">insert(e)</button>
           <div class="args"><span class="field"><label>e</label><input type="text" id="vHpInsert" class="short" placeholder="value" value="2"></span></div>
-          <button class="btn primary obtn" data-act="hpremove">remove()</button>
-          <div class="args"></div>
           <button class="btn primary obtn" data-act="hppeek">getMin()</button>
+          <div class="args"></div>
+          <button class="btn primary obtn" data-act="hpremove">remove()</button>
           <div class="args"></div>
         </div>
       </div>
@@ -736,6 +793,11 @@ input.long{width:160px;flex:1;min-width:130px}
           <div class="args"></div>
           <button class="btn primary obtn" data-act="hpclear">clear()</button>
           <div class="args"></div>
+          <button class="btn primary obtn" data-act="hpatom" data-pqonly style="visibility:hidden">lastAtom(atoms)</button>
+          <div class="args" data-pqonly style="visibility:hidden">
+            <span class="field"><label>atoms</label><input type="text" id="vHpAtoms" class="mid" data-free value="1, 1, 3"></span>
+            <label class="mgnull"><input type="checkbox" id="hpAtomsNull"> null</label>
+          </div>
         </div>
       </div>
     </div>
@@ -1330,6 +1392,9 @@ function renderPhases(opKey){
     '<li data-id="'+p.id+'"><div class="pt">'+p.t+'</div><div class="pd">'+p.d+'</div></li>'
   ).join('');
 }
+/* While an animation plays, the page follows the step that is lit. A structure that is only being set up (a tab or a
+   class was picked, nothing was run) must not move the page, so constructActive(false) turns the following off. */
+var PHASE_FOLLOW = true;
 function highlightPhase(activeId, completedSet, skippedSet){
   const items = document.getElementById('phaseList').querySelectorAll('li');
   items.forEach(li=>{
@@ -1340,7 +1405,7 @@ function highlightPhase(activeId, completedSet, skippedSet){
     li.classList.toggle('done', !sk && id!==activeId && completedSet.has(id));
   });
   const onEl = document.querySelector('#phaseList li.on');
-  if(onEl) onEl.scrollIntoView({block:'nearest',behavior:'smooth'});
+  if(onEl && PHASE_FOLLOW) onEl.scrollIntoView({block:'nearest',behavior:'smooth'});
 }
 
 /* =====================================================================
@@ -1812,8 +1877,9 @@ function drawFrame(){
     } }
   if(STRUCT==='hash') document.getElementById('legendHash').style.display = f.kind==='fraud' ? 'none' : '';   // hasFraudulentTxns draws an array, not the table
   if(STRUCT==='deque') document.getElementById('legendDeque').style.display = f.kind==='brackets' ? 'none' : '';   // so does isValidBrackets: the String, not the deque
+  if(STRUCT==='heap') document.getElementById('legendHeap').style.display = f.kind==='atoms' ? 'none' : '';   // and lastAtom: the list of atoms, not the heap
   if(f.ctorFail) renderCtorFail();
-  else if(f.kind==='linked') renderLinked(f); else if(f.kind==='merge') renderMerge(f); else if(f.kind==='stack') renderStack(f); else if(f.kind==='queue' || f.kind==='deque') renderQueue(f); else if(f.kind==='hash') renderHash(f); else if(f.kind==='fraud') renderFraud(f); else if(f.kind==='brackets') renderBrackets(f); else if(f.kind==='heap') renderHeap(f); else if(f.kind==='tree') renderTree(f); else renderState(f, f);
+  else if(f.kind==='linked') renderLinked(f); else if(f.kind==='merge') renderMerge(f); else if(f.kind==='stack') renderStack(f); else if(f.kind==='queue' || f.kind==='deque') renderQueue(f); else if(f.kind==='hash') renderHash(f); else if(f.kind==='fraud') renderFraud(f); else if(f.kind==='brackets') renderBrackets(f); else if(f.kind==='heap') renderHeap(f); else if(f.kind==='atoms') renderAtoms(f); else if(f.kind==='tree') renderTree(f); else renderState(f, f);
   setNote(f.say + (player.counting ? '<div class="startnote">The animation starts in <b>'+player.counting+'</b>s. Press play to start right now.</div>' : ''), f.err);
   const completed = new Set(player.frames.slice(0, player.i).map(x=>x.phase));
   const skipped = new Set();
@@ -2081,7 +2147,7 @@ document.querySelector('.controls').addEventListener('click', e=>{
     else if(act==='dqpeekfirst')     result = genDequePeek(true);
     else if(act==='dqpeeklast')      result = genDequePeek(false);
     else if(act==='dqsize')          result = genDequeSize();
-    else if(act==='brackets')        result = bracketsOp('Dq');
+    else if(act==='brackets'){ if(typeof setPA6Phases==='function') setPA6Phases(); result = bracketsOp('Dq'); }
     else if(act==='dqexpand'){
       // every click doubles the array, so stop before the picture stops being readable
       if(modelDeque.data.length * 2 > DEQUE_UI_MAX_CAP){ setNote('The array already has <b>'+modelDeque.data.length+'</b> slots. Doubling again would make the picture too big to read, so Construct a smaller deque to start over.', true); return; }
@@ -2105,6 +2171,15 @@ document.querySelector('.controls').addEventListener('click', e=>{
     else if(act==='hppeek')   result = genHeapPeek();
     else if(act==='hpsize')   result = genHeapSize();
     else if(act==='hpclear')  result = genHeapClear();
+    else if(act==='hpatom')   result = lastAtomOp();
+    else if(act==='hpswap'){ const a = heapIdx('iHpSwapA', 'swap', 'from'), b = a===null ? null : heapIdx('iHpSwapB', 'swap', 'to'); result = b===null ? null : genHeapSwap(a, b); }
+    else if(act==='hpparent'){ const i = heapMathIdx('iHpPar', 'getParentIdx', 1); result = i===null ? null : genHeapIdxMath('parent', i); }
+    else if(act==='hpleft'){ const i = heapMathIdx('iHpLeft', 'getLeftChildIdx', 0); result = i===null ? null : genHeapIdxMath('left', i); }
+    else if(act==='hpright'){ const i = heapMathIdx('iHpRight', 'getRightChildIdx', 0); result = i===null ? null : genHeapIdxMath('right', i); }
+    else if(act==='hpminchild'){ const i = heapIdx('iHpMin', 'getMinChildIdx', 'index'); result = i===null ? null : genHeapMinChild(i); }
+    else if(act==='hpup'){ const i = heapIdx('iHpUp', 'percolateUp', 'index'); result = i===null ? null : genHeapPercolate(i, true); }
+    else if(act==='hpdown'){ const i = heapIdx('iHpDown', 'percolateDown', 'index'); result = i===null ? null : genHeapPercolate(i, false); }
+    else if(act==='hpdelete'){ const i = heapIdx('iHpDel', 'deleteIndex', 'index'); result = i===null ? null : genHeapDeleteIndex(i); }
     if(result) loadOp(result, true);
     return;
   }
@@ -2226,18 +2301,27 @@ document.getElementById('llmodewrap').addEventListener('click', e=>{
 });
 
 /* MyMinHeap ⇄ MyPriorityQueue toggle (Heap only) */
-document.getElementById('heapmodewrap').addEventListener('click', e=>{
-  const b = e.target.closest('.segbtn'); if(!b) return;
+/* the innermost layer under the pointer wins: a click on MyMinHeap, which sits inside MyPriorityQueue, picks MyMinHeap */
+function pickHeapLayer(e){
+  const b = e.target.closest('[data-mode]'); if(!b) return;
   const mode = b.getAttribute('data-mode');
   if(mode!==HEAPMODE) setHeapMode(mode);
+}
+document.getElementById('heapmodewrap').addEventListener('click', pickHeapLayer);
+document.getElementById('heapmodewrap').addEventListener('keydown', e=>{
+  if(e.key==='Enter' || e.key===' '){ e.preventDefault(); pickHeapLayer(e); }
 });
 
 /* MyDeque ⇄ MyStack ⇄ MyQueue toggle (the PA6 tab only). Each one keeps its own object, so switching
    lands on that class's constructor, the same as opening the tab. */
-document.getElementById('dqmodewrap').addEventListener('click', e=>{
-  const b = e.target.closest('.segbtn'); if(!b) return;
+function pickDqLayer(e){
+  const b = e.target.closest('[data-mode]'); if(!b) return;
   const mode = b.getAttribute('data-mode');
   if(PA6_STRUCT[mode]!==STRUCT) setStruct(mode);
+}
+document.getElementById('dqmodewrap').addEventListener('click', pickDqLayer);
+document.getElementById('dqmodewrap').addEventListener('keydown', e=>{
+  if(e.key==='Enter' || e.key===' '){ e.preventDefault(); pickDqLayer(e); }
 });
 
 /* HashMap ⇄ HashSet toggle (Hashing only) */
@@ -2731,7 +2815,7 @@ function genLLmerge(L, R, lNull, rNull){
 /* ---- mergeLists, answer only: what it returns, never how ----
    mergeLists is the assignment's problem to solve, so the student site shows only the two inputs and what comes back
    (the examples and the rules of the write-up), not the steps. */
-const MERGE_REVEAL = {"pa3":true,"pa4":true};
+const MERGE_REVEAL = {"pa3":true,"pa4":true,"pa6":true};
 function genMergeAnswer(L, R, lNull, rNull, iter){
   const label = 'mergeLists(left, right)';
   const cost = iter ? 'The write-up requires your solution to run in <code>O(n)</code>.'
@@ -3345,8 +3429,7 @@ function buildIterCard(s){
       '<div class="itrow"><span class="itk">idx</span><span class="itval">'+(bl.idx?'?':s.idx)+'</span></div>'+
       '<div class="itrow"><span class="itk blue">forward</span><span class="itval blue">'+(bl.forward?'?':(s.forward?'true':'false'))+'</span></div>'+
       '<div class="itrow"><span class="itk blue">canRemoveOrSet</span><span class="itval blue">'+(bl.canSet?'?':(s.canSet?'true':'false'))+'</span></div>'+
-    '</div>'+
-    '<div class="itcaption">it : ListIterator&lt;Integer&gt;<br>(a MyListIterator on <b>list</b>)</div>';
+    '</div>';
   // a pointer field shows a dot once it is set, and its arrow leaves from that dot; '?' until the constructor sets it
   card.querySelector('#itLeftBox').textContent  = bl.left  ? '?' : '\u25CF';
   card.querySelector('#itRightBox').textContent = bl.right ? '?' : '\u25CF';
@@ -3587,11 +3670,12 @@ function genCtorArr(tokens, isNull){
    ===================================================================== */
 const CTOR_HINT = {
   array:'All three constructors set up the same two fields, data and size. They differ only in how. Pick one and press Construct. A negative capacity throws IllegalArgumentException, so try -1.',
-  heap:'new MyMinHeap() starts empty; new MyMinHeap(collection) copies the values in, then heapifies them bottom-up. A null collection (or a null inside it) throws NullPointerException.',
+  heap:'new MyMinHeap() starts empty. new MyMinHeap(collection) copies the values in, then heapifies them bottom-up. A null collection (or a null inside it) throws NullPointerException.',
+  heappq:'new MyPriorityQueue() starts empty. new MyPriorityQueue(collection) starts with the elements of the collection. A null collection, or a null inside it, throws NullPointerException.',
   linked:'The no-arg constructor builds the head and tail sentinels. Any values you list are then added one by one with add(e). A null in the list is skipped, since add(null) would throw.',
   iter:'Order matters: an iterator cannot exist without a list, so line 1 builds the MyLinkedList and line 2 asks that list for an iterator.<br>list.listIterator() just runs return new MyListIterator(), a constructor with no parameters, because the iterator is an inner class and already sees the list&rsquo;s head.<br>forward can start as true or false and it does not matter: only remove() and set() read it, and a call to next() or previous() sets it first.',
-  stack:'new MyStack(capacity) allocates a MyDeque of that capacity, then pushes each listed value (addLast). A capacity of 0 is allowed (the first push grows it to 10) and a negative one throws IllegalArgumentException. A null in the list is skipped.',
-  queue:'new MyQueue(capacity) allocates a MyDeque of that capacity, then enqueues each listed value (addLast). A capacity of 0 is allowed (the first enqueue grows it to 10) and a negative one throws IllegalArgumentException. A null in the list is skipped.',
+  stack:'new MyStack(capacity) allocates a MyDeque of that capacity, then pushes each listed value. A capacity of 0 is allowed, since the first push grows it to 10, and a negative one throws IllegalArgumentException. A null in the list is skipped.',
+  queue:'new MyQueue(capacity) allocates a MyDeque of that capacity, then enqueues each listed value. A capacity of 0 is allowed, since the first enqueue grows it to 10, and a negative one throws IllegalArgumentException. A null in the list is skipped.',
   deque:'new MyDeque(capacity) allocates the circular array with front = rear = 0, then addLasts each listed value. A capacity of 0 is allowed (the first add grows it to 10) and a negative one throws IllegalArgumentException. A null in the list is skipped.',
   tree:'The no-arg constructor makes an empty tree (root = null). Listed entries are then inserted one by one: write key:value, or just a key. A null key is skipped, since insert(null, v) would throw.',
   hashmap:'new MyHashMap() / (capacity) allocate the bucket array; listed key:value entries (like A:1, the String key A mapped to the Integer 1) are then put in, in order. A capacity of 0 or less throws IllegalArgumentException.',
@@ -3645,6 +3729,7 @@ function ctorDefs(){
   return [];
 }
 function ctorHintKey(){ return (STRUCT==='linked' && ITER) ? 'iter' : STRUCT==='hash' ? (HASHMODE==='set'?'hashset':'hashmap') : STRUCT; }
+function ctorHintText(){ return STRUCT==='heap' ? stackedHint(CTOR_HINT.heap, CTOR_HINT.heappq, HEAPMODE==='pq') : (CTOR_HINT[ctorHintKey()] || ''); }
 
 let activeCtor = 'ctor0';
 /* render the tabs and argument inputs for the active structure */
@@ -3683,7 +3768,7 @@ function ctorSelect(kind){
   document.getElementById('caNone').style.display = (!d.cap && !d.el) ? '' : 'none';
   if(d.el) document.getElementById('caArrLabel').textContent = d.elLabel || 'elements';
   if(d.nul) document.getElementById('caNullText').textContent = d.nulLabel || 'null array';
-  document.getElementById('ctorHint').innerHTML = CTOR_HINT[ctorHintKey()] || '';
+  document.getElementById('ctorHint').innerHTML = ctorHintText();
 }
 /* read the chosen constructor's arguments and return its animation result */
 function ctorResult(){
@@ -3712,6 +3797,10 @@ function ctorResult(){
 }
 /* construct: animate on an explicit click, land on the result on a switch */
 function constructActive(animate){
+  PHASE_FOLLOW = !!animate;
+  try{ constructActiveNow(animate); } finally { PHASE_FOLLOW = true; }
+}
+function constructActiveNow(animate){
   pause();
   if(animate){ track('ctor_used', {struct:curStruct(), ctor:activeCtor}); awardPet('ctor', curStruct()+':'+activeCtor); }
   if(ITER){
@@ -3734,9 +3823,10 @@ function constructActive(animate){
   // a constructor that throws creates no object, so there is nothing to operate on yet
   lockOps(!animate || built.frames.some(f=>f.err));
 }
+var HEAP_HELPERS_OFF = false;     // true under MyPriorityQueue, which may use only the public methods of MyMinHeap
 /* operation buttons stay disabled until the student presses Construct */
 function lockOps(locked){
-  document.querySelectorAll('.ops2 [data-act]').forEach(b=>{ b.disabled = locked; });
+  document.querySelectorAll('.ops2 [data-act]').forEach(b=>{ b.disabled = locked || (HEAP_HELPERS_OFF && b.hasAttribute('data-heaponly')); });
   document.querySelectorAll('.ops2').forEach(o=>o.classList.toggle('locked', locked));
 }
 /* a fresh structure starts with an empty visualization; only pressing
@@ -3881,10 +3971,7 @@ function setStruct(name){
   // the MyDeque/MyStack/MyQueue toggle only makes sense for the PA6 tab
   document.getElementById('dqmodewrap').style.display = isCirc ? '' : 'none';
   if(isCirc){
-    document.querySelectorAll('#dqmodewrap .segbtn').forEach(b=>b.classList.toggle('active', PA6_STRUCT[b.getAttribute('data-mode')]===STRUCT));
-    document.getElementById('dqmodeHint').innerHTML = isDq
-      ? 'the circular array that MyStack and MyQueue are built on'
-      : (isStack ? 'a MyDeque used from one end only: last in, first out' : 'a MyDeque that adds at the back and removes from the front: first in, first out');
+    document.querySelectorAll('#dqmodewrap [data-mode]').forEach(b=>{ const on = PA6_STRUCT[b.getAttribute('data-mode')]===STRUCT; b.classList.toggle('active', on); b.setAttribute('aria-pressed', String(on)); });
   }
   // the MyMinHeap/MyPriorityQueue toggle only makes sense for the Heap tab
   document.getElementById('heapmodewrap').style.display = isHeap ? '' : 'none';
@@ -3946,7 +4033,7 @@ let modelStack = { data:new Array(STACK_DEFAULT_CAP).fill(null), size:0, front:0
 
 const PHASES_STACK = {
   push: [
-    {id:'guard', t:'Reject null', d:'A stack cannot hold null. push hands the element to addLast, and addLast throws NullPointerException before anything else.'},
+    {id:'guard', t:'Reject null', d:'A stack cannot hold null. push(null) throws NullPointerException before anything else.'},
     {id:'full',  t:'Room to grow?', d:'If the backing array is full (size = capacity), the deque must expand before adding.'},
     {id:'grow',  t:'Expand the array', d:'Allocate a doubled array and copy every element across, keeping them contiguous from index 0. Rare, but O(n).'},
     {id:'slot',  t:'Move rear', d:'rear steps one slot forward to the next free spot, where the new top will go. On an empty deque, rear stays.'},
@@ -3954,7 +4041,7 @@ const PHASES_STACK = {
     {id:'size',  t:'Grow the size', d:'The stack holds one more element.'},
   ],
   pop: [
-    {id:'guard',   t:'Empty?', d:'If the stack is empty, removeLast returns null.'},
+    {id:'guard',   t:'Empty?', d:'If the stack is empty, pop returns null.'},
     {id:'read',    t:'Read the top', d:'Remember the element at rear so it can be returned.'},
     {id:'clear',   t:'Clear the slot', d:'Set the rear slot to null to release the reference.'},
     {id:'advance', t:'Move rear', d:'If rear ≠ front, step rear back to the new top. If they were equal, that was the last element and the deque is now empty.'},
@@ -3976,8 +4063,8 @@ const PHASE_TITLES_STACK = {push:'How push(e) works', pop:'How pop() works', pee
 
 const CX_STACK =
   '<tr id="bo-empty"><td class="opname">empty()</td><td class="bigo">O(1)</td><td class="why">Reads the stored size field.</td></tr>'+
-  '<tr id="bo-push"><td class="opname">push(e)</td><td class="bigo">O(1)*</td><td class="why">addLast: one write and a pointer nudge. A rare resize copies all n.</td></tr>'+
-  '<tr id="bo-pop"><td class="opname">pop()</td><td class="bigo">O(1)</td><td class="why">removeLast: clears rear, steps the pointer.</td></tr>'+
+  '<tr id="bo-push"><td class="opname">push(e)</td><td class="bigo">O(1)*</td><td class="why">One write and a pointer nudge. A rare resize copies all n.</td></tr>'+
+  '<tr id="bo-pop"><td class="opname">pop()</td><td class="bigo">O(1)</td><td class="why">Clears rear, steps the pointer.</td></tr>'+
   '<tr id="bo-peek"><td class="opname">peek()</td><td class="bigo">O(1)</td><td class="why">Reads the rear slot directly.</td></tr>'+
   '<tr id="bo-stsize"><td class="opname">size()</td><td class="bigo">O(1)</td><td class="why">Reads the stored size field.</td></tr>';
 const CXP_STACK = 'A <code>MyStack</code> is a thin wrapper over a <code>MyDeque</code>. <b>push</b>, <b>pop</b>, and <b>peek</b> all act on the <b>back</b> (rear) end, so the elements stay contiguous, <b>front</b> never moves, and each operation is <code>O(1)</code>.<br><b>*amortized</b>: a <code>push</code> is usually <code>O(1)</code>, but the rare resize that doubles a full array copies all <code>n</code> elements. Averaged over many pushes, that still works out to <code>O(1)</code>.';
@@ -4011,11 +4098,10 @@ function newDeque(start, kind){
 /* the frame list for a MyStack / MyQueue constructor that threw: the MyDeque underneath rejects a negative capacity */
 function dequeCtorFail(kind, wrapper, cap, finalModel, code){
   const noun = wrapper==='MyStack' ? 'stack' : (wrapper==='MyQueue' ? 'queue' : 'deque');
-  const via = wrapper==='MyDeque' ? '' : ' calls <b>new MyDeque('+cap+')</b>, and the deque constructor';
   return ctorFailed({
     frames:[{kind, data:[], size:0, cap:0, front:0, rear:0, active:[], compare:[], resize:null, phase:null,
       cost:{writes:0,copies:0}, lit:null, err:true,
-      say:'<b>new '+wrapper+'('+cap+')</b>'+via+' throws <b>IllegalArgumentException</b>, because the initial capacity is negative (strictly less than 0 is invalid). No '+noun+' is created.'}],
+      say:'<b>new '+wrapper+'('+cap+')</b> throws <b>IllegalArgumentException</b>, because the initial capacity is negative (strictly less than 0 is invalid). No '+noun+' is created.'}],
     final:finalModel, code, row:null, label:'new '+wrapper+'('+cap+')', bigO:null});
 }
 
@@ -4049,10 +4135,10 @@ function genStackPush(value){
   const g = newDeque(modelStack);
   const label = 'push('+fmt(value)+')';
   if(value===null){
-    g.snap({phase:'guard', err:true, say:'<b>push(null)</b> calls <b>theStack.addLast(null)</b>, and MyDeque throws <b>NullPointerException</b>: null cannot be an element, because it marks an empty slot. Nothing changes.'});
+    g.snap({phase:'guard', err:true, say:'<b>push(null)</b> throws <b>NullPointerException</b>: null cannot be an element, because it marks an empty slot. Nothing changes.'});
     return {frames:g.frames, final:modelStack, code:'push', row:'bo-push', label, bigO:null};
   }
-  g.snap({phase:'guard', run:label, say:'<b>push('+fmt(value)+')</b> calls <b>theStack.addLast('+fmt(value)+')</b>: the new element will become the top of the stack.'});
+  g.snap({phase:'guard', run:label, say:'<b>push('+fmt(value)+')</b>: the new element will become the top of the stack.'});
   const full = (g.size===g.data.length);
   g.snap({phase:'full', say:'Is the deque full? size = '+g.size+', capacity = '+g.data.length+' → '+(full?'<b>yes</b>, expand first.':'<b>no</b>, there is room.')});
   if(full) dequeExpand(g);
@@ -4077,12 +4163,12 @@ function genStackPop(){
   const g = newDeque(modelStack);
   const label = 'pop()';
   if(g.size===0){
-    g.snap({phase:'guard', run:label, ret:'null', say:'<b>pop()</b> calls <b>theStack.removeLast()</b>. The stack is <b>empty</b> (size = 0), so there is nothing to remove: return <b>null</b>.'});
+    g.snap({phase:'guard', run:label, ret:'null', say:'<b>pop()</b>: the stack is <b>empty</b> (size = 0), so there is nothing to remove: return <b>null</b>.'});
     return {frames:g.frames, final:modelStack, code:'pop', row:'bo-pop', label,
       bigO:'An empty pop returns immediately. <code>O(1)</code>.'};
   }
   const removed = g.data[g.rear];
-  g.snap({phase:'read', compare:[g.rear], lit:'R', run:label, say:'<b>removeLast()</b>: read the element at <b>rear</b> (slot '+g.rear+'): <b>'+fmt(removed)+'</b>. This is the value to return.'});
+  g.snap({phase:'read', compare:[g.rear], lit:'R', run:label, say:'<b>pop()</b>: read the element at <b>rear</b> (slot '+g.rear+'): <b>'+fmt(removed)+'</b>. This is the value to return.'});
   g.data[g.rear] = null; g.cost.writes++;
   g.snap({phase:'clear', active:[g.rear], lit:'W', say:'Clear slot '+g.rear+' (set it to <b>null</b>) so the reference is released.'});
   const cap = g.data.length;
@@ -4105,11 +4191,11 @@ function genStackPeek(){
   const g = newDeque(modelStack);
   const label = 'peek()';
   if(g.size===0){
-    g.snap({phase:'guard', run:label, ret:'null', say:'<b>peek()</b> calls <b>theStack.peekLast()</b>. The stack is empty, so return <b>null</b>.'});
+    g.snap({phase:'guard', run:label, ret:'null', say:'<b>peek()</b>: the stack is empty, so return <b>null</b>.'});
     return {frames:g.frames, final:modelStack, code:'peek', row:'bo-peek', label,
       bigO:'An empty peek returns immediately. <code>O(1)</code>.'};
   }
-  g.snap({phase:'read', compare:[g.rear], lit:'R', run:label, ret:fmt(g.data[g.rear]), say:'<b>peekLast()</b>: read the element at <b>rear</b> (slot '+g.rear+') and return it: <b>'+fmt(g.data[g.rear])+'</b>. The stack is unchanged.'});
+  g.snap({phase:'read', compare:[g.rear], lit:'R', run:label, ret:fmt(g.data[g.rear]), say:'<b>peek()</b>: read the element at <b>rear</b> (slot '+g.rear+') and return it: <b>'+fmt(g.data[g.rear])+'</b>. The stack is unchanged.'});
   return {frames:g.frames, final:modelStack, code:'peek', row:'bo-peek', label,
     bigO:'peek reads the rear slot directly, with no search. <code>O(1)</code>.'};
 }
@@ -4130,44 +4216,17 @@ function genStackSize(){
 
 /* ---- render a stack frame: object card, logical tower, and the
    backing array with rear (top) / front (bottom) markers ---- */
-function renderStack(f){
-  const objbox = document.getElementById('objbox'); if(objbox) objbox.style.display='none';
-  if(f.resize){ renderDequeResize(f.resize); return; }
-  const cells = document.getElementById('cells');
-  cells.innerHTML = '';
-  const wrap = document.createElement('div'); wrap.className = 'stackview';
-
-  // object card: MyStack -> MyDeque
-  const card = document.createElement('div'); card.className = 'objcard stkcard';
-  card.innerHTML =
-    '<div class="ocname">MyStack → MyDeque</div>'+
-    '<div class="ofield">size = <b>'+f.size+'</b></div>'+
-    '<div class="ofield">rear = <b>'+f.rear+'</b> <span class="dnote">← top</span></div>'+
-    '<div class="ofield">front = <b>'+f.front+'</b> <span class="dnote">← bottom</span></div>'+
-    '<div class="ofield">data <span class="optr">●→</span> <span class="dnote">(array, length = '+f.cap+')</span></div>';
-  wrap.appendChild(card);
-
-  // logical view of the stack, top (rear) -> bottom (front)
-  const logic = document.createElement('div'); logic.className = 'stklogic';
-  if(f.size===0){
-    logic.innerHTML = '<span class="stkempty">the stack is empty</span>';
-  } else {
-    let html = '<span class="stklab">top</span><span class="stkarrow">→</span>';
-    for(let k=0;k<f.size;k++){
-      const idx = (f.rear - k + f.cap) % f.cap;
-      html += '<span class="stkbox'+(k===0?' top':'')+'">'+fmt(f.data[idx])+'</span>';
-    }
-    html += '<span class="stkarrow">→</span><span class="stklab">bottom</span>';
-    logic.innerHTML = html;
-  }
-  wrap.appendChild(logic);
-
-  // backing array
-  const arrLabel = document.createElement('div'); arrLabel.className = 'arrayName';
-  arrLabel.innerHTML = 'backing array <span class="dnote">'+(f.cap===0 ? '(no slots yet, capacity 0)' : '(indices 0 … '+(f.cap-1)+')')+'</span>';
-  wrap.appendChild(arrLabel);
-
+/* the array a data field points to, drawn like MyArrayList's: a ringed box labelled by the field's target */
+function pointedFrame(label, body){
+  const row = document.createElement('div'); row.className = 'arrow-row pointed';
+  const lab = document.createElement('div'); lab.className = 'arrlabel'; lab.textContent = label;
+  row.append(lab, body);
+  return row;
+}
+/* the deque's circular array as cells, with front and rear tags */
+function dequeGrid(f){
   const grid = document.createElement('div'); grid.className = 'cells stkcells';
+  if(f.cap===0){ const e = document.createElement('div'); e.className = 'stkempty'; e.textContent = 'no slots yet, capacity 0'; grid.appendChild(e); return grid; }
   const active = f.active||[], compare = f.compare||[];
   for(let i=0;i<f.cap;i++){
     const val = f.data[i];
@@ -4187,7 +4246,52 @@ function renderStack(f){
     cell.append(box, idx, ptr);
     grid.appendChild(cell);
   }
-  wrap.appendChild(grid);
+  return grid;
+}
+/* a MyDeque card, alone or nested inside the MyStack / MyQueue that owns it through one field */
+function dequeCard(f, owner, field, notes){
+  const deq =
+    '<div class="ocname">MyDeque</div>'+
+    '<div class="ofield">size = <b>'+f.size+'</b></div>'+
+    '<div class="ofield">front = <b>'+f.front+'</b> <span class="dnote">'+notes.front+'</span></div>'+
+    '<div class="ofield">rear = <b>'+f.rear+'</b> <span class="dnote">'+notes.rear+'</span></div>'+
+    '<div class="ofield">data <span class="optr">●→</span> <span class="otarget">array</span></div>';
+  const card = document.createElement('div'); card.className = 'objcard stkcard';
+  card.innerHTML = owner
+    ? '<div class="ocname">'+owner+'</div>'+
+      '<div class="ofield">'+field+' <span class="optr">●→</span></div>'+
+      '<div class="objcard stkcard nested">'+deq+'</div>'
+    : deq;
+  return card;
+}
+function renderStack(f){
+  const objbox = document.getElementById('objbox'); if(objbox) objbox.style.display='none';
+  if(f.resize){ renderDequeResize(f.resize); return; }
+  const cells = document.getElementById('cells');
+  cells.innerHTML = '';
+  const wrap = document.createElement('div'); wrap.className = 'stackview';
+
+  // object card: a MyStack holds one field, theStack, which points to the MyDeque that stores the elements
+  wrap.appendChild(dequeCard(f, 'MyStack', 'theStack', {front:'← bottom', rear:'← top'}));
+  wrap.appendChild(pointedFrame('array (capacity '+f.cap+')', dequeGrid(f)));
+
+  // logical view of the stack, top (rear) -> bottom (front). It is drawn from the array above, nothing more is stored
+  const stackLabel = document.createElement('div'); stackLabel.className = 'arrayName';
+  stackLabel.innerHTML = 'This represents the stack: the same elements, from top to bottom. <span class="dnote">Nothing extra is stored.</span>';
+  wrap.appendChild(stackLabel);
+  const logic = document.createElement('div'); logic.className = 'stklogic';
+  if(f.size===0){
+    logic.innerHTML = '<span class="stkempty">the stack is empty</span>';
+  } else {
+    let html = '<span class="stklab">top</span><span class="stkarrow">→</span>';
+    for(let k=0;k<f.size;k++){
+      const idx = (f.rear - k + f.cap) % f.cap;
+      html += '<span class="stkbox'+(k===0?' top':'')+'">'+fmt(f.data[idx])+'</span>';
+    }
+    html += '<span class="stkarrow">→</span><span class="stklab">bottom</span>';
+    logic.innerHTML = html;
+  }
+  wrap.appendChild(logic);
   cells.appendChild(wrap);
 
   document.getElementById('bSize').textContent = 'size = ' + f.size;
@@ -4232,7 +4336,7 @@ function genStackBuildResult(capArg, tokens){
   const initModel = {data:new Array(cap).fill(null), size:0, front:0, rear:0};
   const allocFrame = {kind:'stack', data:initModel.data.slice(), size:0, cap, front:0, rear:0,
     active:[], compare:[], phase:null, cost:{writes:0,copies:0},
-    say:'<b>new MyStack('+cap+')</b> → <b>new MyDeque('+cap+')</b>: allocate a backing <b>Object['+cap+']</b>; set <b>size = front = rear = 0</b>.'};
+    say:'<b>new MyStack('+cap+')</b>: allocate a backing <b>Object['+cap+']</b>; set <b>size = front = rear = 0</b>.'};
   return chainBuild({
     getModel:()=>modelStack, setModel:m=>{modelStack=m;}, initModel, allocFrame, values:vals,
     stepGen:v=>genStackPush(v),
@@ -4242,7 +4346,7 @@ function genStackBuildResult(capArg, tokens){
       say: m.size===0 ? 'Empty stack. capacity = <b>'+m.data.length+'</b>, front = rear = 0.'
         : 'Built a stack of <b>'+m.size+'</b> element(s) by pushing left to right, so <b>'+fmt(vals[vals.length-1])+'</b> is on top.'}),
     code:'push', label:'new MyStack('+cap+')',
-    bigO: vals.length ? 'Allocate the deque, then push each element (addLast). <b>'+vals.length+'</b> push(es): <code>O(n)</code>.'
+    bigO: vals.length ? 'Allocate the array, then push each element. <b>'+vals.length+'</b> push(es): <code>O(n)</code>.'
       : 'Allocate the backing array. <code>O(1)</code>.'
   });
 }
@@ -4260,7 +4364,7 @@ let modelQueue = { data:new Array(QUEUE_DEFAULT_CAP).fill(null), size:0, front:0
 
 const PHASES_QUEUE = {
   enqueue: [
-    {id:'guard', t:'Reject null', d:'A queue cannot hold null. enqueue hands the element to addLast, and addLast throws NullPointerException before anything else.'},
+    {id:'guard', t:'Reject null', d:'A queue cannot hold null. enqueue(null) throws NullPointerException before anything else.'},
     {id:'full',  t:'Room to grow?', d:'If the backing array is full (size = capacity), the deque must expand before adding.'},
     {id:'grow',  t:'Expand the array', d:'Allocate a doubled array and copy every element across in logical order from front, re-basing front to 0. Rare, but O(n).'},
     {id:'slot',  t:'Move rear', d:'rear steps one slot forward (wrapping around the end) to the next free spot at the back. On an empty deque, rear stays.'},
@@ -4268,7 +4372,7 @@ const PHASES_QUEUE = {
     {id:'size',  t:'Grow the size', d:'The queue holds one more element.'},
   ],
   dequeue: [
-    {id:'guard',   t:'Empty?', d:'If the queue is empty, removeFirst returns null.'},
+    {id:'guard',   t:'Empty?', d:'If the queue is empty, dequeue returns null.'},
     {id:'read',    t:'Read the front', d:'Remember the element at front (the oldest) so it can be returned.'},
     {id:'clear',   t:'Clear the slot', d:'Set the front slot to null to release the reference.'},
     {id:'advance', t:'Move front', d:'If front ≠ rear, step front forward (wrapping) to the new head. If they were equal, that was the last element and the deque is now empty.'},
@@ -4290,21 +4394,21 @@ const PHASE_TITLES_QUEUE = {enqueue:'How enqueue(e) works', dequeue:'How dequeue
 
 const CX_QUEUE =
   '<tr id="bo-qempty"><td class="opname">empty()</td><td class="bigo">O(1)</td><td class="why">Reads the stored size field.</td></tr>'+
-  '<tr id="bo-enq"><td class="opname">enqueue(e)</td><td class="bigo">O(1)*</td><td class="why">addLast: one write at the back. A rare resize copies all n.</td></tr>'+
-  '<tr id="bo-deq"><td class="opname">dequeue()</td><td class="bigo">O(1)</td><td class="why">removeFirst: clears front, steps the pointer.</td></tr>'+
+  '<tr id="bo-enq"><td class="opname">enqueue(e)</td><td class="bigo">O(1)*</td><td class="why">One write at the back. A rare resize copies all n.</td></tr>'+
+  '<tr id="bo-deq"><td class="opname">dequeue()</td><td class="bigo">O(1)</td><td class="why">Clears front, steps the pointer.</td></tr>'+
   '<tr id="bo-qpeek"><td class="opname">peek()</td><td class="bigo">O(1)</td><td class="why">Reads the front slot directly.</td></tr>'+
   '<tr id="bo-qsize"><td class="opname">size()</td><td class="bigo">O(1)</td><td class="why">Reads the stored size field.</td></tr>';
-const CXP_QUEUE = 'A <code>MyQueue</code> is a thin wrapper over a <code>MyDeque</code>. <b>enqueue</b> adds at the <b>back</b> (addLast) and <b>dequeue</b> / <b>peek</b> act at the <b>front</b> (removeFirst / peekFirst), so it is FIFO. Both <b>front</b> and <b>rear</b> advance and wrap around the circular array. This is where you see <b>front &gt; rear</b>. Each op is <code>O(1)</code>.<br><b>*amortized</b>: an <code>enqueue</code> is usually <code>O(1)</code>, but the rare resize that doubles a full array copies all <code>n</code> elements.';
+const CXP_QUEUE = 'A <code>MyQueue</code> is a thin wrapper over a <code>MyDeque</code>. <b>enqueue</b> adds at the <b>back</b>, and <b>dequeue</b> and <b>peek</b> act at the <b>front</b>, so it is FIFO. Both <b>front</b> and <b>rear</b> advance and wrap around the circular array. This is where you see <b>front &gt; rear</b>. Each op is <code>O(1)</code>.<br><b>*amortized</b>: an <code>enqueue</code> is usually <code>O(1)</code>, but the rare resize that doubles a full array copies all <code>n</code> elements.';
 
 /* ---- enqueue(value) = addLast(value): the back of the queue ---- */
 function genQueueEnqueue(value){
   const g = newDeque(modelQueue, 'queue');
   const label = 'enqueue('+fmt(value)+')';
   if(value===null){
-    g.snap({phase:'guard', err:true, say:'<b>enqueue(null)</b> calls <b>theQueue.addLast(null)</b>, and MyDeque throws <b>NullPointerException</b>: null cannot be an element, because it marks an empty slot. Nothing changes.'});
+    g.snap({phase:'guard', err:true, say:'<b>enqueue(null)</b> throws <b>NullPointerException</b>: null cannot be an element, because it marks an empty slot. Nothing changes.'});
     return {frames:g.frames, final:modelQueue, code:'enqueue', row:'bo-enq', label, bigO:null};
   }
-  g.snap({phase:'guard', run:label, say:'<b>enqueue('+fmt(value)+')</b> calls <b>theQueue.addLast('+fmt(value)+')</b>: the new element joins the back of the line.'});
+  g.snap({phase:'guard', run:label, say:'<b>enqueue('+fmt(value)+')</b>: the new element joins the back of the line.'});
   const full = (g.size===g.data.length);
   g.snap({phase:'full', say:'Is the deque full? size = '+g.size+', capacity = '+g.data.length+' → '+(full?'<b>yes</b>, expand first.':'<b>no</b>, there is room.')});
   if(full) dequeExpand(g);
@@ -4329,12 +4433,12 @@ function genQueueDequeue(){
   const g = newDeque(modelQueue, 'queue');
   const label = 'dequeue()';
   if(g.size===0){
-    g.snap({phase:'guard', run:label, ret:'null', say:'<b>dequeue()</b> calls <b>theQueue.removeFirst()</b>. The queue is <b>empty</b> (size = 0), so there is nothing to remove: return <b>null</b>.'});
+    g.snap({phase:'guard', run:label, ret:'null', say:'<b>dequeue()</b>: the queue is <b>empty</b> (size = 0), so there is nothing to remove: return <b>null</b>.'});
     return {frames:g.frames, final:modelQueue, code:'dequeue', row:'bo-deq', label,
       bigO:'An empty dequeue returns immediately. <code>O(1)</code>.'};
   }
   const removed = g.data[g.front];
-  g.snap({phase:'read', compare:[g.front], lit:'R', run:label, say:'<b>removeFirst()</b>: read the element at <b>front</b> (slot '+g.front+'): <b>'+fmt(removed)+'</b>. It is the oldest, so it leaves first.'});
+  g.snap({phase:'read', compare:[g.front], lit:'R', run:label, say:'<b>dequeue()</b>: read the element at <b>front</b> (slot '+g.front+'): <b>'+fmt(removed)+'</b>. It is the oldest, so it leaves first.'});
   g.data[g.front] = null; g.cost.writes++;
   g.snap({phase:'clear', active:[g.front], lit:'W', say:'Clear slot '+g.front+' (set it to <b>null</b>) so the reference is released.'});
   const cap = g.data.length;
@@ -4357,11 +4461,11 @@ function genQueuePeek(){
   const g = newDeque(modelQueue, 'queue');
   const label = 'peek()';
   if(g.size===0){
-    g.snap({phase:'guard', run:label, ret:'null', say:'<b>peek()</b> calls <b>theQueue.peekFirst()</b>. The queue is empty, so return <b>null</b>.'});
+    g.snap({phase:'guard', run:label, ret:'null', say:'<b>peek()</b>: the queue is empty, so return <b>null</b>.'});
     return {frames:g.frames, final:modelQueue, code:'peek', row:'bo-qpeek', label,
       bigO:'An empty peek returns immediately. <code>O(1)</code>.'};
   }
-  g.snap({phase:'read', compare:[g.front], lit:'R', run:label, ret:fmt(g.data[g.front]), say:'<b>peekFirst()</b>: read the element at <b>front</b> (slot '+g.front+') and return it: <b>'+fmt(g.data[g.front])+'</b>. The queue is unchanged.'});
+  g.snap({phase:'read', compare:[g.front], lit:'R', run:label, ret:fmt(g.data[g.front]), say:'<b>peek()</b>: read the element at <b>front</b> (slot '+g.front+') and return it: <b>'+fmt(g.data[g.front])+'</b>. The queue is unchanged.'});
   return {frames:g.frames, final:modelQueue, code:'peek', row:'bo-qpeek', label,
     bigO:'peek reads the front slot directly, with no search. <code>O(1)</code>.'};
 }
@@ -4389,18 +4493,17 @@ function renderQueue(f){
   cells.innerHTML = '';
   const wrap = document.createElement('div'); wrap.className = 'stackview';
 
-  // object card: MyQueue -> MyDeque, or the MyDeque itself
+  // object card: the MyDeque itself, or a MyQueue whose one field, theQueue, points to the MyDeque
   const isDq = f.kind==='deque';
-  const card = document.createElement('div'); card.className = 'objcard stkcard';
-  card.innerHTML =
-    '<div class="ocname">'+(isDq ? 'MyDeque' : 'MyQueue → MyDeque')+'</div>'+
-    '<div class="ofield">size = <b>'+f.size+'</b></div>'+
-    '<div class="ofield">front = <b>'+f.front+'</b> <span class="dnote">'+(isDq ? '← first element' : '← head (next out)')+'</span></div>'+
-    '<div class="ofield">rear = <b>'+f.rear+'</b> <span class="dnote">'+(isDq ? '← last element' : '← tail (back)')+'</span></div>'+
-    '<div class="ofield">data <span class="optr">●→</span> <span class="dnote">(circular array, length = '+f.cap+')</span></div>';
-  wrap.appendChild(card);
+  wrap.appendChild(isDq
+    ? dequeCard(f, null, null, {front:'← first element', rear:'← last element'})
+    : dequeCard(f, 'MyQueue', 'theQueue', {front:'← next out', rear:'← last in'}));
+  wrap.appendChild(pointedFrame('array (capacity '+f.cap+', wraps around)', dequeGrid(f)));
 
-  // logical view of the queue, front (head) -> rear (tail), FIFO
+  // logical view, drawn from the array above
+  const queueLabel = document.createElement('div'); queueLabel.className = 'arrayName';
+  queueLabel.innerHTML = 'This represents the '+(isDq ? 'deque' : 'queue')+': the same elements, from front to rear. <span class="dnote">Nothing extra is stored.</span>';
+  wrap.appendChild(queueLabel);
   const logic = document.createElement('div'); logic.className = 'stklogic';
   if(f.size===0){
     logic.innerHTML = '<span class="stkempty">the '+(isDq ? 'deque' : 'queue')+' is empty</span>';
@@ -4415,33 +4518,6 @@ function renderQueue(f){
     logic.innerHTML = html;
   }
   wrap.appendChild(logic);
-
-  // backing circular array
-  const arrLabel = document.createElement('div'); arrLabel.className = 'arrayName';
-  arrLabel.innerHTML = 'backing array <span class="dnote">'+(f.cap===0 ? '(no slots yet, capacity 0)' : '(indices 0 … '+(f.cap-1)+', wraps around)')+'</span>';
-  wrap.appendChild(arrLabel);
-
-  const grid = document.createElement('div'); grid.className = 'cells stkcells';
-  const active = f.active||[], compare = f.compare||[];
-  for(let i=0;i<f.cap;i++){
-    const val = f.data[i];
-    const cell = document.createElement('div');
-    let cls;
-    if(active.includes(i)) cls='active';
-    else if(compare.includes(i)) cls='compare';
-    else if(val!==null) cls='inlist';
-    else cls='free';
-    cell.className = 'cell '+cls;
-    const box = document.createElement('div'); box.className='box';
-    box.textContent = (val===null ? '·' : fmt(val));
-    const idx = document.createElement('div'); idx.className='idx'; idx.textContent=i;
-    const ptr = document.createElement('div'); ptr.className='ptr';
-    if(i===f.front){ const t=document.createElement('span'); t.className='tag front'; t.textContent='front'; ptr.appendChild(t); }
-    if(i===f.rear){ const t=document.createElement('span'); t.className='tag rear'; t.textContent='rear'; ptr.appendChild(t); }
-    cell.append(box, idx, ptr);
-    grid.appendChild(cell);
-  }
-  wrap.appendChild(grid);
   cells.appendChild(wrap);
 
   document.getElementById('bSize').textContent = 'size = ' + f.size;
@@ -4459,7 +4535,7 @@ function genQueueBuildResult(capArg, tokens){
   const initModel = {data:new Array(cap).fill(null), size:0, front:0, rear:0};
   const allocFrame = {kind:'queue', data:initModel.data.slice(), size:0, cap, front:0, rear:0,
     active:[], compare:[], phase:null, cost:{writes:0,copies:0},
-    say:'<b>new MyQueue('+cap+')</b> → <b>new MyDeque('+cap+')</b>: allocate a backing <b>Object['+cap+']</b>; set <b>size = front = rear = 0</b>.'};
+    say:'<b>new MyQueue('+cap+')</b>: allocate a backing <b>Object['+cap+']</b>; set <b>size = front = rear = 0</b>.'};
   return chainBuild({
     getModel:()=>modelQueue, setModel:m=>{modelQueue=m;}, initModel, allocFrame, values:vals,
     stepGen:v=>genQueueEnqueue(v),
@@ -4469,7 +4545,7 @@ function genQueueBuildResult(capArg, tokens){
       say: m.size===0 ? 'Empty queue. capacity = <b>'+m.data.length+'</b>, front = rear = 0.'
         : 'Built a queue of <b>'+m.size+'</b> element(s) by enqueueing left to right, so <b>'+fmt(vals[0])+'</b> is at the front and <b>'+fmt(vals[vals.length-1])+'</b> is at the back.'}),
     code:'enqueue', label:'new MyQueue('+cap+')',
-    bigO: vals.length ? 'Allocate the deque, then enqueue each element (addLast). <b>'+vals.length+'</b> enqueue(s): <code>O(n)</code>.'
+    bigO: vals.length ? 'Allocate the array, then enqueue each element. <b>'+vals.length+'</b> enqueue(s): <code>O(n)</code>.'
       : 'Allocate the backing array. <code>O(1)</code>.'
   });
 }
@@ -4694,7 +4770,7 @@ function genDequeExpand(){
 }
 
 /* ---- PA6 MyAlgorithm.isValidBrackets(input), answer only: what it returns, never how ----
-   PA6 is still open, so like PA5's hasFraudulentTxns the page shows the input and what comes back, with the rule of the
+   Until its walkthrough is revealed (see PA6-STEPS below), like PA5's hasFraudulentTxns the page shows the input and what comes back, with the rule of the
    write-up that decides it, not the steps. It is offered only under MyDeque, so the page does not hint whether a stack
    or a queue is the one to use, and it changes nothing in the deque. */
 const BRACKET_OPEN = '([{', BRACKET_CLOSE = ')]}';
@@ -4740,10 +4816,11 @@ function genBrackets(input){
 }
 /* the input box holds the whole String as typed (commas included); the checkbox passes null instead */
 function bracketsOp(sfx){
-  if(document.getElementById('br'+sfx+'Null').checked) return genBrackets(null);
+  const gen = MERGE_REVEAL.pa6 ? genBracketsSteps : genBrackets;
+  if(document.getElementById('br'+sfx+'Null').checked) return gen(null);
   const str = document.getElementById('vBr'+sfx).value;
   if(str.length > BRACKETS_MAX){ setNote('Use at most '+BRACKETS_MAX+' characters, so the picture stays readable. This input has '+str.length+'.', true); return null; }
-  return genBrackets(str);
+  return gen(str);
 }
 function renderBrackets(f){
   const objbox = document.getElementById('objbox'); if(objbox) objbox.style.display='none';
@@ -4757,7 +4834,7 @@ function renderBrackets(f){
   if(f.input===null || !f.input.length){ const b = document.createElement('div'); b.className = 'mgempty'; b.textContent = f.input===null ? 'null' : 'empty string'; line.appendChild(b); }
   else [...f.input].forEach((c, i)=>{
     const cell = document.createElement('div');
-    cell.className = 'lcell' + (i===f.bad || f.mark.includes(i) ? ' target' : '');
+    cell.className = 'lcell' + (i===f.bad || f.mark.includes(i) ? ' target' : i===f.at ? ' look' : i<f.at ? ' mgdone' : '');
     const box = document.createElement('div'); box.className = 'lbox'; box.textContent = c===' ' ? '␣' : c;
     if(!/[()[\]{}]/.test(c)) box.style.opacity = '.45';    // only brackets decide the answer
     cell.appendChild(box);
@@ -4765,12 +4842,96 @@ function renderBrackets(f){
     line.appendChild(cell);
   });
   host.appendChild(row);
+  if(f.aux && typeof drawBracketAux==='function') drawBracketAux(host, f);   // a second row, drawn only by the walkthrough
   cells.appendChild(host);
   document.getElementById('bSize').textContent = 'length = ' + (f.input===null ? 0 : f.input.length);
-  document.getElementById('bCap').textContent = f.ret==null ? 'throws' : 'returns ' + f.ret;
+  document.getElementById('bCap').textContent = f.err ? 'throws' : f.ret==null ? 'not returned yet' : 'returns ' + f.ret;
 }
 PHASES_DEQUE.isValidBrackets = BRACKETS_ANSWER_PHASES;
 PHASE_TITLES_DEQUE.isValidBrackets = BRACKETS_TITLE;
+/* ---- PA6 MyAlgorithm.isValidBrackets(input), step by step, the way the solution does it with a MyStack ----
+   This block is cut out of the student site while pa6 is false in REVEAL_FOR_STUDENTS (site-rules.mjs).
+   Open brackets wait on a stack. A close bracket pops the top, which has to be an open bracket of the same type.
+   The input is valid when every close bracket found its match and the stack is empty at the end. */
+const BRACKETS_STEP_PHASES = [
+  {id:'setup', t:'Reject null, make a stack', d:'A null input throws NullPointerException. Otherwise make an empty MyStack of characters. It will hold the open brackets that are still waiting for their close bracket.'},
+  {id:'scan',  t:'Read the next character', d:'Go through input one character at a time, from left to right. A character that is not a bracket is skipped.'},
+  {id:'push',  t:'Open bracket: push', d:'An open bracket cannot be judged yet, so push it onto the stack to wait.'},
+  {id:'pop',   t:'Close bracket: pop', d:'A close bracket has to close the most recent open bracket that is still waiting, and that is the top of the stack. If the stack is empty there is nothing for it to close, so return false. Otherwise pop the top.'},
+  {id:'match', t:'Same type?', d:'Compare the open bracket that was popped with the close bracket. If their types differ, return false. If they match, this pair is finished and the scan goes on.'},
+  {id:'done',  t:'Is the stack empty?', d:'After the last character, return whether the stack is empty. Anything still on it is an open bracket that was never closed.'},
+];
+function setPA6Phases(){
+  PHASES_DEQUE.isValidBrackets = MERGE_REVEAL.pa6 ? BRACKETS_STEP_PHASES : BRACKETS_ANSWER_PHASES;
+  PHASE_TITLES_DEQUE.isValidBrackets = MERGE_REVEAL.pa6 ? 'How isValidBrackets(input) works' : BRACKETS_TITLE;
+}
+function genBracketsSteps(input){
+  const final = modelDeque;
+  const esc = t=>String(t).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const label = input===null ? 'isValidBrackets(null)' : 'isValidBrackets("'+input+'")';
+  const frames = [], stack = [];                         // stack holds {c, i}: an open bracket and the index it came from
+  const snap = o => frames.push({kind:'brackets', input, at:o.at==null ? -1 : o.at, mark:o.mark||[], bad:o.bad==null ? -1 : o.bad,
+    aux:stack.map(x=>({c:x.c, i:x.i})), gone:o.gone||null, phase:o.phase, say:o.say, err:!!o.err,
+    cost:{writes:0, copies:0}, lit:null, run:frames.length ? '' : label, ret:o.ret===undefined ? null : o.ret});
+  const BIGO = 'Every character is read once, and every bracket is pushed and popped at most once, so the whole check is <code>O(n)</code>.';
+  const done = bigO => ({frames, final, row:'bo-brackets', code:'isValidBrackets', label, bigO});
+  if(input===null){
+    snap({phase:'setup', err:true, say:'<b>NullPointerException</b>: isValidBrackets throws when <b>input</b> is <b>null</b>.'});
+    return done(null);
+  }
+  snap({phase:'setup', say:'<b>input</b> is not null. Make an empty stack of characters with <b>new MyStack('+input.length+')</b>. It will hold the open brackets that are still waiting for their close bracket.'});
+  const ch = c => '<b>'+esc(c)+'</b>';
+  for(let i=0;i<input.length;i++){
+    const c = input[i];
+    if(BRACKET_OPEN.includes(c)){
+      stack.push({c, i});
+      snap({phase:'push', at:i, say:'Index '+i+': '+ch(c)+' is an open bracket, so <b>push</b> it. It waits on the stack for its close bracket.'});
+    } else if(BRACKET_CLOSE.includes(c)){
+      if(!stack.length){
+        snap({phase:'pop', at:i, bad:i, ret:'false', say:'Index '+i+': '+ch(c)+' is a close bracket, but the stack is <b>empty</b>, so there is no open bracket for it to close. Return <b>false</b>.'});
+        return done(BIGO);
+      }
+      const topOfStack = stack.pop();
+      snap({phase:'pop', at:i, mark:[topOfStack.i], gone:topOfStack,
+        say:'Index '+i+': '+ch(c)+' is a close bracket. <b>pop</b> the top of the stack: '+ch(topOfStack.c)+', the open bracket from index '+topOfStack.i+'.'});
+      if(BRACKET_OPEN.indexOf(topOfStack.c) !== BRACKET_CLOSE.indexOf(c)){
+        snap({phase:'match', at:i, bad:i, mark:[topOfStack.i], gone:topOfStack, ret:'false',
+          say:ch(topOfStack.c)+' and '+ch(c)+' are different types, so '+ch(c)+' closes the wrong bracket. Return <b>false</b>.'});
+        return done(BIGO);
+      }
+      snap({phase:'match', at:i, mark:[topOfStack.i], gone:topOfStack,
+        say:ch(topOfStack.c)+' and '+ch(c)+' are the same type, so this pair is matched. Keep going.'});
+    } else {
+      let j = i;                                           // one frame for a whole run of characters that are not brackets
+      while(j+1 < input.length && !BRACKET_OPEN.includes(input[j+1]) && !BRACKET_CLOSE.includes(input[j+1])) j++;
+      snap({phase:'scan', at:j, say:(j > i ? 'Index '+i+' to '+j+': these characters are not brackets, so skip them.' : 'Index '+i+': '+ch(c)+' is not a bracket, so skip it.')});
+      i = j;
+    }
+  }
+  const ok = !stack.length;
+  snap({phase:'done', at:input.length, ret:String(ok), bad:ok ? -1 : stack[stack.length-1].i,
+    say: ok ? 'Every character has been read and the stack is <b>empty</b>, so every open bracket was closed by a bracket of its own type, in order. Return <b>true</b>.'
+            : 'Every character has been read, but the stack still holds <b>'+stack.length+'</b> open bracket(s) that were never closed. Return <b>false</b>.'});
+  return done(BIGO);
+}
+/* the stack, bottom on the left and top on the right, and next to it the bracket that was just popped */
+function drawBracketAux(host, f){
+  const row = document.createElement('div'); row.className = 'mgrow mgit frrow';
+  const lab = document.createElement('div'); lab.className = 'mglab';
+  lab.innerHTML = '<b>stack</b><span>'+f.aux.length+' open bracket(s) waiting, the top is on the right</span>';
+  row.appendChild(lab);
+  const line = document.createElement('div'); line.className = 'mgitems'; row.appendChild(line);
+  const cellOf = (x, cls, under)=>{
+    const cell = document.createElement('div'); cell.className = 'lcell' + cls;
+    const box = document.createElement('div'); box.className = 'lbox'; box.textContent = x.c; cell.appendChild(box);
+    const ptr = document.createElement('div'); ptr.className = 'lptr'; ptr.textContent = under; cell.appendChild(ptr);
+    line.appendChild(cell);
+  };
+  if(!f.aux.length){ const b = document.createElement('div'); b.className = 'mgempty'; b.textContent = 'empty'; line.appendChild(b); }
+  f.aux.forEach((x, k)=>cellOf(x, k===f.aux.length-1 ? ' look' : '', k===f.aux.length-1 ? 'top' : 'from '+x.i));
+  if(f.gone){ const gap = document.createElement('div'); gap.style.width = '18px'; line.appendChild(gap); cellOf(f.gone, ' detached', 'popped'); }
+  host.appendChild(row);
+}
 
 /* ---- constructor: new MyDeque(capacity) allocates the circular array; listed values are then addLast-ed ---- */
 function genDequeBuildResult(capArg, tokens){
@@ -4833,8 +4994,50 @@ const PHASES_HEAP = {
     {id:'guard',  t:'Empty?', d:'If the heap is empty, there is no minimum, so return null.'},
     {id:'root',   t:'Take the root', d:'remove() is deleteIndex(0). The root (index 0) is always the minimum. Remember it to return.'},
     {id:'fill',   t:'Refill the root', d:'Move the right-most node of the bottom level up to the root, then drop that last slot (by index, never by value, so duplicates are safe). The tree stays complete, but the heap property may now be broken. Removing the very last element needs no repair.'},
+    {id:'decide', t:'Does it need fixing?', d:'Compare the element that moved in with the one it replaced. At the root it can never be smaller. If it is greater it may now be greater than a child, so it has to percolate down. If it is equal, the root holds the same value as before and nothing is violated.'},
     {id:'down',   t:'Percolate down', d:'getMinChildIdx picks the smaller child (two children are compared, and a tie goes left). If that child is strictly smaller than the node, swap so the node sinks. Stop once the child is not smaller, or the node becomes a leaf.'},
     {id:'return', t:'Return the minimum', d:'Hand back the value that was at the root.'},
+  ],
+  swap: [
+    {id:'pick', t:'The two slots', d:'swap(from, to) is given two indices of data. It may assume both are within bounds.'},
+    {id:'swap', t:'Trade places', d:'The element at from and the element at to change places. Nothing else in data moves.'},
+    {id:'done', t:'No checking', d:'swap never compares anything, so it can break the heap property. The methods that call it, percolateUp and percolateDown, decide when a swap is right.'},
+  ],
+  getParentIdx: [
+    {id:'calc', t:'(index - 1) / 2', d:'The parent of index is (index - 1) / 2 with integer division. The method is static: it only does arithmetic, it does not read or change data. It may assume index > 0, because the root has no parent.'},
+  ],
+  getLeftChildIdx: [
+    {id:'calc', t:'2 * index + 1', d:'The left child of index is 2 * index + 1. The method is static: it only does arithmetic, it does not read or change data, so it answers even when no element is stored there.'},
+  ],
+  getRightChildIdx: [
+    {id:'calc', t:'2 * index + 2', d:'The right child of index is 2 * index + 2, the slot right after the left child. The method is static: it only does arithmetic, it does not read or change data.'},
+  ],
+  getMinChildIdx: [
+    {id:'kids', t:'Where the children are', d:'Work out the left and right child indices of index, then check which of them are inside data.'},
+    {id:'leaf', t:'A leaf: -1', d:'If the left child index is past the end of data, the node has no children. Return -1.'},
+    {id:'one',  t:'One child: the left', d:'A heap fills each level from the left, so a node with one child has a left child. Return its index.'},
+    {id:'two',  t:'Two children: the smaller', d:'Compare the two children and return the index of the smaller one. If they are equal, return the left child.'},
+  ],
+  percolateUp: [
+    {id:'start', t:'The element to move', d:'percolateUp(index) moves only the element at index, and only upward.'},
+    {id:'up',    t:'Swap while the parent is greater', d:'Compare the element with its parent. If the parent is greater, swap them and repeat from the parent slot. If the parent is equal or smaller, stop: an equal parent already satisfies the heap property. At the root there is no parent, so stop.'},
+    {id:'done',  t:'Finished', d:'This element no longer violates the heap property with its parent.'},
+  ],
+  percolateDown: [
+    {id:'start', t:'The element to move', d:'percolateDown(index) moves only the element at index, and only downward.'},
+    {id:'down',  t:'Swap while a child is smaller', d:'getMinChildIdx picks the smaller child, the left one on a tie. If that child is smaller than the element, swap them and repeat from the child slot. If the child is equal or greater, stop. At a leaf there is no child, so stop.'},
+    {id:'done',  t:'Finished', d:'This element no longer violates the heap property with its children.'},
+  ],
+  deleteIndex: [
+    {id:'target', t:'Take the element', d:'deleteIndex(index) removes the element at that index of data and returns it. Remember it to return. The helper may assume the index is within bounds.'},
+    {id:'fill',   t:'Refill the slot', d:'Replace the deleted element with the last element of the heap, the right-most node of the bottom level, then drop that last slot (by index, never by value, so duplicates are safe). The tree stays complete. Deleting the last element itself needs no repair.'},
+    {id:'decide', t:'Up or down?', d:'Only one direction can be needed. Compare the element that moved in with the one it replaced. Greater: it may now be greater than a child, so percolate down. Smaller: it may now be smaller than its parent, so percolate up. Equal: nothing is violated.'},
+    {id:'down',   t:'Percolate down', d:'Swap with the smaller child while that child is strictly smaller. A tie between the two children goes left. Stop at a leaf or once the child is not smaller.'},
+    {id:'up',     t:'Percolate up', d:'Swap with the parent while the parent is strictly greater. Stop at the root or once the parent is not greater.'},
+    {id:'return', t:'Return the element', d:'Hand back the element that was deleted.'},
+  ],
+  lastAtom: [
+    {id:'result', t:'What lastAtom returns', d:'The type of the last remaining atom. Each experiment selects the two atoms with the smallest types. If their types are the same they combine into a new atom whose type is their sum. If their types differ they combine into a new atom whose type is their absolute difference. The experiments continue until there is one final atom. A null list throws NullPointerException. Working out how is the assignment, so for now try to work out the solution yourself. A detailed walkthrough will be shared after the PA is due.'},
   ],
   getMin: [
     {id:'guard', t:'Empty?', d:'An empty heap has no minimum, so return null.'},
@@ -4848,22 +5051,31 @@ const PHASES_HEAP = {
     {id:'done',    t:'Heap ready', d:'Every parent is now ≤ its children, so the minimum sits at the root.'},
   ],
 };
-const PHASE_TITLES_HEAP = {insert:'How insert(e) works', removeMin:'How remove() works', getMin:'How getMin() works', size:'How size() works', clear:'How clear() works', ctor:'How new MyMinHeap(collection) works'};
-const PHASE_TITLES_PQ = {insert:'How push(e) works', removeMin:'How pop() works', getMin:'How peek() works', size:'How getLength() works', clear:'How clear() works', ctor:'How new MyPriorityQueue(collection) works'};
+const PHASE_TITLES_HEAP = {swap:'How swap(from, to) works', getParentIdx:'How getParentIdx(index) works', getLeftChildIdx:'How getLeftChildIdx(index) works', getRightChildIdx:'How getRightChildIdx(index) works', getMinChildIdx:'How getMinChildIdx(index) works', percolateUp:'How percolateUp(index) works', percolateDown:'How percolateDown(index) works', deleteIndex:'How deleteIndex(index) works', insert:'How insert(e) works', removeMin:'How remove() works', getMin:'How getMin() works', size:'How size() works', clear:'How clear() works', ctor:'How new MyMinHeap(collection) works'};
+const PHASE_TITLES_PQ = {lastAtom:'What lastAtom(atoms) returns', insert:'How push(e) works', removeMin:'How pop() works', getMin:'How peek() works', size:'How getLength() works', clear:'How clear() works', ctor:'How new MyPriorityQueue(collection) works'};
 
+const CX_ATOM = '<tr id="bo-hpatom"><td class="opname">lastAtom</td><td class="bigo">O(n log n)</td><td class="why">The write-up requires your MyAlgorithm solution to use a MyPriorityQueue and run in O(n log n).</td></tr>';
 const CX_HEAP =
+  '<tr id="bo-hpswap"><td class="opname">swap(from, to)</td><td class="bigo">O(1)</td><td class="why">Two reads and two writes in data.</td></tr>'+
+  '<tr id="bo-hpparent"><td class="opname">getParentIdx(index)</td><td class="bigo">O(1)</td><td class="why">Arithmetic only: (index - 1) / 2.</td></tr>'+
+  '<tr id="bo-hpleft"><td class="opname">getLeftChildIdx(index)</td><td class="bigo">O(1)</td><td class="why">Arithmetic only: 2 * index + 1.</td></tr>'+
+  '<tr id="bo-hpright"><td class="opname">getRightChildIdx(index)</td><td class="bigo">O(1)</td><td class="why">Arithmetic only: 2 * index + 2.</td></tr>'+
+  '<tr id="bo-hpminchild"><td class="opname">getMinChildIdx(index)</td><td class="bigo">O(1)</td><td class="why">At most one comparison, between the two children.</td></tr>'+
+  '<tr id="bo-hpup"><td class="opname">percolateUp(index)</td><td class="bigo">O(log n)</td><td class="why">One swap per level, at most up to the root.</td></tr>'+
+  '<tr id="bo-hpdown"><td class="opname">percolateDown(index)</td><td class="bigo">O(log n)</td><td class="why">One swap per level, at most down to a leaf.</td></tr>'+
+  '<tr id="bo-hpdelete"><td class="opname">deleteIndex(index)</td><td class="bigo">O(log n)</td><td class="why">Move the last node into the slot, then percolate it down or up, at most the tree height.</td></tr>'+
   '<tr id="bo-hpinsert"><td class="opname">insert(e)</td><td class="bigo">O(log n)</td><td class="why">Append, then percolateUp at most the tree height.</td></tr>'+
-  '<tr id="bo-hpremove"><td class="opname">remove()</td><td class="bigo">O(log n)</td><td class="why">deleteIndex(0): swap in the last node, then percolateDown the height.</td></tr>'+
   '<tr id="bo-hppeek"><td class="opname">getMin()</td><td class="bigo">O(1)</td><td class="why">The root is always the minimum, so read index 0.</td></tr>'+
+  '<tr id="bo-hpremove"><td class="opname">remove()</td><td class="bigo">O(log n)</td><td class="why">deleteIndex(0): move the last node to the root, then percolateDown the height.</td></tr>'+
   '<tr id="bo-hpsize"><td class="opname">size()</td><td class="bigo">O(1)</td><td class="why">Reads the stored array length.</td></tr>'+
   '<tr id="bo-hpclear"><td class="opname">clear()</td><td class="bigo">O(n)</td><td class="why">Drops all n elements.</td></tr>';
 const CX_PQ =
-  '<tr id="bo-hpinsert"><td class="opname">push(e)</td><td class="bigo">O(log n)</td><td class="why">heap.insert: append, then percolateUp at most the tree height.</td></tr>'+
-  '<tr id="bo-hpremove"><td class="opname">pop()</td><td class="bigo">O(log n)</td><td class="why">heap.remove: swap in the last node, then percolateDown the height.</td></tr>'+
-  '<tr id="bo-hppeek"><td class="opname">peek()</td><td class="bigo">O(1)</td><td class="why">heap.getMin: the root is the highest priority.</td></tr>'+
-  '<tr id="bo-hpsize"><td class="opname">getLength()</td><td class="bigo">O(1)</td><td class="why">heap.size: reads the stored array length.</td></tr>'+
-  '<tr id="bo-hpclear"><td class="opname">clear()</td><td class="bigo">O(n)</td><td class="why">heap.clear: drops all n elements.</td></tr>';
-const CXP_HEAP = 'A <code>MyMinHeap</code> stores a complete binary tree inside a <code>0-indexed ArrayList</code>: node <code>i</code>’s children are <code>2i+1</code> and <code>2i+2</code>, its parent is <code>(i−1)/2</code>. The <b>heap property</b> (every parent ≤ its children) keeps the minimum at the root. <code>insert</code> and <code>remove</code> restore that property by percolating one node along a single root-to-leaf path, so each costs <code>O(log n)</code>. A <code>MyPriorityQueue</code> is just this heap with friendlier names: <b>push</b> = insert, <b>peek</b> = getMin, <b>pop</b> = remove, <b>getLength</b> = size.';
+  '<tr id="bo-hpinsert"><td class="opname">push(e)</td><td class="bigo">O(log n)</td><td class="why">The new element moves up at most one level per step, so at most the tree height.</td></tr>'+
+  '<tr id="bo-hppeek"><td class="opname">peek()</td><td class="bigo">O(1)</td><td class="why">The smallest element is always the root, so it is read directly.</td></tr>'+
+  '<tr id="bo-hpremove"><td class="opname">pop()</td><td class="bigo">O(log n)</td><td class="why">The element that refills the root moves down at most one level per step, so at most the tree height.</td></tr>'+
+  '<tr id="bo-hpsize"><td class="opname">getLength()</td><td class="bigo">O(1)</td><td class="why">Reads the stored number of elements.</td></tr>'+
+  '<tr id="bo-hpclear"><td class="opname">clear()</td><td class="bigo">O(n)</td><td class="why">Drops all n elements.</td></tr>'+ CX_ATOM;
+const CXP_HEAP = 'A <code>MyMinHeap</code> stores a complete binary tree inside a <code>0-indexed ArrayList</code>: node <code>i</code>’s children are <code>2i+1</code> and <code>2i+2</code>, its parent is <code>(i−1)/2</code>. The <b>heap property</b> (every parent ≤ its children) keeps the minimum at the root. <code>insert</code> and <code>remove</code> restore that property by percolating one node along a single root-to-leaf path, so each costs <code>O(log n)</code>. A <code>MyPriorityQueue</code> keeps its elements in one of these heaps.';
 
 /* ---- BST concept text: phases, complexity table, primer ---- */
 const PHASES_TREE = {
@@ -4937,8 +5149,6 @@ const HEAP_NAMES = {
   pq:  {insert:'push',   getMin:'peek',   remove:'pop',    size:'getLength', clear:'clear'},
 };
 const heapName = k => HEAP_NAMES[HEAPMODE][k];
-// first sentence of the narration when the call goes through the MyPriorityQueue wrapper
-const pqVia = (call, inner) => heapPQ() ? '<b>'+call+'</b> hands the work to the <b>MyMinHeap</b> inside, calling <b>heap.'+inner+'</b>. ' : '';
 
 /* ---- frame builder for the heap ---- */
 function newHeap(start){
@@ -4963,12 +5173,11 @@ function newHeap(start){
 function genHeapInsert(value){
   const g = newHeap(modelHeap);
   const label = heapName('insert')+'('+fmt(value)+')';
-  const via = pqVia(label, 'insert('+fmt(value)+')');
   if(value===null){
-    g.snap({phase:'guard', err:true, say:via+'<b>NullPointerException</b>: a min-heap cannot hold <b>null</b>, and the element is not added. Nothing changes.'});
+    g.snap({phase:'guard', err:true, say:'<b>NullPointerException</b>: a min-heap cannot hold <b>null</b>, and the element is not added. Nothing changes.'});
     return {frames:g.frames, final:modelHeap, code:'insert', row:'bo-hpinsert', label, bigO:null};
   }
-  g.snap({phase:'guard', run:label, say:via+'<b>insert('+fmt(value)+')</b>: the value is non-null, so it can be added to the heap.'});
+  g.snap({phase:'guard', run:label, say:'<b>'+label+'</b>: the value is non-null, so it can be added to the heap.'});
   g.data.push(value);
   let i = g.data.length - 1;
   g.snap({phase:'place', active:[i], fresh:i,
@@ -5042,50 +5251,257 @@ function heapSinkOnce(g, i, phase, val){
   return -1;
 }
 
-/* ---- remove() = pop(): deleteIndex(0), take the root, refill, percolate down ---- */
-function genHeapRemoveMin(){
-  const g = newHeap(modelHeap);
-  const label = heapName('remove')+'()';
-  const via = pqVia(label, 'remove()');
-  const n = g.data.length;
-  if(n === 0){
-    g.snap({phase:'guard', run:label, ret:'null', say:via+'The heap is <b>empty</b>, so there is no minimum: return <b>null</b>. Nothing changes.'});
-    return {frames:g.frames, final:modelHeap, code:'removeMin', row:'bo-hpremove', label,
-      bigO:'An empty '+heapName('remove')+' returns immediately. <code>O(1)</code>.'};
+/* one level of percolateUp: compare with the parent and swap only if the parent is strictly greater. Returns the
+   slot the node rose to, or -1 when the percolation stops here. */
+function heapRiseOnce(g, i, phase, val){
+  if(i === 0){
+    g.snap({phase, active:[0], say:'Slot 0 is the root, so there is no parent and percolation stops.'});
+    return -1;
   }
-  const removed = g.data[0];
-  g.snap({phase:'root', compare:[0], lit:'C', run:label,
-    say:via+'<b>remove()</b> calls <b>deleteIndex(0)</b>. The <b>root</b> (slot 0) is always the minimum: <b>'+fmt(removed)+'</b>. Remember it to return.'});
-  if(n === 1){
+  const p = hParent(i);
+  g.cost.compares++;
+  const c = heapCmp(g.data[p], g.data[i]);
+  g.snap({phase, compare:[p, i], lit:'C',
+    say:'Compare with the parent at slot '+p+' (getParentIdx('+i+') = '+p+'): <b>'+fmt(g.data[p])+'</b> vs <b>'+fmt(g.data[i])+'</b> → '+
+        (c > 0 ? 'the parent is <b>greater</b>, so the heap property is violated, so swap.'
+               : (c === 0 ? 'the parent is <b>equal</b>, which already satisfies the heap property, so do not swap. Stop.'
+                          : 'the parent is <b>smaller</b>, so the heap property holds. Stop.'))});
+  if(c > 0){
+    const tmp = g.data[p]; g.data[p] = g.data[i]; g.data[i] = tmp; g.cost.swaps++;
+    g.snap({phase, active:[p, i], lit:'S', say:'<b>swap('+i+', '+p+')</b>. <b>'+fmt(val)+'</b> moves up to slot '+p+'.'});
+    return p;
+  }
+  g.snap({phase, active:[i], say:'No more violations. <b>'+fmt(val)+'</b> settles at slot '+i+'.'});
+  return -1;
+}
+/* the first slot whose parent is greater than it, or -1 when the whole array is a valid min-heap */
+function heapBrokenAt(data){
+  for(let i = 1; i < data.length; i++) if(heapCmp(data[hParent(i)], data[i]) > 0) return i;
+  return -1;
+}
+const heapBrokenNote = data => { const k = heapBrokenAt(data);
+  return k < 0 ? '' : ' The heap property is violated at slot '+k+': its parent <b>'+fmt(data[hParent(k)])+'</b> is greater than <b>'+fmt(data[k])+'</b>.'; };
+
+/* ---- the helper methods of MyMinHeap, in the order of the write-up. They are protected, so only MyMinHeap offers
+   them, and each one may assume its index is within bounds. ---- */
+/* swap(from, to): the two elements trade places, and nothing is compared */
+function genHeapSwap(from, to){
+  const g = newHeap(modelHeap);
+  const label = 'swap('+from+', '+to+')';
+  g.snap({phase:'pick', compare:from===to ? [from] : [from, to], run:label,
+    say:'<b>'+label+'</b>: slot '+from+' holds <b>'+fmt(g.data[from])+'</b>'+(from===to ? '.' : ' and slot '+to+' holds <b>'+fmt(g.data[to])+'</b>.')});
+  if(from === to){
+    g.snap({phase:'done', say:'<b>from</b> and <b>to</b> are the same slot, so nothing changes.'+heapBrokenNote(g.data)});
+  } else {
+    const tmp = g.data[from]; g.data[from] = g.data[to]; g.data[to] = tmp; g.cost.swaps++;
+    g.snap({phase:'swap', active:[from, to], lit:'S',
+      say:'The two elements trade places: slot '+from+' now holds <b>'+fmt(g.data[from])+'</b> and slot '+to+' holds <b>'+fmt(g.data[to])+'</b>. Nothing else in data moves.'});
+    const note = heapBrokenNote(g.data);
+    g.snap({phase:'done', say:'<b>swap</b> never compares anything.'+(note ? note+' A percolate call can repair it.' : ' Here the heap property still holds.')});
+  }
+  return {frames:g.frames, final:g.final(), code:'swap', row:'bo-hpswap', label,
+    bigO:'<b>swap</b> reads two slots and writes two slots. <code>O(1)</code>.'};
+}
+/* getParentIdx / getLeftChildIdx / getRightChildIdx: static arithmetic, data is never read */
+function genHeapIdxMath(which, index){
+  const g = newHeap(modelHeap), n = g.data.length;
+  const def = {
+    parent:{name:'getParentIdx',     row:'bo-hpparent', val:(index - 1) >> 1, how:'(index - 1) / 2 with integer division: ('+index+' - 1) / 2 = '},
+    left:  {name:'getLeftChildIdx',  row:'bo-hpleft',   val:2*index + 1,      how:'2 * index + 1: 2 * '+index+' + 1 = '},
+    right: {name:'getRightChildIdx', row:'bo-hpright',  val:2*index + 2,      how:'2 * index + 2: 2 * '+index+' + 2 = '},
+  }[which];
+  const label = def.name+'('+index+')';
+  const inside = [index, def.val].filter(i=>i >= 0 && i < n);
+  const outside = [index, def.val].filter(i=>i >= n);
+  g.snap({phase:'calc', compare:inside, run:label, ret:String(def.val),
+    say:'<b>'+label+'</b> is '+def.how+'<b>'+def.val+'</b>. The method is static and only does arithmetic. It never reads data'+
+        (outside.length ? ', so it answers even though slot '+outside.join(' and slot ')+' holds no element in this heap right now.' : '.')});
+  return {frames:g.frames, final:modelHeap, code:def.name, row:def.row, label,
+    bigO:'<b>'+def.name+'</b> is one line of arithmetic. <code>O(1)</code>.'};
+}
+/* getMinChildIdx(index): -1 for a leaf, the left child when it is the only one, otherwise the smaller child (left on a tie) */
+function genHeapMinChild(index){
+  const g = newHeap(modelHeap), n = g.data.length;
+  const label = 'getMinChildIdx('+index+')';
+  const l = 2*index + 1, r = 2*index + 2;
+  g.snap({phase:'kids', compare:[index], run:label,
+    say:'<b>'+label+'</b>: the children of slot '+index+' would be at getLeftChildIdx('+index+') = <b>'+l+'</b> and getRightChildIdx('+index+') = <b>'+r+'</b>. data holds '+n+' element(s), so its last slot is '+(n-1)+'.'});
+  if(l >= n){
+    g.snap({phase:'leaf', compare:[index], ret:'-1', say:'Slot '+l+' is past the end of data, so slot '+index+' has no children. It is a leaf: return <b>-1</b>.'});
+  } else if(r >= n){
+    g.snap({phase:'one', compare:[l], ret:String(l), say:'Slot '+l+' exists and slot '+r+' does not, so there is only a left child. Return <b>'+l+'</b> without comparing anything.'});
+  } else {
+    g.cost.compares++;
+    const cc = heapCmp(g.data[l], g.data[r]), m = cc <= 0 ? l : r;
+    g.snap({phase:'two', compare:[l, r], lit:'C', ret:String(m),
+      say:'Both children exist, so compare them: slot '+l+' holds <b>'+fmt(g.data[l])+'</b> and slot '+r+' holds <b>'+fmt(g.data[r])+'</b> → '+
+          (cc < 0 ? 'the left child is smaller' : (cc === 0 ? 'they are equal, so the tie goes to the <b>left</b> child' : 'the right child is smaller'))+'. Return <b>'+m+'</b>.'});
+  }
+  return {frames:g.frames, final:modelHeap, code:'getMinChildIdx', row:'bo-hpminchild', label,
+    bigO:'<b>getMinChildIdx</b> makes at most one comparison. <code>O(1)</code>.'};
+}
+/* percolateUp(index) / percolateDown(index): move only the element at index, one level at a time */
+function genHeapPercolate(index, up){
+  const g = newHeap(modelHeap);
+  const name = up ? 'percolateUp' : 'percolateDown', label = name+'('+index+')';
+  const val = g.data[index];
+  g.snap({phase:'start', active:[index], run:label,
+    say:'<b>'+label+'</b>: the element at slot '+index+' is <b>'+fmt(val)+'</b>. '+
+        (up ? 'Swap it with its parent while the parent is greater.' : 'Swap it with its smaller child while that child is smaller.')});
+  let i = index, at = index;
+  while(i !== -1){ at = i; i = up ? heapRiseOnce(g, i, 'up', val) : heapSinkOnce(g, i, 'down', val); }
+  const note = heapBrokenNote(g.data);
+  g.snap({phase:'done', say:'<b>'+name+'</b> is finished: <b>'+fmt(val)+'</b> is at slot '+at+'.'+
+    (note ? note+' '+name+' only moves the one element it was given, so a violation somewhere else is left as it is.' : ' The heap property holds.')});
+  return {frames:g.frames, final:g.final(), code:name, row:up ? 'bo-hpup' : 'bo-hpdown', label,
+    bigO:'<b>'+name+'</b> swaps at most once per level: <b>'+g.cost.swaps+'</b> swap(s), <b>'+g.cost.compares+'</b> comparison(s). A heap of n nodes has ⌊log₂n⌋ levels below the root, so it is <code>O(log n)</code>.'};
+}
+
+/* ---- deleteIndex(index), and remove() = pop() which is deleteIndex(0) ----
+   Take the element, move the last node into its slot, then compare the node that moved in with the one it replaced:
+   greater percolates down, smaller percolates up, equal needs nothing. Only one direction is ever needed. At the
+   root the node that moved in is never smaller in a valid heap, so remove() only percolates down. */
+function heapDelete(index, asRemove){
+  const g = newHeap(modelHeap);
+  const code = asRemove ? 'removeMin' : 'deleteIndex', row = asRemove ? 'bo-hpremove' : 'bo-hpdelete';
+  const label = asRemove ? heapName('remove')+'()' : 'deleteIndex('+index+')';
+  const name = asRemove ? heapName('remove') : 'deleteIndex';
+  const what = asRemove ? 'minimum' : 'deleted element';
+  const n = g.data.length;
+  if(asRemove && n === 0){
+    g.snap({phase:'guard', run:label, ret:'null', say:'The heap is <b>empty</b>, so there is no minimum: return <b>null</b>. Nothing changes.'});
+    return {frames:g.frames, final:modelHeap, code, row, label,
+      bigO:'An empty '+name+' returns immediately. <code>O(1)</code>.'};
+  }
+  const removed = g.data[index];
+  g.snap({phase: asRemove ? 'root' : 'target', compare:[index], lit:'C', run:label,
+    say: asRemove
+      ? (heapPQ() ? '<b>'+label+'</b>: the' : '<b>remove()</b> calls <b>deleteIndex(0)</b>. The')+' <b>root</b> (slot 0) is always the minimum: <b>'+fmt(removed)+'</b>. Remember it to return.'
+      : '<b>deleteIndex('+index+')</b>: slot '+index+' holds <b>'+fmt(removed)+'</b>. Remember it to return.'});
+  if(index === n - 1){
     g.data.pop();
-    g.snap({phase:'fill', say:'It was the last element, so removing it keeps the heap property and nothing needs to be fixed. The heap is now empty.'});
-    g.snap({phase:'return', ret:fmt(removed), say:'Return the minimum: <b>'+fmt(removed)+'</b>.'});
-    return {frames:g.frames, final:g.final(), code:'removeMin', row:'bo-hpremove', label,
+    g.snap({phase:'fill', say:'It was the last element, so removing it keeps the heap property and nothing needs to be fixed.'+(n === 1 ? ' The heap is now empty.' : '')});
+    g.snap({phase:'return', ret:fmt(removed), say:'Return the '+what+': <b>'+fmt(removed)+'</b>.'});
+    return {frames:g.frames, final:g.final(), code, row, label,
       bigO:'Removing the last node needs no percolation: <code>O(1)</code> this time, <code>O(log n)</code> in general.'};
   }
   const last = g.data[n-1];
-  g.data[0] = last; g.data.pop();
-  g.snap({phase:'fill', active:[0], lit:'S',
-    say:'Move the last node (<b>'+fmt(last)+'</b>) up to the root and drop its old slot (removing by <b>index</b>, so a duplicate value elsewhere is never hit by mistake). The tree stays complete, but the heap property may now be broken, so <b>percolateDown(0)</b> runs.'});
-  let i = 0;
-  while(i !== -1) i = heapSinkOnce(g, i, 'down', last);
-  g.snap({phase:'return', ret:fmt(removed), say:'Return the minimum: <b>'+fmt(removed)+'</b>.'});
-  return {frames:g.frames, final:g.final(), code:'removeMin', row:'bo-hpremove', label,
-    bigO:'remove refills the root and percolates down at most the tree height: <b>'+g.cost.swaps+'</b> swap(s), <b>'+g.cost.compares+'</b> comparison(s). Height is ⌊log₂n⌋, so it is <code>O(log n)</code>.'};
+  g.data[index] = last; g.data.pop();
+  g.snap({phase:'fill', active:[index], lit:'S',
+    say:'Move the last node (<b>'+fmt(last)+'</b>) '+(index === 0 ? 'up to the root' : 'into slot '+index)+' and drop its old slot (removing by <b>index</b>, so a duplicate value elsewhere is never hit by mistake). The tree stays complete, but the heap property may now be broken.'});
+  g.cost.compares++;
+  const c = heapCmp(last, removed);
+  const dir = (c > 0 ? 'down' : 'up');
+  /* remove() has no "up" step in its list: at the root percolateUp stops at once, so it is told under the same step */
+  const upPhase = asRemove ? 'decide' : 'up';
+  g.snap({phase:'decide', compare:[index], lit:'C',
+    say:'Compare the element that moved in with the one it replaced: <b>'+fmt(last)+'</b> vs <b>'+fmt(removed)+'</b> → '+
+        (c > 0 ? 'it is <b>greater</b>, so it may now be greater than a child. <b>percolateDown('+index+')</b> runs.'
+               : (c < 0 ? 'it is <b>smaller</b>, so it may now be smaller than its parent. <b>percolateUp('+index+')</b> runs.'
+                        : 'they are <b>equal</b>, so slot '+index+' holds the same value as before and no heap property is violated. No percolation is needed.'))});
+  let i = index;
+  if(c > 0) while(i !== -1) i = heapSinkOnce(g, i, 'down', last);
+  else if(c < 0) while(i !== -1) i = heapRiseOnce(g, i, upPhase, last);
+  g.snap({phase:'return', ret:fmt(removed), say:'Return the '+what+': <b>'+fmt(removed)+'</b>.'});
+  return {frames:g.frames, final:g.final(), code, row, label,
+    bigO: name+' refills the slot and percolates '+(asRemove ? 'down' : 'down or up')+' at most the tree height: <b>'+g.cost.swaps+'</b> swap(s), <b>'+g.cost.compares+'</b> comparison(s). Height is ⌊log₂n⌋, so it is <code>O(log n)</code>.'};
+}
+function genHeapRemoveMin(){ return heapDelete(0, true); }
+function genHeapDeleteIndex(index){ return heapDelete(index, false); }
+/* The write-up lets the helpers assume their index is within bounds, so an index outside the heap is refused with a
+   note instead of inventing a behavior for it. Returns the index, or null when the call is refused. */
+function heapIdx(inputId, method, argName){
+  const n = modelHeap.data.length, index = readInt(inputId);
+  if(n === 0){ setNote('<b>'+method+'</b> may assume <b>'+argName+'</b> is within bounds, and the heap is empty, so there is no index to use. Insert something first.', true); return null; }
+  if(index < 0 || index >= n){ setNote('<b>'+method+'</b> may assume <b>'+argName+'</b> is within bounds. The heap holds '+n+' element(s), so use an index from 0 to '+(n-1)+'.', true); return null; }
+  return index;
+}
+/* the three index methods never read data, so any index from their stated assumption up to a readable size is taken */
+const HEAP_MATH_MAX = 999;
+function heapMathIdx(inputId, method, least){
+  const index = readInt(inputId);
+  if(index < least || index > HEAP_MATH_MAX){
+    setNote('<b>'+method+'</b> may assume <b>index '+(least === 1 ? '&gt; 0' : '&gt;= 0')+'</b>'+(least === 1 ? ', because the root has no parent' : '')+'. Use an index from '+least+' to '+HEAP_MATH_MAX+'.', true);
+    return null;
+  }
+  return index;
+}
+
+/* ---- PA7 MyAlgorithm.lastAtom(atoms), answer only: what it returns, never how ----
+   Like PA5's hasFraudulentTxns and PA6's isValidBrackets, the page shows the input and what comes back, with the rule
+   of the write-up that decides it, not the steps. It is offered only under MyPriorityQueue, because the write-up
+   requires the solution to use a MyPriorityQueue object. It changes nothing in the heap. The answer is worked out here by
+   sorting a plain array before every experiment, which the page never shows. */
+const ATOMS_MAX = 12;                                    // atoms, so the row stays readable
+function lastAtomAnswer(atoms){
+  const a = atoms.slice();
+  while(a.length > 1){
+    a.sort((x, y)=>x - y);
+    const first = a.shift(), second = a.shift();
+    a.push(first === second ? first + second : Math.abs(first - second));
+  }
+  return a[0];
+}
+function genLastAtom(atoms, isNull){
+  const label = isNull ? 'lastAtom(null)' : 'lastAtom(['+atoms.join(', ')+'])';
+  const frame = o => ({kind:'atoms', atoms:isNull ? null : atoms.slice(), phase:'result', say:o.say, err:!!o.err,
+    cost:{compares:0, swaps:0}, lit:null, run:label, ret:o.ret===undefined ? null : o.ret});
+  const done = (f, bigO) => ({frames:[f], final:modelHeap, row:'bo-hpatom', code:'lastAtom', label, bigO});
+  if(isNull){
+    return done(frame({err:true, say:'<b>NullPointerException</b>: lastAtom throws when <b>atoms</b> is <b>null</b>.'}), null);
+  }
+  const ans = lastAtomAnswer(atoms);
+  const why = atoms.length === 1
+    ? ' There is only one atom, so no experiment is needed and its type is the answer.'
+    : ' Each experiment selects the two atoms with the smallest types: the same type combines into their sum, different types combine into their absolute difference. After '+(atoms.length-1)+' experiment(s) one atom of type <b>'+ans+'</b> is left.';
+  return done(frame({ret:String(ans),
+    say:'<b>lastAtom</b> returns <b>'+ans+'</b>.'+why+' How to run the experiments is your assignment, so for now try to work out the solution yourself. A detailed walkthrough will be shared after the PA is due. '
+      + 'Use your <b>MyPriorityQueue</b>, and your solution must run in O(n log n).'}),
+    'The write-up requires your solution to use a MyPriorityQueue and run in <code>O(n log n)</code>.');
+}
+/* atoms is an ArrayList<Integer> of positive types with at least one atom (the write-up's assumptions), so anything
+   else refuses the call with a note instead of quietly changing the list. The checkbox passes null instead. */
+function lastAtomOp(){
+  if(document.getElementById('hpAtomsNull').checked) return genLastAtom([], true);
+  const toks = document.getElementById('vHpAtoms').value.split(',').map(t=>t.trim()).filter(t=>t!=='');
+  const bad = toks.find(t=>!/^\d+$/.test(t) || Number(t) < 1 || Number(t) > MAX_ELEM);
+  if(bad!==undefined){ setNote('The write-up says every atom type is positive, so each one must be a whole number from 1 to '+MAX_ELEM+'. <b>'+bad.replace(/[&<>]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))+'</b> is not one.', true); return null; }
+  if(!toks.length){ setNote('The write-up says a list that is not null holds at least one atom, so list at least one type.', true); return null; }
+  if(toks.length > ATOMS_MAX){ setNote('Use at most '+ATOMS_MAX+' atoms, so the picture stays readable. This list has '+toks.length+'.', true); return null; }
+  return genLastAtom(toks.map(Number), false);
+}
+function renderAtoms(f){
+  const objbox = document.getElementById('objbox'); if(objbox) objbox.style.display='none';
+  const cells = document.getElementById('cells'); cells.innerHTML = '';
+  const host = document.createElement('div'); host.className = 'mgstage';
+  const row = document.createElement('div'); row.className = 'mgrow mgit frrow';
+  const lab = document.createElement('div'); lab.className = 'mglab';
+  lab.innerHTML = '<b>atoms</b><span>'+(f.atoms===null ? 'null' : f.atoms.length+' atom(s), in the order given')+'</span>';
+  row.appendChild(lab);
+  const line = document.createElement('div'); line.className = 'mgitems'; row.appendChild(line);
+  if(f.atoms===null){ const b = document.createElement('div'); b.className = 'mgempty'; b.textContent = 'null'; line.appendChild(b); }
+  else f.atoms.forEach((v, i)=>{
+    const cell = document.createElement('div'); cell.className = 'lcell';
+    const box = document.createElement('div'); box.className = 'lbox'; box.textContent = fmt(v); cell.appendChild(box);
+    const ptr = document.createElement('div'); ptr.className = 'lptr'; ptr.textContent = i; cell.appendChild(ptr);
+    line.appendChild(cell);
+  });
+  host.appendChild(row);
+  cells.appendChild(host);
+  document.getElementById('bSize').textContent = f.ret==null ? 'throws' : 'returns ' + f.ret;
 }
 
 /* ---- getMin() = peek(): read the root, no change ---- */
 function genHeapPeek(){
   const g = newHeap(modelHeap);
   const label = heapName('getMin')+'()';
-  const via = pqVia(label, 'getMin()');
   if(g.data.length === 0){
-    g.snap({phase:'guard', run:label, ret:'null', say:via+'The heap is <b>empty</b>, so there is no minimum: return <b>null</b>.'});
+    g.snap({phase:'guard', run:label, ret:'null', say:'The heap is <b>empty</b>, so there is no minimum: return <b>null</b>.'});
     return {frames:g.frames, final:modelHeap, code:'getMin', row:'bo-hppeek', label,
       bigO:'An empty '+heapName('getMin')+' returns immediately. <code>O(1)</code>.'};
   }
   g.snap({phase:'read', compare:[0], lit:'C', run:label, ret:fmt(g.data[0]),
-    say:via+'The <b>root</b> (slot 0) is always the minimum: return <b>'+fmt(g.data[0])+'</b>. The heap is unchanged.'});
+    say:'The <b>root</b> (slot 0) is always the minimum: return <b>'+fmt(g.data[0])+'</b>. The heap is unchanged.'});
   return {frames:g.frames, final:modelHeap, code:'getMin', row:'bo-hppeek', label,
     bigO:heapName('getMin')+' reads the root directly, with no search. <code>O(1)</code>.'};
 }
@@ -5095,26 +5511,25 @@ function genHeapSize(){
   const g = newHeap(modelHeap);
   const label = heapName('size')+'()';
   g.snap({phase:'read', run:label, ret:String(g.data.length),
-    say:pqVia(label, 'size()')+'<b>'+label+'</b> returns the number of elements in the backing array: <b>'+g.data.length+'</b>.'});
+    say:'<b>'+label+'</b> returns the number of elements in the backing array: <b>'+g.data.length+'</b>.'});
   return {frames:g.frames, final:modelHeap, code:'size', row:'bo-hpsize', label,
     bigO:'<b>'+heapName('size')+'</b> reads the stored array length. <code>O(1)</code>.'};
 }
 function genHeapClear(){
   const g = newHeap(modelHeap);
-  const via = pqVia('clear()', 'clear()');
   if(g.data.length === 0){
-    g.snap({phase:'clear', run:'clear()', say:via+'The heap is already empty.'});
+    g.snap({phase:'clear', run:'clear()', say:'The heap is already empty.'});
   } else {
-    g.snap({phase:'clear', run:'clear()', say:via+'Drop all <b>'+g.data.length+'</b> element(s) from the heap.'});
+    g.snap({phase:'clear', run:'clear()', say:'Drop all <b>'+g.data.length+'</b> element(s) from the heap.'});
     g.data = [];
-    g.snap({phase:'clear', say:'The heap is now empty.'+(heapPQ() ? ' The priority queue keeps an empty <b>MyMinHeap</b>, never null.' : '')});
+    g.snap({phase:'clear', say:'The heap is now empty.'+(heapPQ() ? ' The priority queue is empty, and it is still ready to use.' : '')});
   }
   return {frames:g.frames, final:g.final(), code:'clear', row:'bo-hpclear', label:'clear()',
     bigO:'clear drops every element. <code>O(n)</code>.'};
 }
 
 /* ---- render a heap frame: object card, binary tree, backing array ---- */
-function heapTreeSVG(data, active, compare, fresh){
+function heapTreeSVG(data, active, compare, fresh, minOk){
   const n = data.length;
   const levels = Math.floor(Math.log2(n)) + 1;
   const levelGap = 62, padTop = 26, nodeR = 19;
@@ -5141,7 +5556,7 @@ function heapTreeSVG(data, active, compare, fresh){
     if(active.includes(i)) ncls += ' act';
     else if(compare.includes(i)) ncls += ' cmp';
     else if(i === fresh) ncls += ' fresh';
-    else if(i === 0) ncls += ' root';
+    else if(i === 0 && minOk) ncls += ' root';
     nodes += '<g class="'+ncls+'">'+
       '<circle cx="'+me.x.toFixed(1)+'" cy="'+me.y.toFixed(1)+'" r="'+nodeR+'"/>'+
       '<text class="hval" x="'+me.x.toFixed(1)+'" y="'+me.y.toFixed(1)+'">'+escSvg(fmt(data[i]))+'</text>'+
@@ -5155,24 +5570,32 @@ function renderHeap(f){
   const cells = document.getElementById('cells'); cells.innerHTML = '';
   const data = f.data, n = data.length;
   const active = f.active||[], compare = f.compare||[], fresh = (f.fresh==null?-1:f.fresh);
+  // index 0 is the minimum only while every parent is <= its children. Mid-build or mid-percolate it may not be, so it is not marked then
+  let minOk = true;
+  for(let i = 1; i < n; i++) if(heapCmp(data[(i - 1) >> 1], data[i]) > 0){ minOk = false; break; }
   const wrap = document.createElement('div'); wrap.className = 'heapview';
 
   const card = document.createElement('div'); card.className = 'objcard heapcard';
-  card.innerHTML =
-    '<div class="ocname">'+(f.mode==='pq' ? 'MyPriorityQueue → MyMinHeap' : 'MyMinHeap')+'</div>'+
+  const heapFields =
+    '<div class="ocname">MyMinHeap</div>'+
     '<div class="ofield">size = <b>'+n+'</b></div>'+
-    '<div class="ofield">data <span class="optr">●→</span> <span class="dnote">(ArrayList, 0-indexed)</span></div>';
+    '<div class="ofield">data <span class="optr">●→</span> <span class="otarget">ArrayList</span></div>';
+  // a priority queue holds nothing itself: its one field, heap, is the MyMinHeap object that holds the elements
+  card.innerHTML = f.mode==='pq'
+    ? '<div class="ocname">MyPriorityQueue</div>'+
+      '<div class="ofield">heap <span class="optr">●→</span> <span class="dnote">(its only field)</span></div>'+
+      '<div class="objcard heapcard nested">'+heapFields+'</div>'
+    : heapFields;
   wrap.appendChild(card);
 
-  const treeBox = document.createElement('div'); treeBox.className = 'heaptree';
-  treeBox.innerHTML = n === 0 ? '<div class="heapempty">the heap is empty</div>'
-                              : heapTreeSVG(data, active, compare, fresh);
-  wrap.appendChild(treeBox);
-
-  const arrLabel = document.createElement('div'); arrLabel.className = 'arrayName';
-  arrLabel.innerHTML = 'backing array <span class="dnote">(parent of i = (i−1)/2, children = 2i+1 and 2i+2)</span>';
-  wrap.appendChild(arrLabel);
+  // data comes first, right under the field that points to it: it is the only thing the heap stores.
+  // Drawn like MyArrayList's array: a ringed box labelled by what data points to
+  const arow = document.createElement('div'); arow.className = 'arrow-row pointed';
+  const alab = document.createElement('div'); alab.className = 'arrlabel';
+  alab.textContent = 'ArrayList (size ' + n + ')';
   const grid = document.createElement('div'); grid.className = 'cells heapcells';
+  arow.append(alab, grid);
+  if(n === 0){ const e = document.createElement('div'); e.className = 'heapempty'; e.textContent = 'empty'; grid.appendChild(e); }
   for(let i = 0; i < n; i++){
     const cell = document.createElement('div');
     let cls;
@@ -5183,11 +5606,20 @@ function renderHeap(f){
     const box = document.createElement('div'); box.className = 'box'; box.textContent = fmt(data[i]);
     const idx = document.createElement('div'); idx.className = 'idx'; idx.textContent = i;
     const ptr = document.createElement('div'); ptr.className = 'ptr';
-    if(i === 0){ const t = document.createElement('span'); t.className = 'tag min'; t.textContent = 'min'; ptr.appendChild(t); }
+    if(i === 0 && minOk){ const t = document.createElement('span'); t.className = 'tag min'; t.textContent = 'min'; ptr.appendChild(t); }
     cell.append(box, idx, ptr);
     grid.appendChild(cell);
   }
-  wrap.appendChild(grid);
+  wrap.appendChild(arow);
+
+  // the tree is not stored anywhere: it is the same ArrayList, drawn by the index rule
+  const treeLabel = document.createElement('div'); treeLabel.className = 'arrayName';
+  treeLabel.innerHTML = 'The same data, drawn as a tree. <span class="dnote">Nothing extra is stored. The children of index i are at 2i+1 and 2i+2, and its parent is at (i−1)/2.</span>';
+  wrap.appendChild(treeLabel);
+  const treeBox = document.createElement('div'); treeBox.className = 'heaptree';
+  treeBox.innerHTML = n === 0 ? '<div class="heapempty">the heap is empty</div>'
+                              : heapTreeSVG(data, active, compare, fresh, minOk);
+  wrap.appendChild(treeBox);
   cells.appendChild(wrap);
 
   document.getElementById('bSize').textContent = 'size = ' + n;
@@ -5198,7 +5630,7 @@ function genHeapEmptyBuild(){
   const g = newHeap({data:[]});
   const pq = heapPQ();
   g.snap({phase:'copy', run: pq ? 'new MyPriorityQueue()' : 'new MyMinHeap()', say: pq
-    ? '<b>new MyPriorityQueue()</b>: initialize <b>heap</b> to an empty <b>MyMinHeap</b> (its <b>data</b> is an empty ArrayList). size = 0.'
+    ? '<b>new MyPriorityQueue()</b>: the priority queue starts empty. size = 0.'
     : '<b>new MyMinHeap()</b>: initialize <b>data</b> to an empty ArrayList. size = 0.'});
   g.snap({phase:'done', say:'An empty heap is trivially valid: there is nothing to order yet.'});
   return {frames:g.frames, final:g.final(), code:'ctor', row:null, label: pq ? 'new MyPriorityQueue()' : 'new MyMinHeap()',
@@ -5206,13 +5638,12 @@ function genHeapEmptyBuild(){
 }
 /* ---- constructor: new MyMinHeap(collection) copies the collection into
    the backing ArrayList, then percolate each node down from the last index to
-   the root (bottom-up heapify). A null collection, or a null inside it, throws.
-   new MyPriorityQueue(collection) hands the collection to that same constructor. ---- */
+   the root (bottom-up heapify). A null collection, or a null inside it, throws. ---- */
 function genHeapBuild(tokens, isNull){
   const g = newHeap({data:[]});
   const pq = heapPQ();
   const label = pq ? 'new MyPriorityQueue(collection)' : 'new MyMinHeap(collection)';
-  const lead = pq ? '<b>new MyPriorityQueue(collection)</b> passes the collection to <b>new MyMinHeap(collection)</b>. ' : '';
+  const lead = '';
   if(isNull || tokens.includes(null)){
     g.snap({phase:'copy', err:true, run:label,
       say:lead+'<b>NullPointerException</b>: '+(isNull ? 'the collection itself is <b>null</b>' : 'the collection contains a <b>null</b> element')+
@@ -6247,7 +6678,7 @@ function renderHash(f){
     '<div class="ocname">'+title+'</div>'+
     '<div class="ofield">size = <b>'+f.size+'</b></div>'+
     '<div class="ofield">capacity = <b>'+f.cap+'</b> <span class="dnote">(max load 0.8 → '+loadShown(f.cap)+')</span></div>'+
-    '<div class="ofield">hashTable <span class="optr">●→</span> <span class="dnote">(Node array, length = '+f.cap+')</span></div>';
+    '<div class="ofield">hashTable <span class="optr">●→</span> <span class="otarget">Node array</span></div>';
   wrap.appendChild(card);
 
   // the getHash() calculation, only on the hashing step
@@ -6263,9 +6694,9 @@ function renderHash(f){
   wrap.appendChild(calc);
 
   if(f.resize) wrap.appendChild(buildHashResize(f));
-  else wrap.appendChild(buildHashTable(f.table, {
+  else wrap.appendChild(pointedFrame('Node array (length '+f.cap+')', buildHashTable(f.table, {
     set:f.mode==='set', hot:f.ha, look:f.look, act:f.act, ghost:f.ghost, fresh:f.fresh
-  }));
+  })));
 
   cells.appendChild(wrap);
   const dispCap = (f.resize && f.resize.pointer==='new') ? f.resize.new.length : f.cap;
@@ -6354,6 +6785,12 @@ function setHashMode(mode){
   constructActive(false);
 }
 
+/* Two texts in one grid cell, only one of them visible. The cell is always as tall as the taller text, so switching
+   between MyMinHeap and MyPriorityQueue never changes a height above the stage and the page does not move. */
+function stackedHint(a, b, showB){
+  const cell = (t, on)=>'<span style="grid-area:1/1;visibility:'+(on ? 'visible' : 'hidden')+'"'+(on ? '' : ' aria-hidden="true"')+'>'+t+'</span>';
+  return '<span style="display:grid">'+cell(a, !showB)+cell(b, showB)+'</span>';
+}
 /* ---- switch the Heap workspace between the bare MyMinHeap and the MyPriorityQueue wrapped around one ---- */
 const HEAP_BTN_TEXT = {
   heap:{hpinsert:'insert(e)', hpremove:'remove()', hppeek:'getMin()', hpsize:'size()', hpclear:'clear()'},
@@ -6363,17 +6800,21 @@ function setHeapMode(mode){
   pause();
   HEAPMODE = mode;
   const isPQ = (mode==='pq');
-  document.querySelectorAll('#heapmodewrap .segbtn').forEach(b=>b.classList.toggle('active', b.getAttribute('data-mode')===mode));
+  document.querySelectorAll('#heapmodewrap [data-mode]').forEach(b=>{ const on = b.getAttribute('data-mode')===mode; b.classList.toggle('active', on); b.setAttribute('aria-pressed', String(on)); });
   Object.entries(HEAP_BTN_TEXT[mode]).forEach(([act, text])=>{
     const b = document.querySelector('#heapOps [data-act="'+act+'"]'); if(b) b.textContent = text;
   });
+  // the helpers are protected methods of MyMinHeap. A MyPriorityQueue cannot call them, so under it they are not shown at all
+  HEAP_HELPERS_OFF = isPQ;
+  document.querySelectorAll('#heapOps [data-helpercol], #heapHelpersHead').forEach(el=>{ el.style.display = isPQ ? 'none' : ''; });
+  document.querySelectorAll('#heapOps input[data-heaponly]').forEach(el=>{ el.disabled = isPQ; });   // the buttons are handled by lockOps
+  document.getElementById('heapHelpersHead').textContent = 'Helper methods (protected)';
+  // lastAtom is required to use a MyPriorityQueue. Under MyMinHeap it is hidden but keeps its place, so the panel is the same height in both modes
+  document.querySelectorAll('#heapOps [data-pqonly]').forEach(el=>{ el.style.visibility = isPQ ? '' : 'hidden'; });
   PH = PHASES_HEAP;
   PH_TITLES = isPQ ? PHASE_TITLES_PQ : PHASE_TITLES_HEAP;
   document.getElementById('cxbody').innerHTML = isPQ ? CX_PQ : CX_HEAP;
   document.getElementById('cxprimer').innerHTML = CXP_HEAP;
-  document.getElementById('heapmodeHint').innerHTML = isPQ
-    ? 'a priority queue is a min-heap with new names: the smallest value has the highest priority'
-    : 'the complete binary tree stored in a 0-indexed ArrayList';
   setCostLabels(false);
   setupCtorChooser();
   constructActive(false);
@@ -6837,6 +7278,8 @@ setVisibleStructs(['ArrayList']);      // hide the rest right away; the server's
     const frames = (result && result.frames) || [];
     if(frames.some(f=>f && f.err))
       return { kind:'err', msg:'Out of bounds! Nothing changed there.' };
+    if(frames.length===1 && frames[0].phase==='result')    // an answer-only MyAlgorithm call: no steps were shown, so no cost to cheer
+      return { kind:'ok', msg:'That is what it returns. How to get there is yours to work out.' };
     if(frames.some(f=>f && f.say && /expandCapacity/i.test(f.say)))
       return { kind:'grow', msg:'Whoa, the array doubled! That copy is the rare O(n) step.' };
     const tag = ((result&&result.label)||'')+' '+((result&&result.code)||'');
@@ -7435,12 +7878,12 @@ setVisibleStructs(['ArrayList']);      // hide the rest right away; the server's
     applyStructs(); return true;
   }).catch(()=>false);
   const meLoaded = (STATIC || tokenGet()) ? api('/api/me').then(signedIn).catch(e=>{ if(e.status===401) signedOut(); }) : Promise.resolve();
-  // the page opens on the newest assignment open to this visitor (PA6, else Hashing, else the iterator) when nothing else was picked meanwhile
+  // the page opens on the newest assignment open to this visitor (PA7 Heap / PQ, else PA6, else Hashing, else the iterator) when nothing else was picked meanwhile
   let navTouched = false;
   document.getElementById('structNav').addEventListener('click', ()=>{ navTouched = true; }, true);
   const openOnCurrent = ()=>{
     if(navTouched) return;
-    for(const name of ['StackQueue', 'Hashing', 'Iterator']){
+    for(const name of ['Heap', 'StackQueue', 'Hashing', 'Iterator']){
       if(name==='Iterator' && !ITER_OPEN) continue;
       const b = document.querySelector('#structNav .struct[data-struct="'+name+'"]');
       if(b && b.style.display!=='none'){ b.click(); return; }

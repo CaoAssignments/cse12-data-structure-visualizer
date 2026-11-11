@@ -18,6 +18,11 @@ window.PawieQuiz = {
    "start": "2026-10-30",
    "due": "2026-11-05",
    "opened": "2026-10-31"
+  },
+  "StackQueue": {
+   "start": "2026-11-06",
+   "due": "2026-11-12",
+   "opened": "2026-11-10"
   }
  },
  "QUIZ_DAYS": {
@@ -1481,6 +1486,371 @@ window.PawieQuiz = {
      ],
      "ans": 0,
      "why": "To get full credit the implementation needs to be O(n), using MyHashSet and/or MyHashMap."
+    }
+   ]
+  ],
+  "StackQueue": [
+   [
+    {
+     "q": "Which instance variables does MyDeque have?",
+     "opt": [
+      "data, size, rear and front",
+      "data, size, head and tail",
+      "data and capacity"
+     ],
+     "ans": 0,
+     "why": "data is the Object array, size counts the valid elements, and rear and front are the indices of the last and the first element."
+    },
+    {
+     "q": "What happens with new MyDeque(-1)?",
+     "opt": [
+      "It creates a deque with capacity 10",
+      "It throws IllegalArgumentException",
+      "It throws NullPointerException"
+     ],
+     "ans": 1,
+     "why": "The constructor throws an IllegalArgumentException if initialCapacity is negative."
+    },
+    {
+     "q": "What happens with new MyDeque(0)?",
+     "opt": [
+      "It throws IllegalArgumentException",
+      "It creates a deque with capacity 10",
+      "It creates a deque with capacity 0"
+     ],
+     "ans": 2,
+     "why": "Only a negative capacity is refused. data is initialized with length initialCapacity, so the capacity is 0 until expandCapacity runs."
+    },
+    {
+     "q": "Right after new MyDeque(5), what are front and rear?",
+     "opt": [
+      "front is 0 and rear is 4",
+      "Both are 0",
+      "front is 0 and rear is -1"
+     ],
+     "ans": 1,
+     "why": "When the deque is initialized both front and rear start at index 0. They are also equal whenever the deque is empty or has only one element."
+    },
+    {
+     "q": "What does a null in data mean?",
+     "opt": [
+      "An empty space in the array",
+      "An element whose value is null",
+      "The end of the deque"
+     ],
+     "ans": 0,
+     "why": "null cannot be a valid element in the deque. It is used to represent an empty space in the array."
+    }
+   ],
+   [
+    {
+     "q": "What does addFirst(null) do?",
+     "opt": [
+      "It adds null at the front",
+      "It does nothing",
+      "It throws NullPointerException"
+     ],
+     "ans": 2,
+     "why": "addFirst and addLast both throw a NullPointerException when element is null."
+    },
+    {
+     "q": "A new deque of capacity 5 has front and rear at 0. After addLast(0), what are front and rear?",
+     "opt": [
+      "Both are still 0",
+      "front is 0 and rear is 1",
+      "front is 4 and rear is 0"
+     ],
+     "ans": 0,
+     "why": "The first element goes into index 0, where front and rear already are. Only size changes, to 1. This is the second example in the write-up."
+    },
+    {
+     "q": "data is [0, null, null, null, null] with front at 0. Where does addFirst(10) put 10?",
+     "opt": [
+      "Index 1",
+      "Index 4, because front wraps around",
+      "Index 0, after 0 is shifted to the right"
+     ],
+     "ans": 1,
+     "why": "The new first element goes just before front. There is no index before 0, so front wraps around to index 4. Nothing is shifted."
+    },
+    {
+     "q": "The capacity is 10, front is 1 and rear is 4. After addLast(6), what is rear?",
+     "opt": [
+      "5",
+      "0",
+      "4"
+     ],
+     "ans": 0,
+     "why": "The element is added to the rear of the deque, in the next space after the old rear, and rear is updated to 5."
+    },
+    {
+     "q": "The deque is at capacity and you call addFirst. What happens first?",
+     "opt": [
+      "It throws IllegalStateException",
+      "It overwrites the element at rear",
+      "It calls expandCapacity, then adds the element"
+     ],
+     "ans": 2,
+     "why": "Before trying to add, addFirst and addLast check if the deque is at capacity and call expandCapacity if necessary."
+    }
+   ],
+   [
+    {
+     "q": "What does removeFirst() do when the deque is empty?",
+     "opt": [
+      "It throws an exception",
+      "It returns null",
+      "It resets front and rear to 0"
+     ],
+     "ans": 1,
+     "why": "If there are no elements in the deque, removeFirst and removeLast return null. No exception is thrown."
+    },
+    {
+     "q": "data is [null, null, null, null, 10] with front and rear at 4. After removeLast(), what are front and rear?",
+     "opt": [
+      "Both are reset to 0",
+      "Both stay at 4",
+      "front is 4 and rear is 3"
+     ],
+     "ans": 1,
+     "why": "The write-up says not to reset rear or front to 0 when removing the final element. The next add uses index 4 again."
+    },
+    {
+     "q": "The capacity is 10, front is 9 and rear is 4. After removeFirst(), what is front?",
+     "opt": [
+      "0, because front wraps around",
+      "8",
+      "10"
+     ],
+     "ans": 0,
+     "why": "The element at index 9 is removed, and the new first element is at index 0. front wraps around the end of the array."
+    },
+    {
+     "q": "What does peekLast() do?",
+     "opt": [
+      "It returns the element at the rear and removes nothing",
+      "It removes and returns the element at the rear",
+      "It returns the element at the front"
+     ],
+     "ans": 0,
+     "why": "peekLast returns the element at the rear of the deque, or null if there are no elements. The deque is not changed."
+    },
+    {
+     "q": "The capacity is 10, front is 1 and rear is 4. After removeLast(), what is rear?",
+     "opt": [
+      "5",
+      "4",
+      "3"
+     ],
+     "ans": 2,
+     "why": "The element at index 4 is removed and returned, so the last element is now at index 3."
+    }
+   ],
+   [
+    {
+     "q": "The capacity is 5. What is it after expandCapacity()?",
+     "opt": [
+      "6",
+      "10",
+      "15"
+     ],
+     "ans": 1,
+     "why": "expandCapacity doubles the current capacity, so 5 becomes 10."
+    },
+    {
+     "q": "The capacity is 0. What is it after expandCapacity()?",
+     "opt": [
+      "0",
+      "1",
+      "10"
+     ],
+     "ans": 2,
+     "why": "Doubling 0 would still give 0, so the write-up says to set the capacity to a default value of 10."
+    },
+    {
+     "q": "data is [3, 4, 5, 1, 2] with front at 3 and rear at 2. What is data after expandCapacity()?",
+     "opt": [
+      "[1, 2, 3, 4, 5, null, null, null, null, null]",
+      "[3, 4, 5, 1, 2, null, null, null, null, null]",
+      "[null, null, null, 1, 2, 3, 4, 5, null, null]"
+     ],
+     "ans": 0,
+     "why": "Elements need to be contiguous after expanding, in their order from first to last, starting at index 0. This is the expandCapacity example in the write-up."
+    },
+    {
+     "q": "In that same example, what are front and rear after expandCapacity()?",
+     "opt": [
+      "front is 3 and rear is 2",
+      "front is 0 and rear is 4",
+      "front is 5 and rear is 9"
+     ],
+     "ans": 1,
+     "why": "After expanding, front needs to be 0 and rear should be at size - 1. The size is still 5, so rear is 4."
+    },
+    {
+     "q": "An empty deque of capacity 4 calls expandCapacity(). What is rear afterward?",
+     "opt": [
+      "0",
+      "-1",
+      "7"
+     ],
+     "ans": 0,
+     "why": "rear should be at size - 1, or 0 if there are no elements present. The size and the elements are preserved."
+    }
+   ],
+   [
+    {
+     "q": "What is the instance variable of MyStack?",
+     "opt": [
+      "An Object array named data",
+      "A MyDeque named theStack",
+      "A MyLinkedList named theStack"
+     ],
+     "ans": 1,
+     "why": "MyStack implements the Stack ADT with a MyDeque<E> object, theStack, as its underlying data structure."
+    },
+    {
+     "q": "You push 1, then 2, then 3, and call pop(). What does it return?",
+     "opt": [
+      "1",
+      "2",
+      "3"
+     ],
+     "ans": 2,
+     "why": "A stack is LIFO, last in first out. The most recent push is at the top, and pop removes from the top."
+    },
+    {
+     "q": "What does pop() return when the stack is empty?",
+     "opt": [
+      "null",
+      "It throws EmptyStackException",
+      "0"
+     ],
+     "ans": 0,
+     "why": "pop returns the removed element, or null if there was no such element."
+    },
+    {
+     "q": "Your push is written with addLast. Which deque method does pop need so the stack stays LIFO?",
+     "opt": [
+      "removeFirst",
+      "removeLast",
+      "peekFirst"
+     ],
+     "ans": 1,
+     "why": "Push and pop have to work on the same end of the deque. The write-up lets you choose either end, as long as the choice is consistent across all the MyStack methods."
+    },
+    {
+     "q": "Which MyDeque methods may MyStack call?",
+     "opt": [
+      "Only the methods outlined in DequeInterface",
+      "Any method, including helpers you added to MyDeque",
+      "None, it should read data directly"
+     ],
+     "ans": 0,
+     "why": "The write-up says to only use the methods outlined in DequeInterface.java, and to refrain from using helper methods you wrote in MyDeque."
+    }
+   ],
+   [
+    {
+     "q": "You enqueue 1, then 2, then 3, and call dequeue(). What does it return?",
+     "opt": [
+      "1",
+      "2",
+      "3"
+     ],
+     "ans": 0,
+     "why": "A queue is FIFO, first in first out. The earliest element is at the front, and dequeue removes from the front."
+    },
+    {
+     "q": "enqueue adds to the ___ of the queue and dequeue removes from the ___.",
+     "opt": [
+      "front, back",
+      "back, front",
+      "back, back"
+     ],
+     "ans": 1,
+     "why": "enqueue adds the specified element to the back of the queue. dequeue removes an element from the front of the queue."
+    },
+    {
+     "q": "You enqueue 4 and then 7. What does peek() return?",
+     "opt": [
+      "4",
+      "7",
+      "null"
+     ],
+     "ans": 0,
+     "why": "peek returns the element at the front of the queue, which is the one that was enqueued first. It does not remove it."
+    },
+    {
+     "q": "What does dequeue() do when the queue is empty?",
+     "opt": [
+      "It throws an exception",
+      "It returns 0",
+      "It returns null"
+     ],
+     "ans": 2,
+     "why": "dequeue returns the removed element, or null if there was no such element."
+    },
+    {
+     "q": "What does new MyQueue(8) do?",
+     "opt": [
+      "It creates an Object array of length 8 inside MyQueue",
+      "It initializes its MyDeque with an initialCapacity of 8",
+      "It enqueues the number 8"
+     ],
+     "ans": 1,
+     "why": "The constructor initializes a MyDeque<E> object with the parameter initialCapacity. The array lives inside that deque."
+    }
+   ],
+   [
+    {
+     "q": "What does isValidBrackets return for \"(abc)\"?",
+     "opt": [
+      "true",
+      "false",
+      "It throws IllegalArgumentException"
+     ],
+     "ans": 0,
+     "why": "The input may contain any characters, and only the brackets matter. The one open bracket is closed by the same type. This is the first example in the write-up."
+    },
+    {
+     "q": "What does isValidBrackets return for the empty string?",
+     "opt": [
+      "false",
+      "It throws NullPointerException",
+      "true"
+     ],
+     "ans": 2,
+     "why": "The write-up lists the empty string as an example that returns true. It has no bracket that is left unmatched."
+    },
+    {
+     "q": "What does isValidBrackets return for \")(\"?",
+     "opt": [
+      "true",
+      "false"
+     ],
+     "ans": 1,
+     "why": "Every close bracket must have a corresponding open bracket of the same type. The first close bracket has none before it."
+    },
+    {
+     "q": "What does isValidBrackets do when input is null?",
+     "opt": [
+      "It throws NullPointerException",
+      "It returns false",
+      "It returns true"
+     ],
+     "ans": 0,
+     "why": "The write-up says to throw a NullPointerException when input is null."
+    },
+    {
+     "q": "Which running time does your isValidBrackets need?",
+     "opt": [
+      "O(n)",
+      "O(n log n)",
+      "O(n squared)"
+     ],
+     "ans": 0,
+     "why": "Your implementation must use a stack or a queue and must run in O(n) time."
     }
    ]
   ]
