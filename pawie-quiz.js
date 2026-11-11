@@ -23,6 +23,10 @@ window.PawieQuiz = {
    "start": "2026-11-06",
    "due": "2026-11-12",
    "opened": "2026-11-10"
+  },
+  "Heap": {
+   "start": "2026-11-13",
+   "due": "2026-11-19"
   }
  },
  "QUIZ_DAYS": {
@@ -1853,6 +1857,371 @@ window.PawieQuiz = {
      "why": "Your implementation must use a stack or a queue and must run in O(n) time."
     }
    ]
+  ],
+  "Heap": [
+   [
+    {
+     "q": "What is the one instance variable of MyMinHeap?",
+     "opt": [
+      "An ArrayList named data",
+      "An Object array and a size counter",
+      "A root node with left and right references"
+     ],
+     "ans": 0,
+     "why": "The write-up allows only protected ArrayList<E> data. The tree is never built out of nodes, it lives inside that list."
+    },
+    {
+     "q": "Where in data is the root of the heap stored?",
+     "opt": [
+      "Index 1, with index 0 left empty",
+      "Index 0",
+      "The last index"
+     ],
+     "ans": 1,
+     "why": "The write-up requires 0-based indexing, so the root of the tree is at index 0. All the tests assume it."
+    },
+    {
+     "q": "How does new MyMinHeap(collection) first fill data?",
+     "opt": [
+      "It calls insert once for every element",
+      "It sorts the collection and copies it over",
+      "It passes collection straight to the ArrayList(Collection) constructor"
+     ],
+     "ans": 2,
+     "why": "The first step is to initialize data with the ArrayList(Collection) constructor, directly passing in the collection argument. The elements keep the order they came in."
+    },
+    {
+     "q": "After the elements are copied in, how does the constructor make data a heap?",
+     "opt": [
+      "It iterates through data backward, percolating each element down",
+      "It iterates through data forward, percolating each element up",
+      "It swaps the smallest element to index 0 and stops"
+     ],
+     "ans": 0,
+     "why": "The write-up says to iterate through data backward, percolating each element down. The percolateDown helper does the work."
+    },
+    {
+     "q": "What does new MyMinHeap(collection) do when one element of collection is null?",
+     "opt": [
+      "It skips that element",
+      "It throws NullPointerException",
+      "It stores null at the end of data"
+     ],
+     "ans": 1,
+     "why": "The constructor throws NullPointerException if collection is null or if any element in collection is null."
+    }
+   ],
+   [
+    {
+     "q": "What does getParentIdx(5) return?",
+     "opt": [
+      "2",
+      "1",
+      "3"
+     ],
+     "ans": 0,
+     "why": "With the root at index 0 the parent of index i is (i - 1) / 2 in integer division, so the parent of 5 is 2."
+    },
+    {
+     "q": "What does getLeftChildIdx(3) return?",
+     "opt": [
+      "6",
+      "7",
+      "8"
+     ],
+     "ans": 1,
+     "why": "The left child of index i is 2 * i + 1, so the left child of 3 is 7. The method only does arithmetic and never looks at data."
+    },
+    {
+     "q": "What does getRightChildIdx(3) return?",
+     "opt": [
+      "6",
+      "7",
+      "8"
+     ],
+     "ans": 2,
+     "why": "The right child of index i is 2 * i + 2, which is the slot right after the left child. For 3 that is 8."
+    },
+    {
+     "q": "data is [1, 4, 4, 9]. What does getMinChildIdx(0) return?",
+     "opt": [
+      "1",
+      "2",
+      "-1"
+     ],
+     "ans": 0,
+     "why": "The children of index 0 are at 1 and 2 and both hold 4. When the two children are equal, getMinChildIdx returns the index of the left child."
+    },
+    {
+     "q": "data is [1, 4, 4, 9]. What does getMinChildIdx(2) return?",
+     "opt": [
+      "3",
+      "-1",
+      "It throws IndexOutOfBoundsException"
+     ],
+     "ans": 1,
+     "why": "The left child of index 2 would be at index 5, which is past the end of data. A node with no children is a leaf, and for a leaf the method returns -1."
+    }
+   ],
+   [
+    {
+     "q": "Where does insert put the new element before any percolating?",
+     "opt": [
+      "At index 0, the root",
+      "At the end of data, the right-most spot of the bottom level",
+      "At the index where it is in sorted order"
+     ],
+     "ans": 1,
+     "why": "insert adds the element to the end of the heap, so the tree stays complete. Then only that element percolates up."
+    },
+    {
+     "q": "data is [1, 5, 3] and you call insert(2). What is data afterward?",
+     "opt": [
+      "[1, 2, 3, 5]",
+      "[1, 5, 3, 2]",
+      "[2, 1, 3, 5]"
+     ],
+     "ans": 0,
+     "why": "2 is added at index 3. Its parent at index 1 holds 5, which is greater, so they swap. The next parent holds 1, which is not greater, so 2 stops at index 1."
+    },
+    {
+     "q": "While percolating up, the element is equal to its parent. What should happen?",
+     "opt": [
+      "Swap them",
+      "Do not swap, and stop",
+      "Throw IllegalArgumentException"
+     ],
+     "ans": 1,
+     "why": "A node only has to be no greater than its children. An equal parent already satisfies that, so the write-up says not to swap."
+    },
+    {
+     "q": "What does insert(null) do?",
+     "opt": [
+      "It adds null at the end of data",
+      "It returns false",
+      "It throws NullPointerException and adds nothing"
+     ],
+     "ans": 2,
+     "why": "The write-up says to throw a NullPointerException and not add to the heap if element is null."
+    },
+    {
+     "q": "data is [3, 5, 4] and you call insert(1). How many swaps does percolateUp make?",
+     "opt": [
+      "1",
+      "2",
+      "3"
+     ],
+     "ans": 1,
+     "why": "1 starts at index 3, swaps with 5 at index 1, then swaps with 3 at index 0. It is now the root, so data is [1, 3, 4, 5] after 2 swaps."
+    }
+   ],
+   [
+    {
+     "q": "When percolateDown has to swap, which child does it swap with?",
+     "opt": [
+      "Always the left child",
+      "The smaller child, and the left child when both are equal",
+      "The larger child"
+     ],
+     "ans": 1,
+     "why": "The write-up says to always swap places with the smaller child, and with the left child if both children are equal."
+    },
+    {
+     "q": "data is [1, 3, 2, 7] and you call remove(). What is data afterward?",
+     "opt": [
+      "[2, 3, 7]",
+      "[3, 7, 2]",
+      "[7, 3, 2]"
+     ],
+     "ans": 0,
+     "why": "The root 1 is removed and returned. The last element 7 takes its place, then percolates down by swapping with the smaller child, which is 2."
+    },
+    {
+     "q": "deleteIndex is called on the last index of the heap. What fixing is needed?",
+     "opt": [
+      "The root has to percolate down",
+      "None, the heap properties are maintained",
+      "The whole heap is rebuilt"
+     ],
+     "ans": 1,
+     "why": "The write-up says that if we are removing the last element then the heap properties are maintained."
+    },
+    {
+     "q": "deleteIndex removes an element that is not the last one. What replaces it?",
+     "opt": [
+      "Its smaller child",
+      "Its parent",
+      "The last element in the heap"
+     ],
+     "ans": 2,
+     "why": "The deleted element is replaced with the last element in the heap, the right-most node of the bottom level, which fixes the completeness property. That element then percolates down or up, and only one of the two is ever necessary."
+    },
+    {
+     "q": "Why should deleteIndex remove from the ArrayList by index and not by element?",
+     "opt": [
+      "Removing by element could delete the wrong one when there are duplicates",
+      "Removing by index never has to shift anything",
+      "ArrayList has no method that removes by element"
+     ],
+     "ans": 0,
+     "why": "The write-up warns that removing by element could accidentally delete the wrong element if there are duplicates in the list."
+    }
+   ],
+   [
+    {
+     "q": "What does getMin() do when the heap is empty?",
+     "opt": [
+      "It throws NoSuchElementException",
+      "It returns null",
+      "It returns 0"
+     ],
+     "ans": 1,
+     "why": "getMin returns the root element, and if the heap is empty it returns null instead. The same is true of remove."
+    },
+    {
+     "q": "Which helper does the write-up tell remove() to use?",
+     "opt": [
+      "percolateUp",
+      "getMinChildIdx",
+      "deleteIndex"
+     ],
+     "ans": 2,
+     "why": "remove removes and returns the root, and the write-up says to use the deleteIndex helper for it. The root is at index 0."
+    },
+    {
+     "q": "data is [2, 6, 4]. You call getMin() twice. What does the second call return?",
+     "opt": [
+      "2",
+      "4",
+      "6"
+     ],
+     "ans": 0,
+     "why": "getMin only returns the root. It does not remove anything, so the heap is unchanged and the second call returns 2 again."
+    },
+    {
+     "q": "A heap holds 5 elements and you call clear(). What does size() return afterward?",
+     "opt": [
+      "0",
+      "5",
+      "It throws NullPointerException"
+     ],
+     "ans": 0,
+     "why": "clear empties the entire heap, so size returns 0. The heap can still be used, and the next insert starts it again at the root."
+    },
+    {
+     "q": "The heap holds n elements. What is the worst case running time of insert?",
+     "opt": [
+      "O(1)",
+      "O(log n)",
+      "O(n)"
+     ],
+     "ans": 1,
+     "why": "The new element only climbs one path from the bottom toward the root, and a complete tree of n nodes has about log n levels."
+    }
+   ],
+   [
+    {
+     "q": "What is the one instance variable of MyPriorityQueue?",
+     "opt": [
+      "An ArrayList of its own",
+      "A MyMinHeap named heap",
+      "A MyDeque named queue"
+     ],
+     "ans": 1,
+     "why": "MyPriorityQueue has a single instance variable, protected MyMinHeap<E> heap, and every method works through it."
+    },
+    {
+     "q": "Which element of a MyPriorityQueue has the highest priority?",
+     "opt": [
+      "The smallest one, as compareTo defines it",
+      "The largest one",
+      "The one that was pushed first"
+     ],
+     "ans": 0,
+     "why": "The underlying structure is a min-heap, so smaller elements have higher priorities. The root of the heap is the smallest element and the one with the highest priority."
+    },
+    {
+     "q": "You push 5, then 2, then 8, and then call pop(). What does it return?",
+     "opt": [
+      "5",
+      "2",
+      "8"
+     ],
+     "ans": 1,
+     "why": "pop removes and returns the element with the highest priority, which is the smallest one. The order of the pushes does not matter."
+    },
+    {
+     "q": "May MyPriorityQueue read or change heap.data directly?",
+     "opt": [
+      "Yes, data is protected so it can be reached",
+      "No, it should use only the public methods of MyMinHeap"
+     ],
+     "ans": 1,
+     "why": "The write-up says to use only the MyMinHeap public methods and to treat heap.data as if it were a private instance variable."
+    },
+    {
+     "q": "What is heap after MyPriorityQueue's clear() finishes?",
+     "opt": [
+      "An empty MyMinHeap, not null",
+      "null",
+      "A MyMinHeap that holds one null element"
+     ],
+     "ans": 0,
+     "why": "The priority queue should be empty after the call, and the write-up says heap should be an empty MyMinHeap, not null."
+    }
+   ],
+   [
+    {
+     "q": "atoms is [1, 1, 3]. What does lastAtom return?",
+     "opt": [
+      "1",
+      "2",
+      "5"
+     ],
+     "ans": 0,
+     "why": "This is the example in the write-up. Atoms 1 and 1 produce an atom of type 2, then atoms 2 and 3 produce an atom of type 1, which is the last one."
+    },
+    {
+     "q": "The two atoms with the smallest types are 4 and 4. What is the type of the new atom?",
+     "opt": [
+      "0",
+      "8",
+      "4"
+     ],
+     "ans": 1,
+     "why": "When the two types are the same the reaction is stable, and the new atom's type is the sum of the two types."
+    },
+    {
+     "q": "The two atoms with the smallest types are 2 and 5. What is the type of the new atom?",
+     "opt": [
+      "3",
+      "7",
+      "10"
+     ],
+     "ans": 0,
+     "why": "When the two types differ the reaction is unstable, and the new atom's type is the absolute difference between the two types."
+    },
+    {
+     "q": "What does lastAtom do when atoms is null?",
+     "opt": [
+      "It returns null",
+      "It returns 0",
+      "It throws NullPointerException"
+     ],
+     "ans": 2,
+     "why": "The write-up says to throw a NullPointerException if atoms is null. A list that is not null always holds at least one atom."
+    },
+    {
+     "q": "Which running time does your lastAtom need for full credit?",
+     "opt": [
+      "O(n)",
+      "O(n log n)",
+      "O(n squared)"
+     ],
+     "ans": 1,
+     "why": "You are required to use a MyPriorityQueue object, and the algorithm must run in O(n log n) time for full credit."
+    }
+   ]
   ]
  },
  "JOKES_DAYS": {
@@ -1969,6 +2338,29 @@ window.PawieQuiz = {
    ],
    [
     "The stack asked the queue for advice. The queue said, wait your turn. The stack said, I go first."
+   ]
+  ],
+  "Heap": [
+   [
+    "Why is the min-heap so humble? It always puts the smallest one on top."
+   ],
+   [
+    "A new element in a heap starts at the bottom and works its way up. Very relatable."
+   ],
+   [
+    "Insert is O(log n) because the new guy only climbs one branch."
+   ],
+   [
+    "Heapify walked in and said, I can sort out this whole family in linear time."
+   ],
+   [
+    "Why does sifting down compare both children? It swaps with the smaller one so the heap stays valid."
+   ],
+   [
+    "Why did two equal elements not fight? Ties do not break the heap property."
+   ],
+   [
+    "Null elements are not allowed. The heap needs something to compare."
    ]
   ]
  }
